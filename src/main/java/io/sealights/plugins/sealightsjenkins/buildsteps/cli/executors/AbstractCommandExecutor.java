@@ -32,7 +32,7 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
             String[] execCommand = createExecutionCommand();
 
             // Run a java app in a separate system process
-            logger.info("About to execute command: " + Arrays.toString(execCommand));
+            logger.info("About to execute command: " + Arrays.toString(prettifyToken(execCommand)));
 
             Process process = runtime.exec(execCommand);
             process.waitFor();
@@ -127,5 +127,15 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 
     public void setRuntime(Runtime runtime) {
         this.runtime = runtime;
+    }
+
+    public String[] prettifyToken(String[] commands){
+        for (int i =0;i<=commands.length;i++){
+            if (commands[i].equals("-token")){
+                commands[i+1] = "..."+commands[i+1].substring(commands[i+1].length()-10);
+                break;
+            }
+        }
+        return commands;
     }
 }
