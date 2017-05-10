@@ -12,4 +12,29 @@
             <f:textbox value="${packagesExcluded}"/>
         </f:entry>
     </f:advanced>
+    <f:entry>
+        <f:property field="defaultBuildParams"/>
+    </f:entry>
+    <f:entry title="App Name" field="appName">
+        <f:textbox value="$${JOB_NAME}"/>
+    </f:entry>
+
+    <f:entry title="Lab Id" field="labId">
+        <f:textbox />
+    </f:entry>
+
+    <f:entry title="Branch Name" field="branchName">
+            <f:textbox value="$${GIT_BRANCH}"/>
+    </f:entry>
+    <f:dropdownList name="buildName" title="Build Name">
+                <j:forEach var="currentDescriptor" items="${descriptor.buildNameDescriptorList}" varStatus="loop">
+                    <f:dropdownListBlock title="${currentDescriptor.displayName}" value="${loop.index}"
+                                         selected="${currentDescriptor == instance.buildName.descriptor || (instance.buildName.descriptor == null &amp;&amp; currentDescriptor.emptyBuild)}"
+                                         staplerClass="${currentDescriptor.clazz.name}">
+                        <j:set var="instance" value="${instance.buildName}"/>
+                        <j:set var="descriptor" value="${instance.descriptor}"/>
+                        <st:include page="${currentDescriptor.configPage}" from="${currentDescriptor}"/>
+                    </f:dropdownListBlock>
+                </j:forEach>
+            </f:dropdownList>
 </j:jelly>

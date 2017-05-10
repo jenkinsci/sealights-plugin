@@ -20,5 +20,7 @@
              description="The test report provider">
         <f:textbox value="${source}"/>
     </f:entry>
-
+    <f:entry>
+        <f:property field="defaultBuildParams"/>
+    </f:entry>
 </j:jelly>

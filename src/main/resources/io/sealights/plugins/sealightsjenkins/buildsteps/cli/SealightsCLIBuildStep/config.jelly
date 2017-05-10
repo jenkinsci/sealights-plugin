@@ -22,8 +22,6 @@
         </j:forEach>
     </f:dropdownList>
 
-    <f:entry>
-        <f:property field="cliRunner"/>
-    </f:entry>
+
 
 </j:jelly>

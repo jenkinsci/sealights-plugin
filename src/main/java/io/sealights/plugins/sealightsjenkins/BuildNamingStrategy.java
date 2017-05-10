@@ -6,7 +6,7 @@ package io.sealights.plugins.sealightsjenkins;
 public enum BuildNamingStrategy {
     JENKINS_BUILD() {
         @Override public String getDisplayName() {
-            return "Use the job name from Jenkins (by default, an auto-incrementing number)";
+            return "Use the build name from Jenkins (by default, an auto-incrementing number)";
         }
     },
     JENKINS_UPSTREAM() {
