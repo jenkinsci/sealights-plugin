@@ -3,4 +3,7 @@
     <f:entry title="Report" field="report">
         <f:textbox value="${report}"/>
     </f:entry>
+    <f:entry>
+            <f:property field="defaultBuildParams"/>
+        </f:entry>
 </j:jelly>
