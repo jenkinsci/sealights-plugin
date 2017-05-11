@@ -4,5 +4,7 @@
     <f:entry title="Test Stage (i.e, Integration Tests, Functional Tests)" field="testStage">
         <f:textbox value="${testStage}" default="Unit Tests"/>
     </f:entry>
-
+<f:entry>
+        <f:property field="defaultBuildParams"/>
+    </f:entry>
 </j:jelly>
