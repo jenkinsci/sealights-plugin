@@ -12,4 +12,40 @@
             <f:textbox value="${packagesExcluded}"/>
         </f:entry>
     </f:advanced>
+
+    <f:entry title="Build Session Id" field="buildSessionId">
+        <f:textbox value="${buildSessionId}"/>
+    </f:entry>
+
+    <f:entry title="${%Additional Arguments}" field="additionalArguments">
+        <f:expandableTextbox value="${additionalArguments}"/>
+    </f:entry>
+
+    <f:advanced title="SeaLights CLI Advanced">
+
+        <f:entry title="App Name" field="appName">
+            <f:textbox value="${appName}"/>
+        </f:entry>
+
+        <f:entry title="Lab Id" field="labId">
+            <f:textbox value="${labId}"/>
+        </f:entry>
+
+        <f:entry title="Branch Name" field="branchName">
+            <f:textbox value="${branch}"/>
+        </f:entry>
+
+        <f:dropdownList name="buildName" title="Build Name">
+            <j:forEach var="currentDescriptor" items="${descriptor.buildNameDescriptorList}" varStatus="loop">
+                <f:dropdownListBlock title="${currentDescriptor.displayName}" value="${loop.index}"
+                                     selected="${currentDescriptor == instance.buildName.descriptor || (instance.buildName.descriptor == null &amp;&amp; currentDescriptor.emptyBuild)}"
+                                     staplerClass="${currentDescriptor.clazz.name}">
+                    <j:set var="instance" value="${instance.buildName}"/>
+                    <j:set var="descriptor" value="${instance.descriptor}"/>
+                    <st:include page="${currentDescriptor.configPage}" from="${currentDescriptor}"/>
+                </f:dropdownListBlock>
+            </j:forEach>
+        </f:dropdownList>
+
+    </f:advanced>
 </j:jelly>

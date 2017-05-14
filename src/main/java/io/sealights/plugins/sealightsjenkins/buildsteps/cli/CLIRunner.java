@@ -34,12 +34,12 @@ import java.util.Properties;
 @ExportedBean
 public class CLIRunner extends Builder {
 
-    private String buildSessionId;
-    private String appName;
-    private String branchName;
-    private CommandBuildName buildName;
-    private String labId;
-    private String additionalArguments;
+    private transient String buildSessionId;
+    private transient String appName;
+    private transient String branchName;
+    private transient CommandBuildName buildName;
+    private transient String labId;
+    private transient String additionalArguments;
     private BeginAnalysis beginAnalysis = new BeginAnalysis();
 
     @DataBoundConstructor

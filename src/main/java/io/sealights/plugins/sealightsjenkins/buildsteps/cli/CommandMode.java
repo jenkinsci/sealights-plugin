@@ -3,9 +3,12 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionPoint;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
+import hudson.model.Items;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -19,9 +22,23 @@ import java.io.Serializable;
 public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Serializable {
 
     private final CommandModes currentMode;
+    private final String buildSessionId;
+    private final String additionalArguments;
 
-    private CommandMode(final CommandModes currentMode) {
+    private CommandMode(final CommandModes currentMode, final String buildSessionId, final String additionalArguments) {
         this.currentMode = currentMode;
+        this.buildSessionId = buildSessionId;
+        this.additionalArguments = additionalArguments;
+    }
+
+    @Exported
+    public String getBuildSessionId() {
+        return buildSessionId;
+    }
+
+    @Exported
+    public String getAdditionalArguments() {
+        return additionalArguments;
     }
 
     @Exported
@@ -62,8 +79,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private String testStage;
 
         @DataBoundConstructor
-        public StartView(String testStage) {
-            super(CommandModes.Start);
+        public StartView(String testStage, String buildSessionId, String additionalArguments) {
+            super(CommandModes.Start, buildSessionId, additionalArguments);
             this.testStage = testStage;
         }
 
@@ -93,8 +110,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     public static class EndView extends CommandMode {
 
         @DataBoundConstructor
-        public EndView() {
-            super(CommandModes.End);
+        public EndView(String buildSessionId, String additionalArguments) {
+            super(CommandModes.End, buildSessionId, additionalArguments);
         }
 
         @Extension
@@ -114,8 +131,9 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private String source;
 
         @DataBoundConstructor
-        public UploadReportsView(String reportFiles, String reportsFolders, boolean hasMoreRequests, String source) {
-            super(CommandModes.UploadReports);
+        public UploadReportsView(String reportFiles, String reportsFolders, boolean hasMoreRequests,
+                                 String source, String buildSessionId, String additionalArguments) {
+            super(CommandModes.UploadReports, buildSessionId, additionalArguments);
             this.reportFiles = reportFiles;
             this.reportsFolders = reportsFolders;
             this.hasMoreRequests = hasMoreRequests;
@@ -176,8 +194,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         }
 
         @DataBoundConstructor
-        public ExternalReportView(String report) {
-            super(CommandModes.ExternalReport);
+        public ExternalReportView(String report, String buildSessionId, String additionalArguments) {
+            super(CommandModes.ExternalReport, buildSessionId, additionalArguments);
             this.report = report;
         }
 
@@ -195,11 +213,53 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private String packagesIncluded;
         private String packagesExcluded;
 
+        private String appName;
+        private String branchName;
+        private CommandBuildName buildName;
+        private String labId;
+
         @DataBoundConstructor
-        public ConfigView(String packagesIncluded, String packagesExcluded) {
-            super(CommandModes.Config);
+        public ConfigView(String packagesIncluded, String packagesExcluded, String appName, String branchName,
+                          CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments) {
+            super(CommandModes.Config, buildSessionId, additionalArguments);
             this.packagesIncluded = packagesIncluded;
             this.packagesExcluded = packagesExcluded;
+            this.appName = appName;
+            this.branchName = branchName;
+            this.buildName = buildName;
+            this.labId = labId;
+        }
+
+        public String getAppName() {
+            return appName;
+        }
+
+        public void setAppName(String appName) {
+            this.appName = appName;
+        }
+
+        public String getBranchName() {
+            return branchName;
+        }
+
+        public void setBranchName(String branchName) {
+            this.branchName = branchName;
+        }
+
+        public CommandBuildName getBuildName() {
+            return buildName;
+        }
+
+        public void setBuildName(CommandBuildName buildName) {
+            this.buildName = buildName;
+        }
+
+        public String getLabId() {
+            return labId;
+        }
+
+        public void setLabId(String labId) {
+            this.labId = labId;
         }
 
         public String getPackagesIncluded() {
@@ -228,6 +288,10 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
             public ConfigDescriptor() {
                 super(ConfigView.class, CommandModes.Config.getDisplayName());
+            }
+            @Initializer(before = InitMilestone.PLUGINS_STARTED)
+            public static void addAliases() {
+                Items.XSTREAM2.addCompatibilityAlias("io.sealights.plugins.sealightsjenkins.buildsteps.cli.CLIRunner", CommandMode.ConfigView.class);
             }
         }
 

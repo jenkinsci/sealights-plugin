@@ -21,4 +21,12 @@
         <f:textbox value="${source}"/>
     </f:entry>
 
+    <f:entry title="Build Session Id" field="buildSessionId">
+        <f:textbox value="${buildSessionId}"/>
+    </f:entry>
+
+    <f:entry title="${%Additional Arguments}" field="additionalArguments">
+        <f:expandableTextbox value="${additionalArguments}"/>
+    </f:entry>
+
 </j:jelly>
