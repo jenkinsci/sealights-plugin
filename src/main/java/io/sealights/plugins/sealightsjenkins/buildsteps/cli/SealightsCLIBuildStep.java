@@ -10,6 +10,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateException;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
+import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -31,6 +32,31 @@ public class SealightsCLIBuildStep extends Builder {
         this.failBuildIfStepFail = failBuildIfStepFail;
         this.commandMode = commandMode;
         this.cliRunner = cliRunner;
+    }
+
+    /* * The goal of this method is to support migration of data between versions
+    * of this plugin.
+    */
+    private Object readResolve() {
+        StringBuffer additionalArgs = new StringBuffer();
+        if(this.commandMode instanceof CommandMode.ConfigView){
+            ((CommandMode.ConfigView)commandMode).setAppName(cliRunner.getAppName());
+            ((CommandMode.ConfigView)commandMode).setBranchName(cliRunner.getBranchName());
+            ((CommandMode.ConfigView)commandMode).setBuildName(cliRunner.getBuildName());
+            additionalArgs.append(cliRunner.getAdditionalArguments());
+        }else if(this.commandMode instanceof CommandMode.EndView||
+                this.commandMode instanceof CommandMode.StartView||
+                this.commandMode instanceof CommandMode.ExternalReportView||
+                this.commandMode instanceof CommandMode.UploadReportsView){
+            if(!StringUtils.isNullOrEmpty(cliRunner.getAppName())){
+                additionalArgs.append("appName="+cliRunner.getAppName()+"\n");
+            }
+            if(!StringUtils.isNullOrEmpty(cliRunner.getBranchName())){
+                additionalArgs.append("branchName="+cliRunner.getBranchName()+"\n");
+            }
+            ((CommandMode.ConfigView)commandMode).setAdditionalArguments(additionalArgs.toString());
+        }
+        return this;
     }
 
     public CommandMode getCommandMode() {

@@ -9,6 +9,7 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Items;
+import io.sealights.plugins.sealightsjenkins.BuildName;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -22,8 +23,8 @@ import java.io.Serializable;
 public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Serializable {
 
     private final CommandModes currentMode;
-    private final String buildSessionId;
-    private final String additionalArguments;
+    private  String buildSessionId;
+    private  String additionalArguments;
 
     private CommandMode(final CommandModes currentMode, final String buildSessionId, final String additionalArguments) {
         this.currentMode = currentMode;
@@ -32,6 +33,17 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     }
 
     @Exported
+    public void setBuildSessionId(String buildSessionId) {
+        this.buildSessionId = buildSessionId;
+    }
+
+    @Exported
+    public void setAdditionalArguments(String additionalArguments) {
+        this.additionalArguments = additionalArguments;
+    }
+
+    @Exported
+
     public String getBuildSessionId() {
         return buildSessionId;
     }
@@ -302,6 +314,10 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
                 super(ConfigView.class, CommandModes.Config.getDisplayName());
             }
 
+            public DescriptorExtensionList<BuildName, BuildName.BuildNameDescriptor> getBuildNameDescriptorList() {
+                return Jenkins.getInstance().getDescriptorList(BuildName.class);
+            }
+            
             @Initializer(before = InitMilestone.PLUGINS_STARTED)
             public static void addAliases() {
                 Items.XSTREAM2.addCompatibilityAlias("io.sealights.plugins.sealightsjenkins.buildsteps.cli.CLIRunner", ConfigView.class);
@@ -309,5 +325,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         }
 
     }
+
 
 }
