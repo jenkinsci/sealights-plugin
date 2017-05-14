@@ -5,6 +5,7 @@ import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import io.sealights.plugins.sealightsjenkins.BeginAnalysisBuildStep;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -38,6 +39,11 @@ public class DefaultBuildParams extends Builder {
     public DefaultBuildParams(String buildSessionId, String additionalArguments) {
         this.buildSessionId = buildSessionId;
         this.additionalArguments = additionalArguments;
+    }
+
+    @Override
+    public DescriptorImpl getDescriptor() {
+        return (DescriptorImpl) super.getDescriptor();
     }
 
     @Extension

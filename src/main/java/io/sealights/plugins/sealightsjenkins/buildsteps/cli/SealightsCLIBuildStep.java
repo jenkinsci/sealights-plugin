@@ -23,6 +23,15 @@ public class SealightsCLIBuildStep extends Builder {
     public boolean failBuildIfStepFail;
     public CommandMode commandMode;
     public CLIRunner cliRunner;
+    public DefaultBuildParams defaultBuildParams;
+
+    public DefaultBuildParams getDefaultBuildParams() {
+        return defaultBuildParams;
+    }
+
+    public void setDefaultBuildParams(DefaultBuildParams defaultBuildParams) {
+        this.defaultBuildParams = defaultBuildParams;
+    }
 
     @DataBoundConstructor
     public SealightsCLIBuildStep(boolean enabled, boolean failBuildIfStepFail,

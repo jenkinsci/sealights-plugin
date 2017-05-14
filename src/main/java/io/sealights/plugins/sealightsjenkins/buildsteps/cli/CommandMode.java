@@ -1,17 +1,25 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 
+import com.thoughtworks.xstream.mapper.Mapper;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionPoint;
+import hudson.XmlFile;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
+import hudson.model.Items;
 import io.sealights.plugins.sealightsjenkins.BeginAnalysis;
+import io.sealights.plugins.sealightsjenkins.RestoreBuildFile;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -20,9 +28,19 @@ import java.io.Serializable;
 public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Serializable {
 
     private final CommandModes currentMode;
+    protected DefaultBuildParams defaultBuildParams;
 
-    private CommandMode(final CommandModes currentMode) {
+    public DefaultBuildParams getDefaultBuildParams() {
+        return defaultBuildParams;
+    }
+
+    public void setDefaultBuildParams(DefaultBuildParams defaultBuildParams) {
+        this.defaultBuildParams = defaultBuildParams;
+    }
+
+    private CommandMode(final CommandModes currentMode, DefaultBuildParams defaultBuildParams) {
         this.currentMode = currentMode;
+        this.defaultBuildParams =defaultBuildParams;
     }
 
     @Exported
@@ -32,7 +50,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
     @Override
     public Descriptor<CommandMode> getDescriptor() {
-        return Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return Jenkins.getInstance().getDescriptorOrDie(this.getClass());
     }
 
     public static class CommandModeDescriptor extends Descriptor<CommandMode> {
@@ -62,15 +80,14 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     }
 
     public static class StartView extends CommandMode {
-
+        CLIRunner cliRunner;
         private String testStage;
-        private DefaultBuildParams defaultBuildParams;
 
         @DataBoundConstructor
-        public StartView(String testStage,DefaultBuildParams defaultBuildParams) {
-            super(CommandModes.Start);
+        public StartView(String testStage,DefaultBuildParams defaultBuildParams, CLIRunner cliRunner) {
+            super(CommandModes.Start,defaultBuildParams);
             this.testStage = testStage;
-            this.defaultBuildParams=defaultBuildParams;
+            this.cliRunner=cliRunner;
         }
 
         public String getTestStage() {
@@ -81,17 +98,16 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.testStage = testStage;
         }
 
-        public DefaultBuildParams getDefaultBuildParams() {
-            return defaultBuildParams;
+        @Override
+        public Descriptor<CommandMode> getDescriptor() {
+            return Jenkins.getInstance().getDescriptorOrDie(this.getClass());
         }
 
-        public void setDefaultBuildParams(DefaultBuildParams defaultBuildParams) {
-            this.defaultBuildParams = defaultBuildParams;
-        }
+
 
         @Extension
         public static class StartDescriptor extends CommandModeDescriptor {
-            private DefaultBuildParams defaultBuildParams;
+
             @Override
             public boolean isDefault() {
                 return true;
@@ -105,11 +121,9 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     }
 
     public static class EndView extends CommandMode {
-        private DefaultBuildParams defaultBuildParams;
         @DataBoundConstructor
         public EndView(DefaultBuildParams defaultBuildParams) {
-            super(CommandModes.End);
-            this.defaultBuildParams=defaultBuildParams;
+            super(CommandModes.End, defaultBuildParams);
         }
 
         @Extension
@@ -118,18 +132,9 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
                 super(EndView.class, CommandModes.End.getDisplayName());
             }
         }
-
-        public DefaultBuildParams getDefaultBuildParams() {
-            return defaultBuildParams;
-        }
-
-        public void setDefaultBuildParams(DefaultBuildParams defaultBuildParams) {
-            this.defaultBuildParams = defaultBuildParams;
-        }
     }
 
     public static class UploadReportsView extends CommandMode {
-        private DefaultBuildParams defaultBuildParams;
         private String reportFiles;
         private String reportsFolders;
         private boolean hasMoreRequests;
@@ -137,12 +142,11 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
         @DataBoundConstructor
         public UploadReportsView(String reportFiles, String reportsFolders, boolean hasMoreRequests, String source, DefaultBuildParams defaultBuildParams) {
-            super(CommandModes.UploadReports);
+            super(CommandModes.UploadReports, defaultBuildParams);
             this.reportFiles = reportFiles;
             this.reportsFolders = reportsFolders;
             this.hasMoreRequests = hasMoreRequests;
             this.source = source;
-            this.defaultBuildParams=defaultBuildParams;
         }
 
         public String getReportFiles() {
@@ -177,13 +181,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.source = source;
         }
 
-        public DefaultBuildParams getDefaultBuildParams() {
-            return defaultBuildParams;
-        }
-
-        public void setDefaultBuildParams(DefaultBuildParams defaultBuildParams) {
-            this.defaultBuildParams = defaultBuildParams;
-        }
 
         @Extension
         public static class UploadReportsDescriptor extends CommandModeDescriptor {
@@ -195,7 +192,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     }
 
     public static class ExternalReportView extends CommandMode {
-        private DefaultBuildParams defaultBuildParams;
         private String report;
 
         public String getReport() {
@@ -206,19 +202,10 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.report = report;
         }
 
-        public DefaultBuildParams getDefaultBuildParams() {
-            return defaultBuildParams;
-        }
-
-        public void setDefaultBuildParams(DefaultBuildParams defaultBuildParams) {
-            this.defaultBuildParams = defaultBuildParams;
-        }
-
         @DataBoundConstructor
         public ExternalReportView(String report, DefaultBuildParams defaultBuildParams) {
-            super(CommandModes.ExternalReport);
+            super(CommandModes.ExternalReport, defaultBuildParams);
             this.report = report;
-            this.defaultBuildParams=defaultBuildParams;
         }
 
         @Extension
@@ -231,7 +218,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     }
 
     public static class ConfigView extends CommandMode {
-        private DefaultBuildParams defaultBuildParams;
         private String branchName;
         private CommandBuildName buildName;
         private String labId;
@@ -244,8 +230,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         public ConfigView(CommandModes currentMode, DefaultBuildParams defaultBuildParams, String branchName,
                           CommandBuildName buildName, String labId, String appName, BeginAnalysis beginAnalysis,
                           String packagesIncluded, String packagesExcluded) {
-            super(currentMode.Config);
-            this.defaultBuildParams = defaultBuildParams;
+            super(currentMode.Config, defaultBuildParams);
             this.branchName = branchName;
             this.buildName = buildName;
             this.labId = labId;
@@ -253,14 +238,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.beginAnalysis = beginAnalysis;
             this.packagesIncluded = packagesIncluded;
             this.packagesExcluded = packagesExcluded;
-        }
-
-        public DefaultBuildParams getDefaultBuildParams() {
-            return defaultBuildParams;
-        }
-
-        public void setDefaultBuildParams(DefaultBuildParams defaultBuildParams) {
-            this.defaultBuildParams = defaultBuildParams;
         }
 
         public String getBranchName() {
