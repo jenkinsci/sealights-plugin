@@ -230,50 +230,62 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.labId = labId;
         }
 
+        @Exported
         public String getAppName() {
             return appName;
         }
 
+        @Exported
         public void setAppName(String appName) {
             this.appName = appName;
         }
 
+        @Exported
         public String getBranchName() {
             return branchName;
         }
 
+        @Exported
         public void setBranchName(String branchName) {
             this.branchName = branchName;
         }
 
+        @Exported
         public CommandBuildName getBuildName() {
             return buildName;
         }
 
+        @Exported
         public void setBuildName(CommandBuildName buildName) {
             this.buildName = buildName;
         }
 
+        @Exported
         public String getLabId() {
             return labId;
         }
 
+        @Exported
         public void setLabId(String labId) {
             this.labId = labId;
         }
 
+        @Exported
         public String getPackagesIncluded() {
             return packagesIncluded;
         }
 
+        @Exported
         public void setPackagesIncluded(String packagesIncluded) {
             this.packagesIncluded = packagesIncluded;
         }
 
+        @Exported
         public String getPackagesExcluded() {
             return packagesExcluded;
         }
 
+        @Exported
         public void setPackagesExcluded(String packagesExcluded) {
             this.packagesExcluded = packagesExcluded;
         }
@@ -289,9 +301,10 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             public ConfigDescriptor() {
                 super(ConfigView.class, CommandModes.Config.getDisplayName());
             }
+
             @Initializer(before = InitMilestone.PLUGINS_STARTED)
             public static void addAliases() {
-                Items.XSTREAM2.addCompatibilityAlias("io.sealights.plugins.sealightsjenkins.buildsteps.cli.CLIRunner", CommandMode.ConfigView.class);
+                Items.XSTREAM2.addCompatibilityAlias("io.sealights.plugins.sealightsjenkins.buildsteps.cli.CLIRunner", ConfigView.class);
             }
         }
 
