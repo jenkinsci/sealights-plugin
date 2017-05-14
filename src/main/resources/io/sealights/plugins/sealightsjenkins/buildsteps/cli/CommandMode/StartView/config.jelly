@@ -4,7 +4,7 @@
     <f:entry title="Test Stage (i.e, Integration Tests, Functional Tests)" field="testStage">
         <f:textbox value="${testStage}" default="Unit Tests"/>
     </f:entry>
-
+<f:entry>
     <f:entry title="Build Session Id" field="buildSessionId">
         <f:textbox value="${buildSessionId}"/>
     </f:entry>

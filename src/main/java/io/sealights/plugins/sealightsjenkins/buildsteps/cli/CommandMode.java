@@ -1,20 +1,25 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 
+import com.thoughtworks.xstream.mapper.Mapper;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionPoint;
 import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.init.Initializer;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Items;
 import io.sealights.plugins.sealightsjenkins.BuildName;
+import io.sealights.plugins.sealightsjenkins.RestoreBuildFile;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -27,6 +32,14 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     private  String additionalArguments;
 
     private CommandMode(final CommandModes currentMode, final String buildSessionId, final String additionalArguments) {
+        return defaultBuildParams;
+    }
+
+    public void setDefaultBuildParams(DefaultBuildParams defaultBuildParams) {
+        this.defaultBuildParams = defaultBuildParams;
+    }
+
+    private CommandMode(final CommandModes currentMode, DefaultBuildParams defaultBuildParams) {
         this.currentMode = currentMode;
         this.buildSessionId = buildSessionId;
         this.additionalArguments = additionalArguments;
@@ -60,7 +73,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
     @Override
     public Descriptor<CommandMode> getDescriptor() {
-        return Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return Jenkins.getInstance().getDescriptorOrDie(this.getClass());
     }
 
     public static class CommandModeDescriptor extends Descriptor<CommandMode> {
@@ -84,16 +97,20 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         public DescriptorExtensionList<CommandMode, CommandModeDescriptor> getRepositoryLocationDescriptors() {
             return Hudson.getInstance().getDescriptorList(CommandMode.class);
         }
+        public DescriptorExtensionList<CommandBuildName, CommandBuildName.CommandBuildNameDescriptor> getBuildNameDescriptorList() {
+            return Jenkins.getInstance().getDescriptorList(CommandBuildName.class);
+        }
     }
 
     public static class StartView extends CommandMode {
-
+        CLIRunner cliRunner;
         private String testStage;
 
         @DataBoundConstructor
         public StartView(String testStage, String buildSessionId, String additionalArguments) {
             super(CommandModes.Start, buildSessionId, additionalArguments);
             this.testStage = testStage;
+            this.cliRunner=cliRunner;
         }
 
         public String getTestStage() {
@@ -103,6 +120,13 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         public void setTestStage(String testStage) {
             this.testStage = testStage;
         }
+
+        @Override
+        public Descriptor<CommandMode> getDescriptor() {
+            return Jenkins.getInstance().getDescriptorOrDie(this.getClass());
+        }
+
+
 
         @Extension
         public static class StartDescriptor extends CommandModeDescriptor {
@@ -184,6 +208,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.source = source;
         }
 
+
         @Extension
         public static class UploadReportsDescriptor extends CommandModeDescriptor {
             public UploadReportsDescriptor() {
@@ -221,7 +246,11 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     }
 
     public static class ConfigView extends CommandMode {
-
+        private String branchName;
+        private CommandBuildName buildName;
+        private String labId;
+        private String appName;
+        private BeginAnalysis beginAnalysis = new BeginAnalysis();
         private String packagesIncluded;
         private String packagesExcluded;
 
@@ -234,6 +263,12 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         public ConfigView(String packagesIncluded, String packagesExcluded, String appName, String branchName,
                           CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments) {
             super(CommandModes.Config, buildSessionId, additionalArguments);
+            super(currentMode.Config, defaultBuildParams);
+            this.branchName = branchName;
+            this.buildName = buildName;
+            this.labId = labId;
+            this.appName = appName;
+            this.beginAnalysis = beginAnalysis;
             this.packagesIncluded = packagesIncluded;
             this.packagesExcluded = packagesExcluded;
             this.appName = appName;
@@ -283,6 +318,30 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         }
 
         @Exported
+        public String getLabId() {
+            return labId;
+        }
+
+        public void setLabId(String labId) {
+            this.labId = labId;
+        }
+
+        public String getAppName() {
+            return appName;
+        }
+
+        public void setAppName(String appName) {
+            this.appName = appName;
+        }
+
+        public BeginAnalysis getBeginAnalysis() {
+            return beginAnalysis;
+        }
+
+        public void setBeginAnalysis(BeginAnalysis beginAnalysis) {
+            this.beginAnalysis = beginAnalysis;
+        }
+
         public String getPackagesIncluded() {
             return packagesIncluded;
         }

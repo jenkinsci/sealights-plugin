@@ -20,7 +20,7 @@
              description="The test report provider">
         <f:textbox value="${source}"/>
     </f:entry>
-
+    <f:entry>
     <f:entry title="Build Session Id" field="buildSessionId">
         <f:textbox value="${buildSessionId}"/>
     </f:entry>
