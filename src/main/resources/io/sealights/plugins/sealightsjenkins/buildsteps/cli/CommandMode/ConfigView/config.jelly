@@ -25,7 +25,7 @@
             <f:dropdownListBlock title="${currentDescriptor.displayName}" value="${loop.index}"
                                  selected="${currentDescriptor == instance.buildName.descriptor || (instance.buildName.descriptor == null &amp;&amp; currentDescriptor.emptyBuild)}"
                                  staplerClass="${currentDescriptor.clazz.name}">
-                <j:set var="instance" value="${instance.buildName}"/>-
+                <j:set var="instance" value="${instance.buildName}"/>
                 <j:set var="descriptor" value="${instance.descriptor}"/>
                 <st:include page="${currentDescriptor.configPage}" from="${currentDescriptor}"/>
             </f:dropdownListBlock>
