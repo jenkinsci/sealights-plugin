@@ -109,7 +109,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
             @Override
             public boolean isDefault() {
-                return true;
+                return false;
             }
 
             public StartDescriptor() {
