@@ -317,10 +317,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             public DescriptorExtensionList<CommandBuildName, CommandBuildName.CommandBuildNameDescriptor> getBuildNameDescriptorList() {
                 return Jenkins.getInstance().getDescriptorList(CommandBuildName.class);
             }
-            @Initializer(before = InitMilestone.PLUGINS_STARTED)
-            public static void addAliases() {
-                Items.XSTREAM2.addCompatibilityAlias("io.sealights.plugins.sealightsjenkins.buildsteps.cli.CLIRunner", ConfigView.class);
-            }
         }
 
     }
