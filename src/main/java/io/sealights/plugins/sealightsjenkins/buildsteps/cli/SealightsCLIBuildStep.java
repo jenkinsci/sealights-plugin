@@ -47,7 +47,7 @@ public class SealightsCLIBuildStep extends Builder {
         return this;
     }
 
-    private Object resolveFromCLiRunner () {
+    private Object resolveFromCLiRunner() {
         StringBuffer additionalArgs = new StringBuffer();
         if (this.commandMode instanceof CommandMode.ConfigView) {
             if (!StringUtils.isNullOrEmpty(cliRunner.getAppName()))
@@ -69,7 +69,7 @@ public class SealightsCLIBuildStep extends Builder {
 
         }
         if (!StringUtils.isNullOrEmpty(cliRunner.getAdditionalArguments()))
-            additionalArgs.insert(0,cliRunner.getAdditionalArguments()+"\n");
+            additionalArgs.insert(0, cliRunner.getAdditionalArguments() + "\n");
         (commandMode).setAdditionalArguments(additionalArgs.toString());
         return this;
     }
@@ -119,6 +119,11 @@ public class SealightsCLIBuildStep extends Builder {
             }
 
             CLIHandler cliHandler = new CLIHandler(logger);
+            if(commandMode instanceof CommandMode.ConfigView){
+                cliRunner= new CLIRunner((CommandMode.ConfigView)commandMode);
+            }else {
+                cliRunner = new CLIRunner(commandMode);
+            }
             isStepSuccessful = cliRunner.perform(build, launcher, listener, commandMode, cliHandler, logger);
         } catch (Exception e) {
             // for cases when property fields setup is invalid.
