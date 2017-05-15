@@ -47,23 +47,30 @@ public class SealightsCLIBuildStep extends Builder {
     * of this plugin.
     */
     private Object readResolve() {
-        StringBuffer additionalArgs = new StringBuffer();
-        if(this.commandMode instanceof CommandMode.ConfigView){
-            ((CommandMode.ConfigView)commandMode).setAppName(cliRunner.getAppName());
-            ((CommandMode.ConfigView)commandMode).setBranchName(cliRunner.getBranchName());
-            ((CommandMode.ConfigView)commandMode).setBuildName(cliRunner.getBuildName());
-            additionalArgs.append(cliRunner.getAdditionalArguments());
-        }else if(this.commandMode instanceof CommandMode.EndView||
-                this.commandMode instanceof CommandMode.StartView||
-                this.commandMode instanceof CommandMode.ExternalReportView||
-                this.commandMode instanceof CommandMode.UploadReportsView){
-            if(!StringUtils.isNullOrEmpty(cliRunner.getAppName())){
-                additionalArgs.append("appName="+cliRunner.getAppName()+"\n");
+        if(cliRunner!=null) {
+            StringBuffer additionalArgs = new StringBuffer();
+            if (this.commandMode instanceof CommandMode.ConfigView) {
+                if (!StringUtils.isNullOrEmpty(cliRunner.getAppName()))
+                    ((CommandMode.ConfigView) commandMode).setAppName(cliRunner.getAppName());
+                if (!StringUtils.isNullOrEmpty(cliRunner.getBranchName()))
+                    ((CommandMode.ConfigView) commandMode).setBranchName(cliRunner.getBranchName());
+                if (cliRunner.getBuildName() != null)
+                    ((CommandMode.ConfigView) commandMode).setBuildName(cliRunner.getBuildName());
+                if (!StringUtils.isNullOrEmpty(cliRunner.getAdditionalArguments()))
+                    additionalArgs.append(cliRunner.getAdditionalArguments());
+            } else if (this.commandMode instanceof CommandMode.EndView ||
+                    this.commandMode instanceof CommandMode.StartView ||
+                    this.commandMode instanceof CommandMode.ExternalReportView ||
+                    this.commandMode instanceof CommandMode.UploadReportsView) {
+                if (!StringUtils.isNullOrEmpty(cliRunner.getAppName())) {
+                    additionalArgs.append("appName=" + cliRunner.getAppName() + "\n");
+                }
+                if (!StringUtils.isNullOrEmpty(cliRunner.getBranchName())) {
+                    additionalArgs.append("branchName=" + cliRunner.getBranchName() + "\n");
+                }
+
             }
-            if(!StringUtils.isNullOrEmpty(cliRunner.getBranchName())){
-                additionalArgs.append("branchName="+cliRunner.getBranchName()+"\n");
-            }
-            ((CommandMode.ConfigView)commandMode).setAdditionalArguments(additionalArgs.toString());
+            (commandMode).setAdditionalArguments(additionalArgs.toString());
         }
         return this;
     }

@@ -12,5 +12,5 @@
     <f:entry title="${%Additional Arguments}" field="additionalArguments">
         <f:expandableTextbox value="${additionalArguments}"/>
     </f:entry>
-
+    </f:entry>
 </j:jelly>
