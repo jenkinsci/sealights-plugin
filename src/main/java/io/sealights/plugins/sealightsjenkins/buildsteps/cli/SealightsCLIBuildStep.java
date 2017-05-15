@@ -42,16 +42,16 @@ public class SealightsCLIBuildStep extends Builder {
     */
     private Object readResolve() {
         if (cliRunner != null) {
-            resolveFromCLiRunner();
+            return resolveFromCLiRunner();
         }
         return this;
     }
 
-    private void resolveFromCLiRunner () {
+    private Object resolveFromCLiRunner () {
         StringBuffer additionalArgs = new StringBuffer();
         if (this.commandMode instanceof CommandMode.ConfigView) {
             if (!StringUtils.isNullOrEmpty(cliRunner.getAppName()))
-//                ((CommandMode.ConfigView) commandMode).setAppName(cliRunner.getAppName());
+                ((CommandMode.ConfigView) commandMode).setAppName(cliRunner.getAppName());
             if (!StringUtils.isNullOrEmpty(cliRunner.getBranchName()))
                 ((CommandMode.ConfigView) commandMode).setBranchName(cliRunner.getBranchName());
             if (cliRunner.getBuildName() != null)
@@ -71,6 +71,7 @@ public class SealightsCLIBuildStep extends Builder {
         if (!StringUtils.isNullOrEmpty(cliRunner.getAdditionalArguments()))
             additionalArgs.insert(0,cliRunner.getAdditionalArguments()+"\n");
         (commandMode).setAdditionalArguments(additionalArgs.toString());
+        return this;
     }
 
 
