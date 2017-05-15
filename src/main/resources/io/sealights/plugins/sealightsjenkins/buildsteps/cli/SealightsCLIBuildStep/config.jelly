@@ -16,7 +16,7 @@
                                  selected="${currentDescriptor == instance.commandMode.descriptor || (instance.commandMode.descriptor == null &amp;&amp; currentDescriptor.default)}"
                                  staplerClass="${currentDescriptor.clazz.name}">
                 <j:set var="instance" value="${instance.commandMode}"/>
-                <j:set var="descriptor" value="${instance.descriptor}"/>
+                <j:set var="descriptor" value="${currentDescriptor}"/>
                 <st:include page="${currentDescriptor.configPage}" from="${currentDescriptor}"/>
             </f:dropdownListBlock>
         </j:forEach>
