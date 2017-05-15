@@ -56,8 +56,6 @@ public class SealightsCLIBuildStep extends Builder {
                     ((CommandMode.ConfigView) commandMode).setBranchName(cliRunner.getBranchName());
                 if (cliRunner.getBuildName() != null)
                     ((CommandMode.ConfigView) commandMode).setBuildName(cliRunner.getBuildName());
-                if (!StringUtils.isNullOrEmpty(cliRunner.getAdditionalArguments()))
-                    additionalArgs.append(cliRunner.getAdditionalArguments());
             } else if (this.commandMode instanceof CommandMode.EndView ||
                     this.commandMode instanceof CommandMode.StartView ||
                     this.commandMode instanceof CommandMode.ExternalReportView ||
@@ -70,6 +68,8 @@ public class SealightsCLIBuildStep extends Builder {
                 }
 
             }
+            if (!StringUtils.isNullOrEmpty(cliRunner.getAdditionalArguments()))
+                additionalArgs.insert(0,cliRunner.getAdditionalArguments()+"\n");
             (commandMode).setAdditionalArguments(additionalArgs.toString());
         }
         return this;
