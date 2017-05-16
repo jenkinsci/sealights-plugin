@@ -22,7 +22,6 @@ import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateExc
 import io.sealights.plugins.sealightsjenkins.utils.*;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -39,15 +38,17 @@ public class CLIRunner extends Builder {
     private transient String branchName;
     private transient CommandBuildName buildName;
     private transient String additionalArguments;
+    private transient String labId;
     private BeginAnalysis beginAnalysis = new BeginAnalysis();
 
     public CLIRunner(String buildSessionId, String appName, String branchName,
-                     CommandBuildName buildName, String additionalArguments) {
+                     CommandBuildName buildName, String additionalArguments, String labId) {
         this.buildSessionId = buildSessionId;
         this.appName = appName;
         this.branchName = branchName;
         this.buildName = buildName;
         this.additionalArguments = additionalArguments;
+        this.labId = labId;
     }
 
     @Exported
@@ -108,6 +109,14 @@ public class CLIRunner extends Builder {
     @Exported
     public void setAdditionalArguments(String additionalArguments) {
         this.additionalArguments = additionalArguments;
+    }
+
+    public String getLabId() {
+        return labId;
+    }
+
+    public void setLabId(String labId) {
+        this.labId = labId;
     }
 
     @Override
@@ -316,6 +325,7 @@ public class CLIRunner extends Builder {
         baseArgs.setBuildName(buildNameResolver.getFinalBuildName(build, envVars, buildName, logger));
 
         baseArgs.setBranchName(resolveEnvVar(envVars, branchName));
+        baseArgs.setLabId(resolveEnvVar(envVars, labId));
     }
 
     private String resolveBuildSessionId(Logger logger, Properties additionalProps) {
