@@ -10,6 +10,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateException;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
+import io.sealights.plugins.sealightsjenkins.utils.PropertiesUtils;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -119,11 +120,8 @@ public class SealightsCLIBuildStep extends Builder {
             }
 
             CLIHandler cliHandler = new CLIHandler(logger);
-            if(commandMode instanceof CommandMode.ConfigView){
-                cliRunner= new CLIRunner((CommandMode.ConfigView)commandMode);
-            }else {
-                cliRunner = new CLIRunner(commandMode);
-            }
+            cliRunner = createCLIRunner(commandMode);
+
             isStepSuccessful = cliRunner.perform(build, launcher, listener, commandMode, cliHandler, logger);
         } catch (Exception e) {
             // for cases when property fields setup is invalid.
@@ -169,5 +167,20 @@ public class SealightsCLIBuildStep extends Builder {
         public String getDisplayName() {
             return "Sealights CLI";
         }
+    }
+
+    private CLIRunner createCLIRunner(CommandMode commandMode){
+        if(commandMode instanceof CommandMode.ConfigView){
+            CommandMode.ConfigView configView=(CommandMode.ConfigView) commandMode;
+            return new CLIRunner(configView.getBuildSessionId(),configView.getAppName(),configView.getBranchName(),
+                    configView.getBuildName(),configView.getAdditionalArguments());
+        }else {
+            Properties properties = PropertiesUtils.toProperties(commandMode.getAdditionalArguments());
+            String appName = properties.get("appname").toString();
+            String branchName= properties.get("branchname").toString();
+            CommandBuildName buildname = new CommandBuildName.ManualBuildName(properties.get("buildname").toString());
+            return new CLIRunner(commandMode.getBuildSessionId(),appName,branchName,buildname,commandMode.getAdditionalArguments());
+        }
+
     }
 }

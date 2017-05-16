@@ -42,7 +42,11 @@ public class EnvVarsInjector {
         logger.info("Injecting environment variables:");
         Set<String> keySet = additionalEnvVars.keySet();
         for (String key: keySet){
-            logger.info(key + " : " + additionalEnvVars.get(key));
+            if(key.equals("SL_TOKEN")){
+                logger.info(key + " : " + StringUtils.trimStart(additionalEnvVars.get(key)));
+            }else {
+                logger.info(key + " : " + additionalEnvVars.get(key));
+            }
         }
     }
 }

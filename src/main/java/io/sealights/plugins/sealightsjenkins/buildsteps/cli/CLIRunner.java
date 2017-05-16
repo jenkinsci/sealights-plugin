@@ -41,7 +41,6 @@ public class CLIRunner extends Builder {
     private transient String additionalArguments;
     private BeginAnalysis beginAnalysis = new BeginAnalysis();
 
-    @DataBoundConstructor
     public CLIRunner(String buildSessionId, String appName, String branchName,
                      CommandBuildName buildName, String additionalArguments) {
         this.buildSessionId = buildSessionId;
@@ -50,22 +49,6 @@ public class CLIRunner extends Builder {
         this.buildName = buildName;
         this.additionalArguments = additionalArguments;
     }
-
-    public CLIRunner(String buildSessionId, String additionalArguments) {
-        this.buildSessionId = buildSessionId;
-        this.additionalArguments = additionalArguments;
-    }
-
-    public CLIRunner(CommandMode commandMode){
-        this(commandMode.getBuildSessionId(),commandMode.getAdditionalArguments());
-    }
-
-    public CLIRunner(CommandMode.ConfigView configView){
-        this(configView.getBuildSessionId(),configView.getAppName(),configView.getBranchName(),
-                configView.getBuildName(),configView.getAdditionalArguments());
-    }
-
-
 
     @Exported
     public String getBuildSessionId() {
@@ -135,9 +118,6 @@ public class CLIRunner extends Builder {
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener,
                            CommandMode commandMode, CLIHandler cliHandler, Logger logger)
             throws IOException, InterruptedException {
-        if(commandMode instanceof CommandMode.ConfigView){
-            commandMode =(CommandMode.ConfigView)commandMode;
-        }
         try {
             Properties additionalProps = PropertiesUtils.toProperties(additionalArguments);
             validateCommandMode(commandMode, additionalProps);
@@ -336,7 +316,6 @@ public class CLIRunner extends Builder {
         baseArgs.setBuildName(buildNameResolver.getFinalBuildName(build, envVars, buildName, logger));
 
         baseArgs.setBranchName(resolveEnvVar(envVars, branchName));
-//        baseArgs.setLabId(resolveEnvVar(envVars, labId));
     }
 
     private String resolveBuildSessionId(Logger logger, Properties additionalProps) {
