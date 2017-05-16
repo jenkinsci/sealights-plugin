@@ -3,12 +3,10 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionPoint;
+import hudson.PluginWrapper;
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
-import hudson.model.Describable;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.model.Items;
+import hudson.model.*;
 import io.sealights.plugins.sealightsjenkins.BuildName;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
 import jenkins.model.Jenkins;
@@ -16,6 +14,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * This class holds the different command options and their arguments in the UI
@@ -316,6 +315,24 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
             public DescriptorExtensionList<CommandBuildName, CommandBuildName.CommandBuildNameDescriptor> getBuildNameDescriptorList() {
                 return Jenkins.getInstance().getDescriptorList(CommandBuildName.class);
+            }
+
+            private String resolveCurrentJobName(){
+                String descFullUrl = this.getDescriptorFullUrl();
+                String resolvedJobName = descFullUrl.substring(0, descFullUrl.indexOf("/descriptor"));
+                resolvedJobName = resolvedJobName.substring(resolvedJobName.lastIndexOf("/") + 1);
+                return resolvedJobName;
+            }
+            public String getBranchName() {
+                List<Job> items = Jenkins.getInstance().getItems(Job.class);
+                String currentJobName = resolveCurrentJobName();;
+                for (Job j : items){
+                    if (j.getName().equals(currentJobName)){
+                        if("hudson.plugins.git.GitSCM".equals(((FreeStyleProject) j).getScm().getType()))
+                        return "${GIT_BRANCH}";
+                    }
+                }
+                return "origin/master";
             }
         }
 

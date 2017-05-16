@@ -17,7 +17,7 @@
     </f:entry>
 
     <f:entry title="Branch Name" field="branchName">
-        <f:textbox value="${branchName}" default="$${GIT_BRANCH}"/>
+        <f:textbox default="${descriptor.branchName}"/>
     </f:entry>
 
     <f:dropdownList name="buildName" title="Build Name">
