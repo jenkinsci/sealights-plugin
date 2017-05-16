@@ -17,10 +17,8 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
 public class SealightsCLIBuildStep extends Builder {
 
@@ -49,7 +47,7 @@ public class SealightsCLIBuildStep extends Builder {
     }
 
     private Object resolveFromCLiRunner() {
-        StringBuffer additionalArgs = new StringBuffer();
+        StringBuilder  additionalArgs = new StringBuilder();
         if (this.commandMode instanceof CommandMode.ConfigView) {
             if (!StringUtils.isNullOrEmpty(cliRunner.getAppName()))
                 ((CommandMode.ConfigView) commandMode).setAppName(cliRunner.getAppName());
