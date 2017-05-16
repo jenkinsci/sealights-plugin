@@ -466,7 +466,6 @@ public class MavenSealightsBuildStep extends Builder {
 
         @Initializer(before = InitMilestone.PLUGINS_STARTED)
         public static void addAliases() {
-            Items.XSTREAM2.addCompatibilityAlias("io.sealigths.plugins.sealightsjenkins.BeginAnalysisBuildStep", MavenSealightsBuildStep.class);
             Items.XSTREAM2.addCompatibilityAlias("io.sealigths.plugins.sealightsjenkins.MavenSealightsBuildStep", MavenSealightsBuildStep.class);
         }
 
