@@ -43,7 +43,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     }
 
     @Exported
-
     public String getBuildSessionId() {
         return buildSessionId;
     }
@@ -314,6 +313,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
                 super(ConfigView.class, CommandModes.Config.getDisplayName());
             }
 
+            // Get buildNames for dropdown list
             public DescriptorExtensionList<CommandBuildName, CommandBuildName.CommandBuildNameDescriptor> getBuildNameDescriptorList() {
                 return Jenkins.getInstance().getDescriptorList(CommandBuildName.class);
             }
