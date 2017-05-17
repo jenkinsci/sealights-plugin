@@ -84,7 +84,6 @@ public class BeginAnalysis extends Builder {
     private String override_url;
     private String override_proxy;
     private String additionalArguments;
-    private boolean isUpgraded;
 
     public BeginAnalysis() {
     }
@@ -143,14 +142,6 @@ public class BeginAnalysis extends Builder {
         this.slMvnPluginVersion = slMvnPluginVersion;
 
         this.additionalArguments = additionalArguments;
-    }
-
-    public boolean isUpgraded() {
-        return isUpgraded;
-    }
-
-    public void setUpgraded(boolean upgraded) {
-        isUpgraded = upgraded;
     }
 
     private void setDefaultValuesForStrings(Logger logger) {

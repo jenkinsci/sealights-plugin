@@ -27,6 +27,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.export.Exported;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -114,6 +115,24 @@ public class MavenSealightsBuildStep extends Builder {
     private static final Pattern S_PATTERN = Pattern.compile("(^| )-s ");
     private static final Pattern GS_PATTERN = Pattern.compile("(^| )-gs ");
 
+
+    private  String backwardMessage = null;
+
+
+    @Exported
+    public void setBackwardMessage(String backwardMessage) {
+        this.backwardMessage = backwardMessage;
+    }
+
+    @Exported
+    public String getBackwardMessage(){
+        return backwardMessage;
+    }
+
+    public boolean isShowBackwardMessage(){
+        return !StringUtils.isBlank(backwardMessage);
+    }
+
     /**
      * The goal of this method is to support migration of data between versions
      * of this plugin.
@@ -123,7 +142,7 @@ public class MavenSealightsBuildStep extends Builder {
     }
 
     private Object resolveFromBeginAnalysis(){
-        beginAnalysis.setUpgraded(true);
+        setBackwardMessage("NOTICE: " );
         StringBuffer additionalArgs = new StringBuffer();
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getAppName())) {
             additionalArgs.append("appname=" + beginAnalysis.getAppName() + "\n");
