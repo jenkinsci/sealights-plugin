@@ -642,14 +642,14 @@ public class BeginAnalysis extends Builder {
         else
             slInfo.setWorkspacepath(workingDir);
 
-        slInfo.setAppName(JenkinsUtils.resolveEnvVarsInString(envVars, appName));
+        slInfo.setAppName(JenkinsUtils.resolveEnvVarsInString(envVars, additionalProps.get("appname").toString()));
         slInfo.setModuleName(moduleName);
-        slInfo.setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars, branch));
+        slInfo.setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars, additionalProps.get("branch").toString()));
         slInfo.setFilesIncluded(filesIncluded);
         slInfo.setFilesExcluded(filesExcluded);
         slInfo.setRecursive(recursive);
-        slInfo.setPackagesIncluded(packagesIncluded);
-        slInfo.setPackagesExcluded(packagesExcluded);
+        slInfo.setPackagesIncluded(additionalProps.get("packagesIncluded").toString());
+        slInfo.setPackagesExcluded(additionalProps.get("packagesExcluded").toString());
         slInfo.setClassLoadersExcluded(classLoadersExcluded);
         slInfo.setListenerJar(testListenerJar);
         slInfo.setListenerConfigFile(testListenerConfigFile);

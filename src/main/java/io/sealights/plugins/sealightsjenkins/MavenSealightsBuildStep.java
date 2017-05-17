@@ -119,10 +119,32 @@ public class MavenSealightsBuildStep extends Builder {
      * of this plugin.
      */
     private Object readResolve() {
-        StringBuffer additionalArgs = new StringBuffer();
+        if(beginAnalysis != null){
+            return resolveFromBeginAnalysis();
+        }
         beginAnalysis.setUpgraded(true);
         return this;
     }
+
+    private Object resolveFromBeginAnalysis(){
+        StringBuffer additionalArgs = new StringBuffer();
+        if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getAppName())) {
+            additionalArgs.append("appName=" + beginAnalysis.getAppName() + "\n");
+        }
+        if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getBranch())) {
+            additionalArgs.append("branchName=" + beginAnalysis.getBranch() + "\n");
+        }
+        if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getPackagesIncluded())) {
+            additionalArgs.append("packagesIncluded=" + beginAnalysis.getPackagesIncluded() + "\n");
+        }
+        if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getPackagesExcluded())) {
+            additionalArgs.append("packagesExcluded=" + beginAnalysis.getPackagesExcluded() + "\n");
+        }
+
+        return this;
+    }
+
+
 
     @DataBoundConstructor
     public MavenSealightsBuildStep(BeginAnalysis beginAnalysis, BuildStepMode buildStepMode,
