@@ -119,36 +119,8 @@ public class MavenSealightsBuildStep extends Builder {
      * of this plugin.
      */
     private Object readResolve() {
-
-        //Check if we are dealing with plugin version before the BuildStepMode feature.
-        if (this.buildStepMode == null) {
-            if (StringUtils.isNotBlank(targets)) {
-                if (enableSeaLights)
-                    this.buildStepMode = new BuildStepMode.InvokeMavenCommandView(targets);
-                else
-                    this.buildStepMode = new BuildStepMode.DisableSealightsView(targets);
-            } else {
-                //Assuming that users of 'MavenSealightsBuildStep' didn't left 'targets' blank.
-                //If no 'targets' is mentioned, its probably the deprecated 'beginAnalysisBuildStep'.
-
-                if(enableSeaLights)
-                    this.buildStepMode = new BuildStepMode.PrepareSealightsView("");
-                else
-                    this.buildStepMode = new BuildStepMode.OffView();
-            }
-        }
-
-        if (this.beginAnalysis.getExecutionType().equals(ExecutionType.ONLY_LISTENER)) {
-            this.beginAnalysis.setExecutionType(ExecutionType.TESTS_ONLY);
-        }
-
-        if (StringUtils.isNotBlank(pomPath)) {
-            this.pom = pomPath;
-        }
-        if (StringUtils.isNotBlank(relativePathToEffectivePom)) {
-            this.pom = relativePathToEffectivePom;
-        }
-
+        StringBuffer additionalArgs = new StringBuffer();
+        beginAnalysis.setUpgraded(true);
         return this;
     }
 

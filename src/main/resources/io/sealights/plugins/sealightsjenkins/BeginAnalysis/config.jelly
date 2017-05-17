@@ -7,6 +7,10 @@
         <f:textbox value="${buildSessionId}" default="$${SL_BUILD_SESSION_ID}"/>
     </f:entry>
 
+    <j:if test="${instance.upgraded}">
+        *******************************
+    </j:if>
+
     <f:advanced title="SeaLights Advanced">
         <f:entry title="App Name" field="appName">
             <f:textbox value="${appName}"/>
