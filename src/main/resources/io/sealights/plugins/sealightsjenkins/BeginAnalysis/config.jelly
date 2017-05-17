@@ -7,29 +7,8 @@
         <f:textbox value="${buildSessionId}" default="$${SL_BUILD_SESSION_ID}"/>
     </f:entry>
 
-    <j:if test="${instance.upgraded}">
-        *******************************
-    </j:if>
-
     <f:advanced title="SeaLights Advanced">
-        <f:entry title="App Name" field="appName">
-            <f:textbox value="${appName}"/>
-        </f:entry>
 
-        <f:entry title="Branch Name" field="branch">
-            <f:textbox value="${branch}"/>
-        </f:entry>
-
-        <f:entry title="Monitored Application Packages" field="packagesIncluded"
-                 description="Java packages that will be analyzed by SeaLights. Supports wildcards (* = any string, ? = any character). Should start with '*'. For example: '*org.eclipse.*'">
-            <f:textbox value="${packagesIncluded}"/>
-        </f:entry>
-
-        <f:entry title="Unmonitored Application Packages" field="packagesExcluded"
-                 description="Java packages to exclude from SeaLights' analysis. Supports wildcards (* = any string, ? = any character).">
-            <f:textbox value="${packagesExcluded}"/>
-        </f:entry>
-        
         <f:entry title="Execution Type" field="executionType">
             <f:enum>${it.displayName}</f:enum>
         </f:entry>
@@ -45,12 +24,7 @@
                 </f:dropdownListBlock>
             </j:forEach>
         </f:dropdownList>
-
-        <!--<f:entry title="Build Strategy" field="buildStrategy"-->
-                 <!--description="'One Build': all modules in the project appear in SeaLights' dashboard as a single build with aggregated results. , each module appear as a different application.">-->
-            <!--<f:enum>${it.displayName}</f:enum>-->
-        <!--</f:entry>-->
-
+        
         <f:entry title="Files Included" field="filesIncluded"
                  description="Files to include in SeaLights' analysis. Supports wildcards (* = any string, ? = any character).">
             <f:textbox value="${filesIncluded}" default="*.class"/>

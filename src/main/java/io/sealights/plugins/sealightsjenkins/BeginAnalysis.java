@@ -642,14 +642,18 @@ public class BeginAnalysis extends Builder {
         else
             slInfo.setWorkspacepath(workingDir);
 
-        slInfo.setAppName(JenkinsUtils.resolveEnvVarsInString(envVars, additionalProps.get("appname").toString()));
+        slInfo.setAppName(JenkinsUtils.resolveEnvVarsInString(envVars,
+                additionalProps.get("appname")!= null ? additionalProps.get("appname").toString():null));
         slInfo.setModuleName(moduleName);
-        slInfo.setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars, additionalProps.get("branch").toString()));
+        slInfo.setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars,
+                additionalProps.get("branch")!= null ? additionalProps.get("branch").toString(): null));
         slInfo.setFilesIncluded(filesIncluded);
         slInfo.setFilesExcluded(filesExcluded);
         slInfo.setRecursive(recursive);
-        slInfo.setPackagesIncluded(additionalProps.get("packagesIncluded").toString());
-        slInfo.setPackagesExcluded(additionalProps.get("packagesExcluded").toString());
+        slInfo.setPackagesIncluded(additionalProps.get("packagesIncluded") != null ?
+                additionalProps.get("packagesIncluded").toString() : null);
+        slInfo.setPackagesExcluded(additionalProps.get("packagesExcluded") != null ?
+                additionalProps.get("packagesExcluded").toString() : null);
         slInfo.setClassLoadersExcluded(classLoadersExcluded);
         slInfo.setListenerJar(testListenerJar);
         slInfo.setListenerConfigFile(testListenerConfigFile);

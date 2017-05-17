@@ -119,28 +119,29 @@ public class MavenSealightsBuildStep extends Builder {
      * of this plugin.
      */
     private Object readResolve() {
-        if(beginAnalysis != null){
-            return resolveFromBeginAnalysis();
-        }
-        beginAnalysis.setUpgraded(true);
-        return this;
+        return  beginAnalysis != null ? resolveFromBeginAnalysis() : this;
     }
 
     private Object resolveFromBeginAnalysis(){
+        beginAnalysis.setUpgraded(true);
         StringBuffer additionalArgs = new StringBuffer();
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getAppName())) {
-            additionalArgs.append("appName=" + beginAnalysis.getAppName() + "\n");
+            additionalArgs.append("appname=" + beginAnalysis.getAppName() + "\n");
         }
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getBranch())) {
-            additionalArgs.append("branchName=" + beginAnalysis.getBranch() + "\n");
+            additionalArgs.append("branch=" + beginAnalysis.getBranch() + "\n");
         }
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getPackagesIncluded())) {
-            additionalArgs.append("packagesIncluded=" + beginAnalysis.getPackagesIncluded() + "\n");
+            additionalArgs.append("packagesincluded=" + beginAnalysis.getPackagesIncluded() + "\n");
         }
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getPackagesExcluded())) {
-            additionalArgs.append("packagesExcluded=" + beginAnalysis.getPackagesExcluded() + "\n");
+            additionalArgs.append("packagesexcluded=" + beginAnalysis.getPackagesExcluded() + "\n");
         }
 
+        if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getAdditionalArguments())) {
+            additionalArgs.insert(0,beginAnalysis.getAdditionalArguments().trim() + "\n");
+        }
+        beginAnalysis.setAdditionalArguments(additionalArgs.toString());
         return this;
     }
 
