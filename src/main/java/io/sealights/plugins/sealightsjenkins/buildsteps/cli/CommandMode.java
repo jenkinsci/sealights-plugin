@@ -14,6 +14,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -317,25 +319,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
                 return Jenkins.getInstance().getDescriptorList(CommandBuildName.class);
             }
 
-            private String resolveCurrentJobName(){
-                String descFullUrl = this.getDescriptorFullUrl();
-                String resolvedJobName = descFullUrl.substring(0, descFullUrl.indexOf("/descriptor"));
-                resolvedJobName = resolvedJobName.substring(resolvedJobName.lastIndexOf("/") + 1);
-                return resolvedJobName;
-            }
-            public String getBranchName() {
-                List<Job> items = Jenkins.getInstance().getItems(Job.class);
-                String currentJobName = resolveCurrentJobName();;
-                for (Job j : items){
-                    if (j.getName().equals(currentJobName)){
-                        if("hudson.plugins.git.GitSCM".equals(((FreeStyleProject) j).getScm().getType()))
-                        return "${GIT_BRANCH}";
-                    }
-                }
-                return "origin/master";
-            }
         }
-
     }
 
 
