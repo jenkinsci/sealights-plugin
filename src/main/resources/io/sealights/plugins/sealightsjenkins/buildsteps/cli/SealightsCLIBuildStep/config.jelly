@@ -14,9 +14,9 @@
         In jelly context we have few vars.
         1. instance - an object currently being configured, within a section of a configure page such as a BuildStep; null if this is a newly added instance rather than reconfiguring.
         2. descriptor - the Descriptor object (see below) corresponding to the class of instance.
-        this loop has two set statements:
-        the first set the instance of selected option to correct command mode (start, end, config, ..) otherwise its null.
-        the second set the descriptor of selected option to correct descriptor.
+        this loop has two "set" statements:
+        the first set the var 'instance' to selected option to correct command mode (start, end, config, ..).
+        the second set the var 'descriptor' to selected option to correct descriptor,  otherwise its null
     -->
 
     <f:dropdownList name="commandMode" title="Action">
