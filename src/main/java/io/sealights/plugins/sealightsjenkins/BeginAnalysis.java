@@ -572,43 +572,24 @@ public class BeginAnalysis extends Builder {
         }
         return Paths.get(path1, path2).toAbsolutePath().toString();
     }
-
-    private String getManualBuildName() {
-        BuildName.ManualBuildName manual = (BuildName.ManualBuildName) buildName;
-        String insertedBuildName = manual.getInsertedBuildName();
-        return insertedBuildName;
-    }
-
-    private String getFinalBuildName(AbstractBuild<?, ?> build, SeaLightsPluginInfo slInfo, Logger logger) throws IllegalStateException {
-
+    
+    private String getFinalBuildName(AbstractBuild<?, ?> build, Properties additionalProps, Logger logger) throws IllegalStateException {
         String finalBuildName = null;
+        if (additionalProps.getProperty("buildname") != null) {
+            finalBuildName = additionalProps.getProperty("buildname").toString();
 
-        boolean hasBuildSessionId = !StringUtils.isNullOrEmpty(slInfo.getBuildSessionId());
-        boolean useNullBuildName = BuildNamingStrategy.LATEST_BUILD.equals(buildName.getBuildNamingStrategy()) ||
-                BuildNamingStrategy.EMPTY_BUILD.equals(buildName.getBuildNamingStrategy());
-        if (!hasBuildSessionId && useNullBuildName) {
-            if (!ExecutionType.TESTS_ONLY.equals(executionType)) {
-                throw new SeaLightsIllegalStateException(
-                        "Trying to report 'null' as 'Build Name'. This option is allowed only with execution type of '"
-                                + ExecutionType.TESTS_ONLY.getDisplayName() + "'.");
+            if ("SL_UPSTREAM_BUILD".equals(finalBuildName)) {
+                BuildName.UpstreamBuildName upstream = (BuildName.UpstreamBuildName) buildName;
+                String upstreamProjectName = upstream.getUpstreamProjectName();
+                finalBuildName = JenkinsUtils.getUpstreamBuildName(build, upstreamProjectName, logger);
             }
-            return null;
         }
-
-        if (BuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
-            finalBuildName = getManualBuildName();
-
-        } else if (BuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy())) {
-            BuildName.UpstreamBuildName upstream = (BuildName.UpstreamBuildName) buildName;
-            String upstreamProjectName = upstream.getUpstreamProjectName();
-            finalBuildName = JenkinsUtils.getUpstreamBuildName(build, upstreamProjectName, logger);
-        }
-
         if (StringUtils.isNullOrEmpty(finalBuildName)) {
-            return String.valueOf(build.getNumber());
+            finalBuildName = String.valueOf(build.getNumber());
         }
 
         return finalBuildName;
+
     }
 
     private SeaLightsPluginInfo createSeaLightsPluginInfo(
@@ -626,7 +607,7 @@ public class BeginAnalysis extends Builder {
         String workingDir = ws.getRemote();
         slInfo.setEnabled(true);
 
-        slInfo.setBuildName(getFinalBuildName(build, slInfo, logger));
+        slInfo.setBuildName(getFinalBuildName(build, additionalProps, logger));
 
         if (workspacepath != null && !"".equals(workspacepath))
             slInfo.setWorkspacepath(workspacepath);
@@ -634,10 +615,10 @@ public class BeginAnalysis extends Builder {
             slInfo.setWorkspacepath(workingDir);
 
         slInfo.setAppName(JenkinsUtils.resolveEnvVarsInString(envVars,
-                additionalProps.get("appname")!= null ? additionalProps.get("appname").toString():null));
+                additionalProps.get("appname") != null ? additionalProps.get("appname").toString() : null));
         slInfo.setModuleName(moduleName);
         slInfo.setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars,
-                additionalProps.get("branch")!= null ? additionalProps.get("branch").toString(): null));
+                additionalProps.get("branch") != null ? additionalProps.get("branch").toString() : null));
         slInfo.setFilesIncluded(filesIncluded);
         slInfo.setFilesExcluded(filesExcluded);
         slInfo.setRecursive(recursive);
