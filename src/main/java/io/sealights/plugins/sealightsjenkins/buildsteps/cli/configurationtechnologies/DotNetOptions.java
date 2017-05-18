@@ -2,31 +2,36 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechno
 
 import hudson.Extension;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.export.Exported;
 
 public class DotNetOptions extends TechnologyOptions {
-    private String namespaacesIncluded;
-    private String namespaacesExcluded;
+    private String namespacesIncluded;
+    private String namespacesExcluded;
 
     @DataBoundConstructor
-    public DotNetOptions(String namespaacesIncluded, String namespaacesExcluded) {
-        this.namespaacesIncluded = namespaacesIncluded;
-        this.namespaacesExcluded = namespaacesExcluded;
+    public DotNetOptions(String namespacesIncluded, String namespacesExcluded) {
+        this.namespacesIncluded = namespacesIncluded;
+        this.namespacesExcluded = namespacesExcluded;
     }
 
-    public String getNamespaacesIncluded() {
-        return namespaacesIncluded;
+    @Exported
+    public String getNamespacesIncluded() {
+        return namespacesIncluded;
     }
 
-    public void setNamespaacesIncluded(String namespaacesIncluded) {
-        this.namespaacesIncluded = namespaacesIncluded;
+    @Exported
+    public void setNamespacesIncluded(String namespacesIncluded) {
+        this.namespacesIncluded = namespacesIncluded;
     }
 
-    public String getNamespaacesExcluded() {
-        return namespaacesExcluded;
+    @Exported
+    public String getNamespacesExcluded() {
+        return namespacesExcluded;
     }
 
-    public void setNamespaacesExcluded(String namespaacesExcluded) {
-        this.namespaacesExcluded = namespaacesExcluded;
+    @Exported
+    public void setNamespacesExcluded(String namespacesExcluded) {
+        this.namespacesExcluded = namespacesExcluded;
     }
 
     @Extension

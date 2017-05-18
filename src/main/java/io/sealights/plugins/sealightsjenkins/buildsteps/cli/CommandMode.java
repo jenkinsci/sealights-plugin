@@ -3,9 +3,12 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionPoint;
+import hudson.Util;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
+import hudson.model.Saveable;
+import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.BeginAnalysis;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
@@ -222,10 +225,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
     public static class ConfigView extends CommandMode {
 
-        private String packagesIncluded;
-        private String packagesExcluded;
-        private List<RepeatableConfigOptions> repeatableConfigOptions;
-        private DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> configOptions;
+        private DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> techOptions;
         private List<BeginAnalysis> branches;
         private String appName;
         private String branchName;
@@ -241,27 +241,24 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         }
 
         @DataBoundConstructor
-        public ConfigView(String packagesIncluded, String packagesExcluded, String appName, String branchName,
+        public ConfigView(String appName, String branchName,
                           CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments,
-                          List<RepeatableConfigOptions> repeatableConfigOptions,
-                          DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> configOptions) {
+                          List<TechnologyOptions> techOptions) {
             super(CommandModes.Config, buildSessionId, additionalArguments);
-            this.packagesIncluded = packagesIncluded;
-            this.packagesExcluded = packagesExcluded;
             this.appName = appName;
             this.branchName = branchName;
             this.buildName = buildName;
             this.labId = labId;
-            this.repeatableConfigOptions = repeatableConfigOptions;
-            this.configOptions = configOptions;
+
+            this.techOptions = new DescribableList<>(Saveable.NOOP, Util.fixNull(techOptions));
         }
 
-        public DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> getConfigOptions() {
-            return configOptions;
+        public DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> getTechOptions() {
+            return techOptions;
         }
 
-        public void setConfigOptions(DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> configOptions) {
-            this.configOptions = configOptions;
+        public void setTechOptions(DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> techOptions) {
+            this.techOptions = techOptions;
         }
 
         @Exported
@@ -304,34 +301,13 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.labId = labId;
         }
 
+        public String getPackagesExcluded() {
+            return "";
+        }
+
         @Exported
         public String getPackagesIncluded() {
-            return packagesIncluded;
-        }
-
-        @Exported
-        public void setPackagesIncluded(String packagesIncluded) {
-            this.packagesIncluded = packagesIncluded;
-        }
-
-        @Exported
-        public String getPackagesExcluded() {
-            return packagesExcluded;
-        }
-
-        @Exported
-        public void setPackagesExcluded(String packagesExcluded) {
-            this.packagesExcluded = packagesExcluded;
-        }
-
-        @Exported
-        public List<RepeatableConfigOptions> getRepeatableConfigOptions() {
-            return repeatableConfigOptions;
-        }
-
-        @Exported
-        public void setRepeatableConfigOptions(List<RepeatableConfigOptions> repeatableConfigOptions) {
-            this.repeatableConfigOptions = repeatableConfigOptions;
+            return "";
         }
 
         @Extension

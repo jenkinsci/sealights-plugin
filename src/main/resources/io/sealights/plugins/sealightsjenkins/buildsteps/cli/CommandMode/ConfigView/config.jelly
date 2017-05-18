@@ -2,27 +2,10 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-    <!--<f:entry title="${%Technologies}" field="repeatableConfigOptions">-->
-        <!--<f:repeatableProperty field="repeatableConfigOptions" minimum="1" maximum="1" noAddButton="false" noDeleteButton="false"/>-->
-    <!--</f:entry>-->
-
-    <f:entry title="${%Additional Behaviours}">
-        <!-- TODO: switch to <f:repeatableHeteroList field="extensions"> -->
-        <f:hetero-list name="configOptions" items="${instance.configOptions}" descriptors="${descriptor.technologiesDescriptors}"
+    <f:entry title="${%Technologies Options}">
+        <f:hetero-list name="techOptions" items="${instance.techOptions}" descriptors="${descriptor.technologiesDescriptors}"
                        hasHeader="true" oneEach="true"/>
     </f:entry>
-
-    <f:advanced title="Java options">
-        <f:entry title="Monitored Application Packages" field="packagesIncluded"
-                 description="Java packages that will be analyzed by SeaLights. Supports wildcards (* = any string, ? = any character). For example: 'com.example.*'">
-            <f:textbox value="${packagesIncluded}" default="com.example.*"/>
-        </f:entry>
-
-        <f:entry title="Unmonitored Application Packages" field="packagesExcluded"
-                 description="Java packages to exclude from SeaLights' analysis. Supports wildcards (* = any string, ? = any character).">
-            <f:textbox value="${packagesExcluded}"/>
-        </f:entry>
-    </f:advanced>
 
     <f:entry title="App Name" field="appName">
         <f:textbox value="${appName}" default="$${JOB_NAME}"/>
