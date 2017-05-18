@@ -622,10 +622,10 @@ public class BeginAnalysis extends Builder {
         slInfo.setFilesIncluded(filesIncluded);
         slInfo.setFilesExcluded(filesExcluded);
         slInfo.setRecursive(recursive);
-        slInfo.setPackagesIncluded(additionalProps.get("packagesIncluded") != null ?
-                additionalProps.get("packagesIncluded").toString() : null);
-        slInfo.setPackagesExcluded(additionalProps.get("packagesExcluded") != null ?
-                additionalProps.get("packagesExcluded").toString() : null);
+        slInfo.setPackagesIncluded(additionalProps.get("packagesincluded") != null ?
+                additionalProps.get("packagesincluded").toString() : null);
+        slInfo.setPackagesExcluded(additionalProps.get("packagesexcluded") != null ?
+                additionalProps.get("packagesexcluded").toString() : null);
         slInfo.setClassLoadersExcluded(classLoadersExcluded);
         slInfo.setListenerJar(testListenerJar);
         slInfo.setListenerConfigFile(testListenerConfigFile);
