@@ -1,0 +1,22 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:dropdownList name="configTechnologyOptions" title="Technology Options">
+        <j:forEach var="currentDescriptor" items="${descriptor.configTechnologyOptionsDescriptorList}" varStatus="loop">
+            <f:dropdownListBlock title="${currentDescriptor.displayName}" value="${loop.index}"
+                                 selected="${currentDescriptor == instance.configTechOptions.descriptor || (instance.configTechOptions.descriptor == null &amp;&amp; currentDescriptor.default)}"
+                                 staplerClass="${currentDescriptor.clazz.name}">
+                <j:set var="instance" value="${instance.configTechOptions}"/>
+                <j:set var="descriptor" value="${currentDescriptor}"/>
+                <st:include page="${currentDescriptor.configPage}" from="${currentDescriptor}"/>
+                <f:entry>
+                    <div style="align:right">
+                        <f:repeatableDeleteButton value="Delete ${currentDescriptor.displayName}"/>
+                    </div>
+                </f:entry>
+            </f:dropdownListBlock>
+        </j:forEach>
+    </f:dropdownList>
+</j:jelly>
+

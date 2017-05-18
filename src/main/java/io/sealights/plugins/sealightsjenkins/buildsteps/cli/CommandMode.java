@@ -3,19 +3,18 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionPoint;
-import hudson.PluginWrapper;
-import hudson.init.InitMilestone;
-import hudson.init.Initializer;
-import hudson.model.*;
-import io.sealights.plugins.sealightsjenkins.BuildName;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
+import hudson.model.Hudson;
+import io.sealights.plugins.sealightsjenkins.BeginAnalysis;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -225,15 +224,27 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
         private String packagesIncluded;
         private String packagesExcluded;
-
+        private List<RepeatableConfigOptions> repeatableConfigOptions;
+        private DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> configOptions;
+        private List<BeginAnalysis> branches;
         private String appName;
         private String branchName;
         private CommandBuildName buildName;
         private String labId;
 
+        public List<BeginAnalysis> getBranches() {
+            return branches;
+        }
+
+        public void setBranches(List<BeginAnalysis> branches) {
+            this.branches = branches;
+        }
+
         @DataBoundConstructor
         public ConfigView(String packagesIncluded, String packagesExcluded, String appName, String branchName,
-                          CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments) {
+                          CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments,
+                          List<RepeatableConfigOptions> repeatableConfigOptions,
+                          DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> configOptions) {
             super(CommandModes.Config, buildSessionId, additionalArguments);
             this.packagesIncluded = packagesIncluded;
             this.packagesExcluded = packagesExcluded;
@@ -241,6 +252,16 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.branchName = branchName;
             this.buildName = buildName;
             this.labId = labId;
+            this.repeatableConfigOptions = repeatableConfigOptions;
+            this.configOptions = configOptions;
+        }
+
+        public DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> getConfigOptions() {
+            return configOptions;
+        }
+
+        public void setConfigOptions(DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> configOptions) {
+            this.configOptions = configOptions;
         }
 
         @Exported
@@ -303,6 +324,16 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.packagesExcluded = packagesExcluded;
         }
 
+        @Exported
+        public List<RepeatableConfigOptions> getRepeatableConfigOptions() {
+            return repeatableConfigOptions;
+        }
+
+        @Exported
+        public void setRepeatableConfigOptions(List<RepeatableConfigOptions> repeatableConfigOptions) {
+            this.repeatableConfigOptions = repeatableConfigOptions;
+        }
+
         @Extension
         public static class ConfigDescriptor extends CommandModeDescriptor {
 
@@ -315,10 +346,13 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
                 super(ConfigView.class, CommandModes.Config.getDisplayName());
             }
 
+            public DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> getTechnologiesDescriptors() {
+                return TechnologyOptionsDescriptor.all();
+            }
+
             public DescriptorExtensionList<CommandBuildName, CommandBuildName.CommandBuildNameDescriptor> getBuildNameDescriptorList() {
                 return Jenkins.getInstance().getDescriptorList(CommandBuildName.class);
             }
-
         }
     }
 
