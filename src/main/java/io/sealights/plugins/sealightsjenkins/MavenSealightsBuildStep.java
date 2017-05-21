@@ -17,7 +17,6 @@ import hudson.util.NullStream;
 import hudson.util.StreamTaskListener;
 import hudson.util.VariableResolver;
 import io.sealights.plugins.sealightsjenkins.enums.BuildStepModes;
-import io.sealights.plugins.sealightsjenkins.utils.BuildNameUtils;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import jenkins.model.Jenkins;
 import jenkins.mvn.GlobalMavenConfig;
@@ -168,10 +167,12 @@ public class MavenSealightsBuildStep extends Builder {
         beginAnalysis.setAdditionalArguments(additionalArgs.toString());
         return this;
     }
-    
+
     private String resolveBuildName(BuildName buildName){
-        if(BuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy()))
-            return BuildNameUtils.getManualBuildName(buildName);
+        if(BuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
+            BuildName.ManualBuildName manual = (BuildName.ManualBuildName) buildName;
+            return manual.getInsertedBuildName();
+        }
         if (BuildNamingStrategy.JENKINS_BUILD.equals(buildName.getBuildNamingStrategy()))
             return "${BUILD_NUMBER}";
         if(BuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
