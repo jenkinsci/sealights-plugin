@@ -9,6 +9,7 @@ import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import io.sealights.plugins.sealightsjenkins.BuildNamingStrategy;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandBuildNamingStrategy;
 import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateException;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.PropertiesUtils;
@@ -182,13 +183,13 @@ public class SealightsCLIBuildStep extends Builder {
     }
 
     private String resolveBuildName(CommandBuildName buildName){
-        if(BuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
+        if(CommandBuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
             CommandBuildName.ManualBuildName manual = (CommandBuildName.ManualBuildName) buildName;
             return manual.getInsertedBuildName();
         }
-        if (BuildNamingStrategy.JENKINS_BUILD.equals(buildName.getBuildNamingStrategy()))
+        if (CommandBuildNamingStrategy.JENKINS_BUILD.equals(buildName.getBuildNamingStrategy()))
             return "${BUILD_NUMBER}";
-        if(BuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
+        if(CommandBuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
             return "SL_UPSTREAM_BUILD";
         return null;
     }
