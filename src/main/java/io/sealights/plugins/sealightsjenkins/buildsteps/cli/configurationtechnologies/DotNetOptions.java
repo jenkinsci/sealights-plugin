@@ -1,6 +1,7 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies;
 
 import hudson.Extension;
+import hudson.model.AbstractProject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
@@ -38,7 +39,12 @@ public class DotNetOptions extends TechnologyOptions {
     public static class DescriptorImpl extends TechnologyOptionsDescriptor {
         @Override
         public String getDisplayName() {
-            return "DotNet Options";
+            return "";
+        }
+
+        @Override
+        public boolean isApplicable(Class<? extends TechnologyOptions> type) {
+            return false;
         }
     }
 }

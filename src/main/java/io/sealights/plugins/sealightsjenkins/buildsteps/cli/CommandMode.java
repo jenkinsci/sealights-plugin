@@ -248,7 +248,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.branchName = branchName;
             this.buildName = buildName;
             this.labId = labId;
-
             this.techOptions = new DescribableList<>(Saveable.NOOP, Util.fixNull(techOptions));
         }
 

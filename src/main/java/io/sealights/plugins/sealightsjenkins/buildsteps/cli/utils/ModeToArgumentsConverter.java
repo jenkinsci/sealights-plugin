@@ -51,6 +51,6 @@ public class ModeToArgumentsConverter {
     }
 
     private ConfigCommandArguments toConfigCommandArguments(CommandMode.ConfigView configView){
-        return new ConfigCommandArguments(configView.getPackagesIncluded(), configView.getPackagesExcluded());
+        return new ConfigCommandArguments(configView.getTechOptions());
     }
 }
