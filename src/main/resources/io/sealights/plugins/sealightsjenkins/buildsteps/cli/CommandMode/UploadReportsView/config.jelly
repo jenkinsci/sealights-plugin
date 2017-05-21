@@ -15,15 +15,6 @@
         <f:textbox value="${reportsFolders}"/>
     </f:entry>
 
-    <f:entry title="Has more requests" field="hasMoreRequests"
-             description="When unchecked, 'execution end' will be triggered after uploading finishes.">
-        <f:checkbox default="true"/>
-    </f:entry>
-
-    <f:entry title="Source" field="source"
-             description="The test report provider">
-        <f:textbox value="${source}"/>
-    </f:entry>
     <f:entry>
         <f:advanced title="SeaLights CLI Advanced">
             <f:entry title="${%Additional Arguments}" field="additionalArguments">

@@ -25,6 +25,7 @@ import org.kohsuke.stapler.export.Exported;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class creates build status report file on the file system and then
@@ -38,6 +39,7 @@ public class BuildStatusNotifier extends Notifier {
     private String branchName;
     private CommandBuildName buildName;
     private String additionalArguments;
+    private String reportTitle = "repot";
     private BeginAnalysis beginAnalysis = new BeginAnalysis();
 
     /*
@@ -51,7 +53,7 @@ public class BuildStatusNotifier extends Notifier {
 
     @DataBoundConstructor
     public BuildStatusNotifier(boolean enabled, String buildSessionId, String appName, String branchName,
-                               CommandBuildName buildName, String additionalArguments) {
+                               CommandBuildName buildName, String additionalArguments, String reportTitle) {
         super();
         this.enabled = enabled;
         this.buildSessionId = buildSessionId;
@@ -59,6 +61,7 @@ public class BuildStatusNotifier extends Notifier {
         this.branchName = branchName;
         this.buildName = buildName;
         this.additionalArguments = additionalArguments;
+        this.reportTitle =reportTitle;
     }
 
     @Override
@@ -86,7 +89,7 @@ public class BuildStatusNotifier extends Notifier {
 
             // we creates a report file on the file system
             String reportFilePath = resolveReportFilePath(workingDir, logger);
-            createReportFile(build.getResult(), reportFilePath, logger);
+            createReportFile(build.getResult(), build.getDuration(), reportFilePath, logger, reportTitle);
 
             logger.info("About to report build status.");
 
@@ -183,24 +186,22 @@ public class BuildStatusNotifier extends Notifier {
         return workingDir;
     }
 
-    private void createReportFile(final Result result, String fileName, Logger logger) {
-        Map reportMap = createReportMap(result);
+    private void createReportFile(final Result result, long duration, String fileName, Logger logger, String reportTitlr) {
+        Map reportMap = createReportMap(result, duration, reportTitlr);
         saveReportToFS(reportMap, fileName, logger);
     }
 
-    private Map createReportMap(Result result) {
+    private Map createReportMap(Result result, long duration, String reportTitle) {
         String status = toSealightsBuildStatus(result);
-        String title = "CI Status";
-        String fieldName = "Jenkins status";
-        String type = "string";
-        String value = result.toString();
+        String title = reportTitle;
+        String formatedDuration = toStringDuration(duration);
 
         List<Map> data = new ArrayList<>();
-        Map index0 = new HashMap();
-        index0.put("fieldName", fieldName);
-        index0.put("type", type);
-        index0.put("value", value);
+        Map index0 = createReportData("Jenkins status","string",result.toString());
         data.add(index0);
+
+        Map index1 = createReportData("Duration","string",formatedDuration);
+        data.add(index1);
 
         Map<String, Object> externalReport = new HashMap<>();
         externalReport.put("title", title);
@@ -208,6 +209,21 @@ public class BuildStatusNotifier extends Notifier {
         externalReport.put("status", status);
 
         return externalReport;
+    }
+
+    private Map createReportData(String fieldName, String type, String value){
+        Map map = new HashMap();
+        map.put("fieldName", fieldName);
+        map.put("type", type);
+        map.put("value", value);
+        return map;
+    }
+
+    private String toStringDuration(long duration){
+        long hours = TimeUnit.MILLISECONDS.toHours(duration) % 24;
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60;
+        return String.format("%d:%02d:%02d", hours,minutes,seconds);
     }
 
     private String toSealightsBuildStatus(Result result) {
@@ -408,6 +424,16 @@ public class BuildStatusNotifier extends Notifier {
     @Exported
     public void setBeginAnalysis(BeginAnalysis beginAnalysis) {
         this.beginAnalysis = beginAnalysis;
+    }
+
+    @Exported
+    public String getReportTitle() {
+        return reportTitle;
+    }
+
+    @Exported
+    public void setReportTitle(String reportTitle) {
+        this.reportTitle = reportTitle;
     }
 
     @Extension

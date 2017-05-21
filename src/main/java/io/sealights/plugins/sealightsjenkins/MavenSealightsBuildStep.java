@@ -157,11 +157,27 @@ public class MavenSealightsBuildStep extends Builder {
             additionalArgs.append("packagesexcluded=" + beginAnalysis.getPackagesExcluded() + "\n");
         }
 
+        if (beginAnalysis.getBuildName()!=null) {
+            additionalArgs.append("buildname=" + resolveBuildName(beginAnalysis.getBuildName()) + "\n");
+        }
+
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getAdditionalArguments())) {
             additionalArgs.insert(0,beginAnalysis.getAdditionalArguments().trim() + "\n");
         }
         beginAnalysis.setAdditionalArguments(additionalArgs.toString());
         return this;
+    }
+
+    private String resolveBuildName(BuildName buildName){
+        if(BuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
+            BuildName.ManualBuildName manual = (BuildName.ManualBuildName) buildName;
+            return manual.getInsertedBuildName();
+        }
+        if (BuildNamingStrategy.JENKINS_BUILD.equals(buildName.getBuildNamingStrategy()))
+            return "${BUILD_NUMBER}";
+        if(BuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
+            return "SL_UPSTREAM_BUILD";
+        return null;
     }
 
 

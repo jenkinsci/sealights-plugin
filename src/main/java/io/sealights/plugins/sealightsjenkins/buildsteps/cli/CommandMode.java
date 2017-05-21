@@ -46,7 +46,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     }
 
     @Exported
-
     public String getBuildSessionId() {
         return buildSessionId;
     }
@@ -146,12 +145,12 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private String source;
 
         @DataBoundConstructor
-        public UploadReportsView(String reportFiles, String reportsFolders, boolean hasMoreRequests,
+        public UploadReportsView(String reportFiles, String reportsFolders,
                                  String source, String buildSessionId, String additionalArguments) {
             super(CommandModes.UploadReports, buildSessionId, additionalArguments);
             this.reportFiles = reportFiles;
             this.reportsFolders = reportsFolders;
-            this.hasMoreRequests = hasMoreRequests;
+            this.hasMoreRequests = true;
             this.source = source;
         }
 
