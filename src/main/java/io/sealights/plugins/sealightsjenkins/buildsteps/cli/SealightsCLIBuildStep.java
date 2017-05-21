@@ -66,6 +66,14 @@ public class SealightsCLIBuildStep extends Builder {
             if (cliRunner.getBuildName()!=null) {
                 additionalArgs.append("buildname=" + resolveBuildName(cliRunner.getBuildName()) + "\n");
             }
+
+            if(this.commandMode instanceof  CommandMode.UploadReportsView){
+                CommandMode.UploadReportsView uploadReportsView = (CommandMode.UploadReportsView) this.commandMode;
+                if(!StringUtils.isNullOrEmpty(uploadReportsView.getSource())){
+                    additionalArgs.append("source="+uploadReportsView.getSource()+"\n");
+                }
+
+            }
         }
         if (!StringUtils.isNullOrEmpty(cliRunner.getAdditionalArguments()))
             additionalArgs.insert(0, cliRunner.getAdditionalArguments().trim() + "\n");

@@ -2,6 +2,7 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli.utils;
 
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.CommandMode;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.*;
+import io.sealights.plugins.sealightsjenkins.utils.PropertiesUtils;
 
 /**
  * Created by shahar on 2/12/2017.
@@ -37,11 +38,12 @@ public class ModeToArgumentsConverter {
     }
 
     private UploadReportsCommandArguments toUploadReportCommandArguments(CommandMode.UploadReportsView uploadReportsView){
+        String source = PropertiesUtils.toProperties(uploadReportsView.getAdditionalArguments()).getProperty("source");
         return new UploadReportsCommandArguments(
                 uploadReportsView.getReportFiles(),
                 uploadReportsView.getReportsFolders(),
                 uploadReportsView.getHasMoreRequests(),
-                uploadReportsView.getSource());
+                source);
     }
 
     private ExternalReportCommandArguments toExternalReportArguments(CommandMode.ExternalReportView externalReportView){
