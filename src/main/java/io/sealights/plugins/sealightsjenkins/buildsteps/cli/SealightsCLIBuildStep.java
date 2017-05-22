@@ -42,13 +42,14 @@ public class SealightsCLIBuildStep extends Builder {
     * of this plugin.
     */
     private Object readResolve() {
+        SealightsCLIBuildStep _this = this;
         if (cliRunner != null) {
-            return resolveFromCLiRunner();
+            _this = resolveFromCLiRunner();
         }
-        return this;
+        return _this;
     }
 
-    private Object resolveFromCLiRunner() {
+    private SealightsCLIBuildStep resolveFromCLiRunner() {
         StringBuilder  additionalArgs = new StringBuilder();
         if (this.commandMode instanceof CommandMode.ConfigView) {
                 CommandMode.ConfigView configView = (CommandMode.ConfigView) commandMode;
