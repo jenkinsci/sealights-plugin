@@ -5,7 +5,7 @@ import hudson.model.AbstractProject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
-public class DotNetOptions extends TechnologyOptions {
+public class DotNetOptions /*extends TechnologyOptions*/ {
     private String namespacesIncluded;
     private String namespacesExcluded;
 
@@ -39,12 +39,7 @@ public class DotNetOptions extends TechnologyOptions {
     public static class DescriptorImpl extends TechnologyOptionsDescriptor {
         @Override
         public String getDisplayName() {
-            return "";
-        }
-
-        @Override
-        public boolean isApplicable(Class<? extends TechnologyOptions> type) {
-            return false;
+            return "DotNet options";
         }
     }
 }
