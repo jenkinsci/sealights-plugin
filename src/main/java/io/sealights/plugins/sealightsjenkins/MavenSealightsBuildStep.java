@@ -161,6 +161,18 @@ public class MavenSealightsBuildStep extends Builder {
             additionalArgs.append("buildname=" + resolveBuildName(beginAnalysis.getBuildName()) + "\n");
         }
 
+        if (beginAnalysis.getBuildScannerJar()!=null) {
+            additionalArgs.append("buildscannerjar=" + beginAnalysis.getBuildScannerJar() + "\n");
+        }
+
+        if (beginAnalysis.getTestListenerJar()!=null) {
+            additionalArgs.append("testlistenerjar=" + beginAnalysis.getTestListenerJar() + "\n");
+        }
+
+        if (beginAnalysis.getSlMvnPluginVersion()!=null) {
+            additionalArgs.append("mvnpluginversion=" + beginAnalysis.getSlMvnPluginVersion() + "\n");
+        }
+
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getAdditionalArguments())) {
             additionalArgs.insert(0,beginAnalysis.getAdditionalArguments().trim() + "\n");
         }
