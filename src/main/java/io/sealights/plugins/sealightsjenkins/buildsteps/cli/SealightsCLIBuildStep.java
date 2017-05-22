@@ -51,23 +51,24 @@ public class SealightsCLIBuildStep extends Builder {
             _this = resolveFromCLiRunner();
         }
         if(commandMode instanceof CommandMode.ConfigView){
-            String packagesIncluded = ((CommandMode.ConfigView) _this.commandMode).getPackagesIncluded();
-            String packagesExcluded = ((CommandMode.ConfigView) _this.commandMode).getPackagesExcluded();
-            DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
-            technologyOptions.add(new JavaOptions(packagesIncluded,packagesExcluded));
-            ((CommandMode.ConfigView) commandMode).setTechOptions(technologyOptions);
+            _this =resolveTechOption();
         }
         return _this;
+    }
+
+    private SealightsCLIBuildStep resolveTechOption(){
+        String packagesIncluded = ((CommandMode.ConfigView) commandMode).getPackagesIncluded();
+        String packagesExcluded = ((CommandMode.ConfigView) commandMode).getPackagesExcluded();
+        DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
+        technologyOptions.add(new JavaOptions(packagesIncluded,packagesExcluded));
+        ((CommandMode.ConfigView) commandMode).setTechOptions(technologyOptions);
+        return this;
     }
 
     private SealightsCLIBuildStep resolveFromCLiRunner() {
         StringBuilder  additionalArgs = new StringBuilder();
         if (this.commandMode instanceof CommandMode.ConfigView) {
-                CommandMode.ConfigView configView = (CommandMode.ConfigView) commandMode;
-                configView.setAppName(cliRunner.getAppName());
-                configView.setBranchName(cliRunner.getBranchName());
-                configView.setBuildName(cliRunner.getBuildName());
-                commandMode =configView;
+               commandMode =setConfigparams();
         } else  {
             if (!StringUtils.isNullOrEmpty(cliRunner.getAppName())) {
                 additionalArgs.append("appname=" + cliRunner.getAppName() + "\n");
@@ -93,6 +94,13 @@ public class SealightsCLIBuildStep extends Builder {
         return this;
     }
 
+    private CommandMode.ConfigView setConfigparams(){
+        CommandMode.ConfigView configView = (CommandMode.ConfigView) commandMode;
+        configView.setAppName(cliRunner.getAppName());
+        configView.setBranchName(cliRunner.getBranchName());
+        configView.setBuildName(cliRunner.getBuildName());
+        return  configView;
+    }
 
     public CommandMode getCommandMode() {
         return commandMode;
