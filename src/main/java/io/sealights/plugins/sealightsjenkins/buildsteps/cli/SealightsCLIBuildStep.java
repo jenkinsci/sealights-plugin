@@ -8,7 +8,11 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.BuildNamingStrategy;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandBuildNamingStrategy;
 import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateException;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
@@ -46,6 +50,15 @@ public class SealightsCLIBuildStep extends Builder {
         if (cliRunner != null) {
             _this = resolveFromCLiRunner();
         }
+        if(commandMode instanceof CommandMode.ConfigView){
+            String packagesIncluded = ((CommandMode.ConfigView) _this.commandMode).getPackagesIncluded();
+            String packagesExcluded = ((CommandMode.ConfigView) _this.commandMode).getPackagesExcluded();
+            List<TechnologyOptions> techOptions = new ArrayList();
+            techOptions.add(new JavaOptions(packagesIncluded,packagesExcluded));
+
+            ((CommandMode.ConfigView) commandMode).setTechOptions((DescribableList<TechnologyOptions, TechnologyOptionsDescriptor>) techOptions);
+        }
+
         return _this;
     }
 

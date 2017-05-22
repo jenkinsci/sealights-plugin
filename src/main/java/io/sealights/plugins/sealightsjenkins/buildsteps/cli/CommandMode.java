@@ -10,6 +10,7 @@ import hudson.model.Hudson;
 import hudson.model.Saveable;
 import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.BeginAnalysis;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
@@ -229,6 +230,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private String appName;
         private String branchName;
         private CommandBuildName buildName;
+        private transient String packagesIncluded;
+        private transient String packagesExcluded;
         private String labId;
 
         public List<BeginAnalysis> getBranches() {
@@ -299,13 +302,22 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.labId = labId;
         }
 
-        public String getPackagesExcluded() {
-            return "";
+        @Exported
+        public String getPackagesIncluded() {
+            return packagesIncluded;
         }
 
         @Exported
-        public String getPackagesIncluded() {
-            return "";
+        public void setPackagesIncluded(String packagesIncluded) {
+            this.packagesIncluded = packagesIncluded;
+        }
+
+        public String getPackagesExcluded() {
+            return packagesExcluded;
+        }
+
+        public void setPackagesExcluded(String packagesExcluded) {
+            this.packagesExcluded = packagesExcluded;
         }
 
         @Extension
