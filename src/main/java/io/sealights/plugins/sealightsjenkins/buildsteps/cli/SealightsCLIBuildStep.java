@@ -53,12 +53,10 @@ public class SealightsCLIBuildStep extends Builder {
         if(commandMode instanceof CommandMode.ConfigView){
             String packagesIncluded = ((CommandMode.ConfigView) _this.commandMode).getPackagesIncluded();
             String packagesExcluded = ((CommandMode.ConfigView) _this.commandMode).getPackagesExcluded();
-            List<TechnologyOptions> techOptions = new ArrayList();
-            techOptions.add(new JavaOptions(packagesIncluded,packagesExcluded));
-
-            ((CommandMode.ConfigView) commandMode).setTechOptions((DescribableList<TechnologyOptions, TechnologyOptionsDescriptor>) techOptions);
+            DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
+            technologyOptions.add(technologyOptions.size()-1,new JavaOptions(packagesIncluded,packagesExcluded));
+            ((CommandMode.ConfigView) commandMode).setTechOptions(technologyOptions);
         }
-
         return _this;
     }
 
