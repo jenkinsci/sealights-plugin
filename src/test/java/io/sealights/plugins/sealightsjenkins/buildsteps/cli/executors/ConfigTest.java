@@ -1,7 +1,11 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import hudson.model.AbstractBuild;
+import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.TestHelper;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.ConfigCommandArguments;
 import io.sealights.plugins.sealightsjenkins.utils.JenkinsUtils;
@@ -42,7 +46,7 @@ public class ConfigTest {
         configExecutor.execute();
         verify(runtimeMock).exec(captor.capture());
         final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java", "-jar", "agent.jar", "-config", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-buildsessionidfile", "/path/to/workspace" + File.separator + "buildSessionId.txt", "-packagesincluded", "io.include.*", "-packagesexcluded", "io.exclude.*", "-enableNoneZeroErrorCode"};
+        String[] expectedCommandLine = {"path/to/java", "-jar", "agent.jar", "-config", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-packagesincluded", "io.include.*", "-packagesexcluded", "io.exclude.*", "-buildsessionidfile", "/path/to/workspace" + File.separator + "buildSessionId.txt", "-enableNoneZeroErrorCode"};
 
         // Assert
         Assert.assertArrayEquals(
@@ -77,10 +81,9 @@ public class ConfigTest {
     }
 
     private ConfigCommandArguments createConfigArguments() {
-        ConfigCommandArguments configArguments = new ConfigCommandArguments(
-                "io.include.*", // packages included
-                "io.exclude.*" // packages excluded
-        );
+        DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
+        technologyOptions.add(new JavaOptions("io.include.*", "io.exclude.*"));
+        ConfigCommandArguments configArguments = new ConfigCommandArguments(technologyOptions);
 
         return configArguments;
     }

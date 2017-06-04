@@ -39,7 +39,7 @@ public class BuildStatusNotifier extends Notifier {
     private String branchName;
     private CommandBuildName buildName;
     private String additionalArguments;
-    private String reportTitle = "repot";
+    private String reportTitle = "report";
     private BeginAnalysis beginAnalysis = new BeginAnalysis();
 
     /*
@@ -194,7 +194,7 @@ public class BuildStatusNotifier extends Notifier {
     private Map createReportMap(Result result, long duration, String reportTitle) {
         String status = toSealightsBuildStatus(result);
         String title = reportTitle;
-        String formatedDuration = toStringDuration(duration);
+        String formatedDuration = TimeUtils.toStringDuration(duration);
 
         List<Map> data = new ArrayList<>();
         Map index0 = createReportData("Jenkins status","string",result.toString());
@@ -217,13 +217,6 @@ public class BuildStatusNotifier extends Notifier {
         map.put("type", type);
         map.put("value", value);
         return map;
-    }
-
-    private String toStringDuration(long duration){
-        long hours = TimeUnit.MILLISECONDS.toHours(duration) % 24;
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60;
-        return String.format("%d:%02d:%02d", hours,minutes,seconds);
     }
 
     private String toSealightsBuildStatus(Result result) {

@@ -57,18 +57,20 @@ public class SealightsCLIBuildStep extends Builder {
     }
 
     private SealightsCLIBuildStep resolveTechOption(){
-        String packagesIncluded = ((CommandMode.ConfigView) commandMode).getPackagesIncluded();
-        String packagesExcluded = ((CommandMode.ConfigView) commandMode).getPackagesExcluded();
+        CommandMode.ConfigView config = (CommandMode.ConfigView) commandMode;
+        String packagesIncluded = config.getPackagesIncluded();
+        String packagesExcluded = config.getPackagesExcluded();
         DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
         technologyOptions.add(new JavaOptions(packagesIncluded,packagesExcluded));
-        ((CommandMode.ConfigView) commandMode).setTechOptions(technologyOptions);
+        config.setTechOptions(technologyOptions);
+        commandMode=config;
         return this;
     }
 
     private SealightsCLIBuildStep resolveFromCLiRunner() {
         StringBuilder  additionalArgs = new StringBuilder();
         if (this.commandMode instanceof CommandMode.ConfigView) {
-               commandMode =setConfigparams();
+               commandMode =getConfigparams();
         } else  {
             if (!StringUtils.isNullOrEmpty(cliRunner.getAppName())) {
                 additionalArgs.append("appname=" + cliRunner.getAppName() + "\n");
@@ -94,7 +96,7 @@ public class SealightsCLIBuildStep extends Builder {
         return this;
     }
 
-    private CommandMode.ConfigView setConfigparams(){
+    private CommandMode.ConfigView getConfigparams(){
         CommandMode.ConfigView configView = (CommandMode.ConfigView) commandMode;
         configView.setAppName(cliRunner.getAppName());
         configView.setBranchName(cliRunner.getBranchName());

@@ -107,6 +107,11 @@ public class JenkinsUtils {
         return resolvedJobName;
     }
 
+    /*
+    * this code currently not used we save the logic only because its was hard to find out how to get the job name
+    * */
+
+
     public Job getCurrentJob(Descriptor descriptor){
         try {
             List<Job> items = Jenkins.getInstance().getItems(Job.class);

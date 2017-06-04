@@ -32,7 +32,7 @@ public class CLIRunnerTest {
         CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
         AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
         BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = new CommandMode.EndView();
+        CommandMode commandMode = createEndView();
 
         // Act
         boolean successfulExecution = cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
@@ -56,7 +56,7 @@ public class CLIRunnerTest {
         CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
         AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
         BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = new CommandMode.EndView();
+        CommandMode commandMode = createEndView();
 
         // Act & Assert
         cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
@@ -79,7 +79,7 @@ public class CLIRunnerTest {
         CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
         AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
         BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = new CommandMode.EndView();
+        CommandMode commandMode = createEndView();
 
         // Act & Assert
         cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
@@ -102,7 +102,7 @@ public class CLIRunnerTest {
         CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
         AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
         BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = new CommandMode.EndView();
+        CommandMode commandMode = createEndView();
 
         // Act & Assert
         cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
@@ -124,7 +124,7 @@ public class CLIRunnerTest {
         CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
         AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
         BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = new CommandMode.EndView();
+        CommandMode commandMode = createEndView();
 
         // Act & Assert
         cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
@@ -147,7 +147,7 @@ public class CLIRunnerTest {
         CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
         AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
         BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = new CommandMode.EndView();
+        CommandMode commandMode = createEndView();
 
         // Act & Assert
         try {
@@ -485,7 +485,7 @@ public class CLIRunnerTest {
         CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
         AbstractBuild<?, ?> build = createJenkinsBuildObject(envVars);
         BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = new CommandMode.EndView();
+        CommandMode commandMode = createEndView();
         //Act
 
         cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
@@ -505,9 +505,15 @@ public class CLIRunnerTest {
 
         return beginAnalysis;
     }
+    
+    private CommandMode.EndView createEndView(){
+        String buildSesionId = "fake-build-session";
+        String additionalArga = "key=value";
+        return new CommandMode.EndView(buildSesionId,additionalArga);
+    }
 
     private CLIRunner createCLIRunner(String additionalArgs) {
-        CLIRunner cliRunner = new CLIRunner("", "", null, new CommandBuildName.EmptyBuildName(), "", additionalArgs);
+        CLIRunner cliRunner = new CLIRunner("", "", null, new CommandBuildName.EmptyBuildName(), additionalArgs,"" );
         cliRunner.setBuildSessionId("fake-build-session");
         cliRunner.setBeginAnalysis(createBeginAnalysis());
         return cliRunner;

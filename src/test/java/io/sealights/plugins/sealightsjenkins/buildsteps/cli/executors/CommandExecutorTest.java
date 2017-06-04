@@ -1,6 +1,10 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import hudson.EnvVars;
+import hudson.util.DescribableList;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.*;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
@@ -73,7 +77,7 @@ public class CommandExecutorTest {
     public void createExecutionCommand_configCommandExecutor_withoutToken_shouldCreateGoodExecutionLine() {
         //Arrange
         BaseCommandArguments baseArguments = createBaseCommandArgumentsWithoutToken();
-        ConfigCommandArguments configCommandArguments = new ConfigCommandArguments("io.included.package", "io.excluded.package");
+        ConfigCommandArguments configCommandArguments = createConfigArguments();
         AbstractCommandExecutor commandExecutor = new ConfigCommandExecutor(nullLogger, baseArguments, configCommandArguments);
         //Act
         String[] actualCommand = commandExecutor.createExecutionCommand();
@@ -154,7 +158,7 @@ public class CommandExecutorTest {
     public void createExecutionCommand_configCommandExecutor_shouldCreateGoodExecutionLine() {
         //Arrange
         BaseCommandArguments baseArguments = createBaseCommandArguments();
-        ConfigCommandArguments configCommandArguments = new ConfigCommandArguments("io.included.package", "io.excluded.package");
+        ConfigCommandArguments configCommandArguments = createConfigArguments();
         AbstractCommandExecutor commandExecutor = new ConfigCommandExecutor(nullLogger, baseArguments, configCommandArguments);
         //Act
         String[] actualCommand = commandExecutor.createExecutionCommand();
@@ -239,5 +243,13 @@ public class CommandExecutorTest {
         baseArgs.setEnvVars(new EnvVars());
 
         return baseArgs;
+    }
+
+    private ConfigCommandArguments createConfigArguments() {
+        DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
+        technologyOptions.add(new JavaOptions("io.included.package", "io.excluded.package"));
+        ConfigCommandArguments configArguments = new ConfigCommandArguments(technologyOptions);
+
+        return configArguments;
     }
 }

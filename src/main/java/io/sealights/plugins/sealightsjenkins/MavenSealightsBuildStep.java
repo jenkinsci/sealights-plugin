@@ -116,7 +116,7 @@ public class MavenSealightsBuildStep extends Builder {
     private static final Pattern GS_PATTERN = Pattern.compile("(^| )-gs ");
 
 
-    private  String backwardMessage = null;
+    private String backwardMessage = null;
 
 
     @Exported
@@ -125,24 +125,28 @@ public class MavenSealightsBuildStep extends Builder {
     }
 
     @Exported
-    public String getBackwardMessage(){
+    public String getBackwardMessage() {
         return backwardMessage;
     }
 
-    public boolean isShowBackwardMessage(){
+    public boolean isShowBackwardMessage() {
         return !StringUtils.isBlank(backwardMessage);
     }
 
     /**
      * The goal of this method is to support migration of data between versions
      * of this plugin.
+     * if user has setup to this step its saved under "BeginAnalysis" object.
+     * if so we take relevant params and copy them to "additional params" field.
      */
     private Object readResolve() {
-        return  beginAnalysis != null ? resolveFromBeginAnalysis() : this;
+        return beginAnalysis != null ? resolveFromBeginAnalysis() : this;
     }
 
-    private Object resolveFromBeginAnalysis(){
-        setBackwardMessage("NOTICE: " );
+    private Object resolveFromBeginAnalysis() {
+        setBackwardMessage("Please note, this build step was set up in the old format.\n" +
+                "The deprecated fields were moved to the additional arguments field.\n" +
+                "Please update the configuration or contact SeaLights support for help.");
         StringBuffer additionalArgs = new StringBuffer();
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getAppName())) {
             additionalArgs.append("appname=" + beginAnalysis.getAppName() + "\n");
@@ -157,41 +161,40 @@ public class MavenSealightsBuildStep extends Builder {
             additionalArgs.append("packagesexcluded=" + beginAnalysis.getPackagesExcluded() + "\n");
         }
 
-        if (beginAnalysis.getBuildName()!=null) {
+        if (beginAnalysis.getBuildName() != null) {
             additionalArgs.append("buildname=" + resolveBuildName(beginAnalysis.getBuildName()) + "\n");
         }
 
-        if (beginAnalysis.getBuildScannerJar()!=null) {
+        if (beginAnalysis.getBuildScannerJar() != null) {
             additionalArgs.append("buildscannerjar=" + beginAnalysis.getBuildScannerJar() + "\n");
         }
 
-        if (beginAnalysis.getTestListenerJar()!=null) {
+        if (beginAnalysis.getTestListenerJar() != null) {
             additionalArgs.append("testlistenerjar=" + beginAnalysis.getTestListenerJar() + "\n");
         }
 
-        if (beginAnalysis.getSlMvnPluginVersion()!=null) {
+        if (beginAnalysis.getSlMvnPluginVersion() != null) {
             additionalArgs.append("mvnpluginversion=" + beginAnalysis.getSlMvnPluginVersion() + "\n");
         }
 
         if (!io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEmpty(beginAnalysis.getAdditionalArguments())) {
-            additionalArgs.insert(0,beginAnalysis.getAdditionalArguments().trim() + "\n");
+            additionalArgs.insert(0, beginAnalysis.getAdditionalArguments().trim() + "\n");
         }
         beginAnalysis.setAdditionalArguments(additionalArgs.toString());
         return this;
     }
 
-    private String resolveBuildName(BuildName buildName){
-        if(BuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
+    private String resolveBuildName(BuildName buildName) {
+        if (BuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
             BuildName.ManualBuildName manual = (BuildName.ManualBuildName) buildName;
             return manual.getInsertedBuildName();
         }
         if (BuildNamingStrategy.JENKINS_BUILD.equals(buildName.getBuildNamingStrategy()))
             return "${BUILD_NUMBER}";
-        if(BuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
+        if (BuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
             return "SL_UPSTREAM_BUILD";
         return null;
     }
-
 
 
     @DataBoundConstructor
@@ -305,7 +308,7 @@ public class MavenSealightsBuildStep extends Builder {
         } finally {
             try {
                 mavenBuildStepHelper.tryRestore(build, launcher, listener);
-            }catch (Exception e){
+            } catch (Exception e) {
                 logger.error("Failed to restore.", e);
             }
         }
@@ -370,12 +373,11 @@ public class MavenSealightsBuildStep extends Builder {
 
                 if (StringUtils.isNotBlank(settingsPath)) {
                     //The user has specified them manually using the UI.
-                    settingsPath= mavenBuildStepHelper.copySettingsFileToSlave(settingsPath, fileStorage, logger);
-                }
-                else {
+                    settingsPath = mavenBuildStepHelper.copySettingsFileToSlave(settingsPath, fileStorage, logger);
+                } else {
                     //Try to get it from the original Maven installation.
                     String toolsPathOnMasterJenkins = this.beginAnalysis.getDescriptor().getToolsPathOnMaster();
-                    GlobalSettingsRetriever settingsManager = new GlobalSettingsRetriever(logger, toolsPathOnMasterJenkins,fileStorage);
+                    GlobalSettingsRetriever settingsManager = new GlobalSettingsRetriever(logger, toolsPathOnMasterJenkins, fileStorage);
                     settingsPath = settingsManager.retrieveSettingsFromHudsonMaven(mi, mavenBuildStepHelper);
                 }
 
@@ -417,7 +419,6 @@ public class MavenSealightsBuildStep extends Builder {
 
         return true;
     }
-
 
 
     private String getTargets(BuildStepMode buildStepMode) {

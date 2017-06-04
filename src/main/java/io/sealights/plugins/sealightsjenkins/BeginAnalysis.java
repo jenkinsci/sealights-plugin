@@ -576,7 +576,7 @@ public class BeginAnalysis extends Builder {
     private String getFinalBuildName(AbstractBuild<?, ?> build, Properties additionalProps, Logger logger) throws IllegalStateException {
         String finalBuildName = null;
         if (additionalProps.getProperty("buildname") != null) {
-            finalBuildName = additionalProps.getProperty("buildname").toString();
+            finalBuildName = additionalProps.getProperty("buildname");
 
             if ("SL_UPSTREAM_BUILD".equals(finalBuildName)) {
                 BuildName.UpstreamBuildName upstream = (BuildName.UpstreamBuildName) buildName;
@@ -627,9 +627,9 @@ public class BeginAnalysis extends Builder {
         slInfo.setPackagesExcluded(additionalProps.get("packagesexcluded") != null ?
                 additionalProps.get("packagesexcluded").toString() : null);
         slInfo.setClassLoadersExcluded(classLoadersExcluded);
-        slInfo.setListenerJar((String) additionalProps.getProperty("testlistenerjar"));
+        slInfo.setListenerJar(additionalProps.getProperty("testlistenerjar"));
         slInfo.setListenerConfigFile(testListenerConfigFile);
-        slInfo.setScannerJar((String)additionalProps.getProperty("buildscannerjar"));
+        slInfo.setScannerJar(additionalProps.getProperty("buildscannerjar"));
         slInfo.setBuildStrategy(buildStrategy);
         slInfo.setEnvironment(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
         slInfo.setTestStage(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
