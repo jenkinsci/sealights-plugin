@@ -1,5 +1,8 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies;
-
+/*
+* This class represents the 'DotNet' item in 'TechnologyOptions' DropDown under 'Config' option.
+ * currently not in used. the 'extends' to hide it from ui.
+* */
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import org.kohsuke.stapler.DataBoundConstructor;

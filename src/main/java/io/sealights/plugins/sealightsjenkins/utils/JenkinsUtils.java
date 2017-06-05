@@ -122,7 +122,7 @@ public class JenkinsUtils {
                 }
             }
         }catch (Exception e){
-
+            throw new RuntimeException(e);
         }
         return null;
     }

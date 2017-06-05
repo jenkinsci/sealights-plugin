@@ -46,14 +46,13 @@ public class SealightsCLIBuildStep extends Builder {
     * of this plugin.
     */
     private Object readResolve() {
-        SealightsCLIBuildStep _this = this;
         if (cliRunner != null) {
-            _this = resolveFromCLiRunner();
+            resolveFromCLiRunner();
         }
         if(commandMode instanceof CommandMode.ConfigView){
-            _this =resolveTechOption();
+            resolveTechOption();
         }
-        return _this;
+        return this;
     }
 
     private SealightsCLIBuildStep resolveTechOption(){
@@ -70,7 +69,7 @@ public class SealightsCLIBuildStep extends Builder {
     private SealightsCLIBuildStep resolveFromCLiRunner() {
         StringBuilder  additionalArgs = new StringBuilder();
         if (this.commandMode instanceof CommandMode.ConfigView) {
-               commandMode =getConfigparams();
+               commandMode =getConfigParams();
         } else  {
             if (!StringUtils.isNullOrEmpty(cliRunner.getAppName())) {
                 additionalArgs.append("appname=" + cliRunner.getAppName() + "\n");
@@ -96,7 +95,7 @@ public class SealightsCLIBuildStep extends Builder {
         return this;
     }
 
-    private CommandMode.ConfigView getConfigparams(){
+    private CommandMode.ConfigView getConfigParams(){
         CommandMode.ConfigView configView = (CommandMode.ConfigView) commandMode;
         configView.setAppName(cliRunner.getAppName());
         configView.setBranchName(cliRunner.getBranchName());

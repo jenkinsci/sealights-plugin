@@ -129,6 +129,7 @@ public class MavenSealightsBuildStep extends Builder {
         return backwardMessage;
     }
 
+    @SuppressWarnings("unused")
     public boolean isShowBackwardMessage() {
         return !StringUtils.isBlank(backwardMessage);
     }
@@ -140,10 +141,13 @@ public class MavenSealightsBuildStep extends Builder {
      * if so we take relevant params and copy them to "additional params" field.
      */
     private Object readResolve() {
-        return beginAnalysis != null ? resolveFromBeginAnalysis() : this;
+        return tryResolveFromBeginAnalysis();
     }
 
-    private Object resolveFromBeginAnalysis() {
+    private Object tryResolveFromBeginAnalysis() {
+        if(beginAnalysis ==  null){
+            return this;
+        }
         setBackwardMessage("Please note, this build step was set up in the old format.\n" +
                 "The deprecated fields were moved to the additional arguments field.\n" +
                 "Please update the configuration or contact SeaLights support for help.");

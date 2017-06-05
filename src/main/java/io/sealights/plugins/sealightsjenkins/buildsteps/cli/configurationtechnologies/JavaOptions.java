@@ -1,5 +1,7 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies;
-
+/*
+* This class represents the 'Java' item in 'TechnologyOptions' DropDown under 'Config' option
+* */
 import hudson.Extension;
 import org.kohsuke.stapler.DataBoundConstructor;
 
