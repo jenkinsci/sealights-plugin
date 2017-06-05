@@ -1,5 +1,9 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:entry title="Build Session Id" field="buildSessionId">
+        <f:textbox value="${buildSessionId}" default="$${SL_BUILD_SESSION_ID}"/>
+    </f:entry>
 
     <f:entry title="Report Files" field="reportFiles"
              description="Comma separated list of files to be uploaded.">
@@ -11,14 +15,11 @@
         <f:textbox value="${reportsFolders}"/>
     </f:entry>
 
-    <f:entry title="Has more requests" field="hasMoreRequests"
-             description="When unchecked, 'execution end' will be triggered after uploading finishes.">
-        <f:checkbox default="true"/>
+    <f:entry>
+        <f:advanced title="SeaLights CLI Advanced">
+            <f:entry title="${%Additional Arguments}" field="additionalArguments">
+                <f:expandableTextbox value="${additionalArguments}"/>
+            </f:entry>
+        </f:advanced>
     </f:entry>
-
-    <f:entry title="Source" field="source"
-             description="The test report provider">
-        <f:textbox value="${source}"/>
-    </f:entry>
-
 </j:jelly>

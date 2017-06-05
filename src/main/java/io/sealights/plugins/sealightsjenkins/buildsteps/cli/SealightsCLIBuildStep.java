@@ -8,14 +8,23 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.util.DescribableList;
+import io.sealights.plugins.sealightsjenkins.BuildNamingStrategy;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandBuildNamingStrategy;
 import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateException;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
+import io.sealights.plugins.sealightsjenkins.utils.PropertiesUtils;
+import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
+import java.util.*;
 
 public class SealightsCLIBuildStep extends Builder {
 
@@ -31,6 +40,67 @@ public class SealightsCLIBuildStep extends Builder {
         this.failBuildIfStepFail = failBuildIfStepFail;
         this.commandMode = commandMode;
         this.cliRunner = cliRunner;
+    }
+
+    /* * The goal of this method is to support migration of data between versions
+    * of this plugin.
+    */
+    private Object readResolve() {
+        if (cliRunner != null) {
+            resolveFromCLiRunner();
+        }
+        if(commandMode instanceof CommandMode.ConfigView){
+            resolveTechOption();
+        }
+        return this;
+    }
+
+    private SealightsCLIBuildStep resolveTechOption(){
+        CommandMode.ConfigView config = (CommandMode.ConfigView) commandMode;
+        String packagesIncluded = config.getPackagesIncluded();
+        String packagesExcluded = config.getPackagesExcluded();
+        DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
+        technologyOptions.add(new JavaOptions(packagesIncluded,packagesExcluded));
+        config.setTechOptions(technologyOptions);
+        commandMode=config;
+        return this;
+    }
+
+    private SealightsCLIBuildStep resolveFromCLiRunner() {
+        StringBuilder  additionalArgs = new StringBuilder();
+        if (this.commandMode instanceof CommandMode.ConfigView) {
+               commandMode =getConfigParams();
+        } else  {
+            if (!StringUtils.isNullOrEmpty(cliRunner.getAppName())) {
+                additionalArgs.append("appname=" + cliRunner.getAppName() + "\n");
+            }
+            if (!StringUtils.isNullOrEmpty(cliRunner.getBranchName())) {
+                additionalArgs.append("branchname=" + cliRunner.getBranchName() + "\n");
+            }
+            if (cliRunner.getBuildName()!=null) {
+                additionalArgs.append("buildname=" + resolveBuildName(cliRunner.getBuildName()) + "\n");
+            }
+
+            if(this.commandMode instanceof  CommandMode.UploadReportsView){
+                CommandMode.UploadReportsView uploadReportsView = (CommandMode.UploadReportsView) this.commandMode;
+                if(!StringUtils.isNullOrEmpty(uploadReportsView.getSource())){
+                    additionalArgs.append("source="+uploadReportsView.getSource()+"\n");
+                }
+
+            }
+        }
+        if (!StringUtils.isNullOrEmpty(cliRunner.getAdditionalArguments()))
+            additionalArgs.insert(0, cliRunner.getAdditionalArguments().trim() + "\n");
+        commandMode.setAdditionalArguments(additionalArgs.toString());
+        return this;
+    }
+
+    private CommandMode.ConfigView getConfigParams(){
+        CommandMode.ConfigView configView = (CommandMode.ConfigView) commandMode;
+        configView.setAppName(cliRunner.getAppName());
+        configView.setBranchName(cliRunner.getBranchName());
+        configView.setBuildName(cliRunner.getBuildName());
+        return  configView;
     }
 
     public CommandMode getCommandMode() {
@@ -77,6 +147,8 @@ public class SealightsCLIBuildStep extends Builder {
             }
 
             CLIHandler cliHandler = new CLIHandler(logger);
+            cliRunner = createCLIRunner(commandMode);
+
             isStepSuccessful = cliRunner.perform(build, launcher, listener, commandMode, cliHandler, logger);
         } catch (Exception e) {
             // for cases when property fields setup is invalid.
@@ -122,5 +194,32 @@ public class SealightsCLIBuildStep extends Builder {
         public String getDisplayName() {
             return "Sealights CLI";
         }
+    }
+
+    private CLIRunner createCLIRunner(CommandMode commandMode){
+        if(commandMode instanceof CommandMode.ConfigView){
+            CommandMode.ConfigView configView=(CommandMode.ConfigView) commandMode;
+            return new CLIRunner(configView.getBuildSessionId(),configView.getAppName(),configView.getBranchName(),
+                    configView.getBuildName(),configView.getAdditionalArguments(),null);
+        }else {
+            Properties properties = PropertiesUtils.toProperties(commandMode.getAdditionalArguments());
+            String appName = (properties.get("appname")!= null)? properties.get("appname").toString():null;
+            String branchName= (properties.get("branchname")!= null)? properties.get("branchname").toString():null;
+            String labId= (properties.get("labid")!= null)? properties.get("labid").toString():null;
+            CommandBuildName buildName = new CommandBuildName.ManualBuildName((String) properties.get("buildname"));
+            return new CLIRunner(commandMode.getBuildSessionId(),appName,branchName,buildName,commandMode.getAdditionalArguments(),labId);
+        }
+    }
+
+    private String resolveBuildName(CommandBuildName buildName){
+        if(CommandBuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
+            CommandBuildName.ManualBuildName manual = (CommandBuildName.ManualBuildName) buildName;
+            return manual.getInsertedBuildName();
+        }
+        if (CommandBuildNamingStrategy.JENKINS_BUILD.equals(buildName.getBuildNamingStrategy()))
+            return "${BUILD_NUMBER}";
+        if(CommandBuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
+            return "SL_UPSTREAM_BUILD";
+        return null;
     }
 }

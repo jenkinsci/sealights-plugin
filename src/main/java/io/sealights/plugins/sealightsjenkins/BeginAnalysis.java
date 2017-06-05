@@ -426,21 +426,21 @@ public class BeginAnalysis extends Builder {
         this.additionalArguments = additionalArguments;
     }
 
-    private void copyAgentsToSlaveIfNeeded(Logger logger, CleanupManager cleanupManager) throws IOException, InterruptedException {
-        if (!StringUtils.isNullOrEmpty(buildScannerJar)) {
-            CustomFile customFile = new CustomFile(logger, cleanupManager, buildScannerJar);
+    private void copyAgentsToSlaveIfNeeded(Logger logger, CleanupManager cleanupManager, Properties additionalProps) throws IOException, InterruptedException {
+        if (additionalProps.get("buildscannerjar") != null) {
+            CustomFile customFile = new CustomFile(logger, cleanupManager, additionalProps.get("buildscannerjar").toString());
             customFile.copyToSlave();
         }
 
-        if (!StringUtils.isNullOrEmpty(testListenerJar)) {
-            CustomFile customFile = new CustomFile(logger, cleanupManager, testListenerJar);
+        if (additionalProps.get("testlistenerjar") != null) {
+            CustomFile customFile = new CustomFile(logger, cleanupManager, additionalProps.get("testlistenerjar").toString());
             customFile.copyToSlave();
         }
     }
 
-    private String tryGetSlMvnPluginVersion(SeaLightsPluginInfo slInfo, Logger logger) {
+    private String tryGetSlMvnPluginVersion(SeaLightsPluginInfo slInfo, Logger logger, Properties additionalProps) {
 
-        String recommendedVersion = this.slMvnPluginVersion;
+        String recommendedVersion = additionalProps.getProperty("mvnpluginversion");
 
         try {
             if (!isValidVersion(recommendedVersion)) {
@@ -476,7 +476,7 @@ public class BeginAnalysis extends Builder {
                 return true;
             }
 
-            copyAgentsToSlaveIfNeeded(logger, cleanupManager);
+            copyAgentsToSlaveIfNeeded(logger, cleanupManager, additionalProps);
 
             String workingDir = ws.getRemote();
 
@@ -496,7 +496,7 @@ public class BeginAnalysis extends Builder {
 
             configureBuildFilePublisher(build, slInfo.getBuildFilesFolders());
 
-            String mvnPluginVersionToUse = tryGetSlMvnPluginVersion(slInfo, logger);
+            String mvnPluginVersionToUse = tryGetSlMvnPluginVersion(slInfo, logger, additionalProps);
             if (!isValidVersion(mvnPluginVersionToUse)) {
                 //Don't integrate with maven if we can't decide our maven plugin version.
                 //Return true so we do it quietly.
@@ -572,43 +572,24 @@ public class BeginAnalysis extends Builder {
         }
         return Paths.get(path1, path2).toAbsolutePath().toString();
     }
-
-    private String getManualBuildName() {
-        BuildName.ManualBuildName manual = (BuildName.ManualBuildName) buildName;
-        String insertedBuildName = manual.getInsertedBuildName();
-        return insertedBuildName;
-    }
-
-    private String getFinalBuildName(AbstractBuild<?, ?> build, SeaLightsPluginInfo slInfo, Logger logger) throws IllegalStateException {
-
+    
+    private String getFinalBuildName(AbstractBuild<?, ?> build, Properties additionalProps, Logger logger) throws IllegalStateException {
         String finalBuildName = null;
+        if (additionalProps.getProperty("buildname") != null) {
+            finalBuildName = additionalProps.getProperty("buildname");
 
-        boolean hasBuildSessionId = !StringUtils.isNullOrEmpty(slInfo.getBuildSessionId());
-        boolean useNullBuildName = BuildNamingStrategy.LATEST_BUILD.equals(buildName.getBuildNamingStrategy()) ||
-                BuildNamingStrategy.EMPTY_BUILD.equals(buildName.getBuildNamingStrategy());
-        if (!hasBuildSessionId && useNullBuildName) {
-            if (!ExecutionType.TESTS_ONLY.equals(executionType)) {
-                throw new SeaLightsIllegalStateException(
-                        "Trying to report 'null' as 'Build Name'. This option is allowed only with execution type of '"
-                                + ExecutionType.TESTS_ONLY.getDisplayName() + "'.");
+            if ("SL_UPSTREAM_BUILD".equals(finalBuildName)) {
+                BuildName.UpstreamBuildName upstream = (BuildName.UpstreamBuildName) buildName;
+                String upstreamProjectName = upstream.getUpstreamProjectName();
+                finalBuildName = JenkinsUtils.getUpstreamBuildName(build, upstreamProjectName, logger);
             }
-            return null;
         }
-
-        if (BuildNamingStrategy.MANUAL.equals(buildName.getBuildNamingStrategy())) {
-            finalBuildName = getManualBuildName();
-
-        } else if (BuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy())) {
-            BuildName.UpstreamBuildName upstream = (BuildName.UpstreamBuildName) buildName;
-            String upstreamProjectName = upstream.getUpstreamProjectName();
-            finalBuildName = JenkinsUtils.getUpstreamBuildName(build, upstreamProjectName, logger);
-        }
-
         if (StringUtils.isNullOrEmpty(finalBuildName)) {
-            return String.valueOf(build.getNumber());
+            finalBuildName = String.valueOf(build.getNumber());
         }
 
         return finalBuildName;
+
     }
 
     private SeaLightsPluginInfo createSeaLightsPluginInfo(
@@ -626,25 +607,29 @@ public class BeginAnalysis extends Builder {
         String workingDir = ws.getRemote();
         slInfo.setEnabled(true);
 
-        slInfo.setBuildName(getFinalBuildName(build, slInfo, logger));
+        slInfo.setBuildName(getFinalBuildName(build, additionalProps, logger));
 
         if (workspacepath != null && !"".equals(workspacepath))
             slInfo.setWorkspacepath(workspacepath);
         else
             slInfo.setWorkspacepath(workingDir);
 
-        slInfo.setAppName(JenkinsUtils.resolveEnvVarsInString(envVars, appName));
+        slInfo.setAppName(JenkinsUtils.resolveEnvVarsInString(envVars,
+                additionalProps.get("appname") != null ? additionalProps.get("appname").toString() : null));
         slInfo.setModuleName(moduleName);
-        slInfo.setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars, branch));
+        slInfo.setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars,
+                additionalProps.get("branch") != null ? additionalProps.get("branch").toString() : null));
         slInfo.setFilesIncluded(filesIncluded);
         slInfo.setFilesExcluded(filesExcluded);
         slInfo.setRecursive(recursive);
-        slInfo.setPackagesIncluded(packagesIncluded);
-        slInfo.setPackagesExcluded(packagesExcluded);
+        slInfo.setPackagesIncluded(additionalProps.get("packagesincluded") != null ?
+                additionalProps.get("packagesincluded").toString() : null);
+        slInfo.setPackagesExcluded(additionalProps.get("packagesexcluded") != null ?
+                additionalProps.get("packagesexcluded").toString() : null);
         slInfo.setClassLoadersExcluded(classLoadersExcluded);
-        slInfo.setListenerJar(testListenerJar);
+        slInfo.setListenerJar(additionalProps.getProperty("testlistenerjar"));
         slInfo.setListenerConfigFile(testListenerConfigFile);
-        slInfo.setScannerJar(buildScannerJar);
+        slInfo.setScannerJar(additionalProps.getProperty("buildscannerjar"));
         slInfo.setBuildStrategy(buildStrategy);
         slInfo.setEnvironment(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
         slInfo.setTestStage(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
@@ -688,16 +673,8 @@ public class BeginAnalysis extends Builder {
             SeaLightsPluginInfo slInfo, Properties additionalProps) {
 
         String createBuildSessionIdString = (String) additionalProps.get("createbuildsessionid");
-        boolean globalCreateBuildSessionId = getDescriptor().isCreateBuildSessionId();
-
-        if (StringUtils.isNullOrEmpty(createBuildSessionIdString)) {
-            // use createBuildSessionId checkbox from global settings
-            slInfo.setCreateBuildSessionId(globalCreateBuildSessionId);
-        } else {
-            // use override value for this step
             boolean shouldUseCreateBuildSessionId = Boolean.valueOf(createBuildSessionIdString);
             slInfo.setCreateBuildSessionId(shouldUseCreateBuildSessionId);
-        }
     }
 
     private void setGlobalConfiguration(Logger logger, SeaLightsPluginInfo slInfo, Properties additionalProps, EnvVars envVars) {
@@ -741,12 +718,6 @@ public class BeginAnalysis extends Builder {
 
         // set proxy
         String proxy = (String) additionalProps.get("proxy");
-        if (StringUtils.isNullOrEmpty(proxy)) {
-            proxy = override_proxy;
-            if (StringUtils.isNullOrEmpty(proxy)) {
-                proxy = getDescriptor().getProxy();
-            }
-        }
         slInfo.setProxy(proxy);
 
         String filesstorage = resolveFilesStorage(additionalProps, envVars);
@@ -981,7 +952,6 @@ public class BeginAnalysis extends Builder {
             url = json.getString("url");
             proxy = json.getString("proxy");
             filesStorage = json.getString("filesStorage");
-            createBuildSessionId = json.getBoolean("createBuildSessionId");
             toolsPathOnMaster = json.getString("toolsPathOnMaster");
             save();
             return super.configure(req, json);

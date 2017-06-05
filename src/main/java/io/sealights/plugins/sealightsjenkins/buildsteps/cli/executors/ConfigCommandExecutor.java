@@ -2,7 +2,11 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
+import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.CleanupManager;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.ConfigCommandArguments;
 import io.sealights.plugins.sealightsjenkins.utils.*;
@@ -141,9 +145,14 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
 
     @Override
     public void addAdditionalArguments(List<String> commandsList) {
+        //TODO: description for other technologies
+        for(TechnologyOptions opt: configCommandArguments.getTechOptions()){
+            if(opt instanceof JavaOptions){
+                addArgumentKeyVal("packagesincluded", ((JavaOptions) opt).getPackagesIncluded(), commandsList);
+                addArgumentKeyVal("packagesexcluded", ((JavaOptions) opt).getPackagesExcluded(), commandsList);
+            }
+        }
         addArgumentKeyVal("buildsessionidfile", this.buildSessionIdFileOnMaster, commandsList);
-        addArgumentKeyVal("packagesincluded", configCommandArguments.getPackagesIncluded(), commandsList);
-        addArgumentKeyVal("packagesexcluded", configCommandArguments.getPackagesExcluded(), commandsList);
         commandsList.add("-enableNoneZeroErrorCode");
     }
 

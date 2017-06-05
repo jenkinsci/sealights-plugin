@@ -22,7 +22,6 @@ import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateExc
 import io.sealights.plugins.sealightsjenkins.utils.*;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -34,23 +33,22 @@ import java.util.Properties;
 @ExportedBean
 public class CLIRunner extends Builder {
 
-    private String buildSessionId;
-    private String appName;
-    private String branchName;
-    private CommandBuildName buildName;
-    private String labId;
-    private String additionalArguments;
+    private transient String buildSessionId;
+    private transient String appName;
+    private transient String branchName;
+    private transient CommandBuildName buildName;
+    private transient String additionalArguments;
+    private transient String labId;
     private BeginAnalysis beginAnalysis = new BeginAnalysis();
 
-    @DataBoundConstructor
     public CLIRunner(String buildSessionId, String appName, String branchName,
-                     CommandBuildName buildName, String labId, String additionalArguments) {
+                     CommandBuildName buildName, String additionalArguments, String labId) {
         this.buildSessionId = buildSessionId;
         this.appName = appName;
         this.branchName = branchName;
         this.buildName = buildName;
-        this.labId = labId;
         this.additionalArguments = additionalArguments;
+        this.labId = labId;
     }
 
     @Exported
@@ -94,16 +92,6 @@ public class CLIRunner extends Builder {
     }
 
     @Exported
-    public String getLabId() {
-        return labId;
-    }
-
-    @Exported
-    public void setLabId(String labId) {
-        this.labId = labId;
-    }
-
-    @Exported
     public BeginAnalysis getBeginAnalysis() {
         return beginAnalysis;
     }
@@ -123,6 +111,14 @@ public class CLIRunner extends Builder {
         this.additionalArguments = additionalArguments;
     }
 
+    public String getLabId() {
+        return labId;
+    }
+
+    public void setLabId(String labId) {
+        this.labId = labId;
+    }
+
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
         return true;
@@ -131,7 +127,6 @@ public class CLIRunner extends Builder {
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener,
                            CommandMode commandMode, CLIHandler cliHandler, Logger logger)
             throws IOException, InterruptedException {
-
         try {
             Properties additionalProps = PropertiesUtils.toProperties(additionalArguments);
             validateCommandMode(commandMode, additionalProps);

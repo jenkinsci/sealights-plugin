@@ -17,7 +17,7 @@ public class CommandExecutorsFactoryTest {
     public void createExecutor_withStartMode_shouldGetStartCommandExecutor() {
         //Arrange
         CommandExecutorsFactory factory = new CommandExecutorsFactory();
-        CommandMode mode = new CommandMode.StartView("");
+        CommandMode mode = createStartView();
         //Act
         ICommandExecutor executor = factory.createExecutor(nullLogger, createBaseCommandArguments(), createAbstractCommandArguments(mode));
         //Assert
@@ -29,7 +29,7 @@ public class CommandExecutorsFactoryTest {
     public void createExecutor_withEndMode_shouldGetEndCommandExecutor() {
         //Arrange
         CommandExecutorsFactory factory = new CommandExecutorsFactory();
-        CommandMode mode = new CommandMode.EndView();
+        CommandMode mode = createEndView();
         //Act
         ICommandExecutor executor = factory.createExecutor(nullLogger, createBaseCommandArguments(), createAbstractCommandArguments(mode));
         //Assert
@@ -41,7 +41,7 @@ public class CommandExecutorsFactoryTest {
     public void createExecutor_withUploadReportsMode_shouldGetUploadReportCommandExecutor() {
         //Arrange
         CommandExecutorsFactory factory = new CommandExecutorsFactory();
-        CommandMode mode = new CommandMode.UploadReportsView("", "", false, "");
+        CommandMode mode = new CommandMode.UploadReportsView("", "", "", "","");
         //Act
         ICommandExecutor executor = factory.createExecutor(nullLogger, createBaseCommandArguments(), createAbstractCommandArguments(mode));
         //Assert
@@ -53,7 +53,7 @@ public class CommandExecutorsFactoryTest {
     public void createExecutor_withExternalReportMode_shouldGetUploadReportCommandExecutor() {
         //Arrange
         CommandExecutorsFactory factory = new CommandExecutorsFactory();
-        CommandMode mode = new CommandMode.ExternalReportView("fake-report");
+        CommandMode mode = new CommandMode.ExternalReportView("fake-report","","");
         //Act
         ICommandExecutor executor = factory.createExecutor(nullLogger, createBaseCommandArguments(), createAbstractCommandArguments(mode));
         //Assert
@@ -65,7 +65,7 @@ public class CommandExecutorsFactoryTest {
     public void createExecutor_withConfigMode_shouldGetUploadReportCommandExecutor() {
         //Arrange
         CommandExecutorsFactory factory = new CommandExecutorsFactory();
-        CommandMode mode = new CommandMode.ConfigView("", "");
+        CommandMode mode = new CommandMode.ConfigView("", "",null,"","","",null);
         //Act
         ICommandExecutor executor = factory.createExecutor(nullLogger, createBaseCommandArguments(), createAbstractCommandArguments(mode));
         //Assert
@@ -113,12 +113,25 @@ public class CommandExecutorsFactoryTest {
     }
 
     private AbstractCommandArgument createAbstractCommandArguments() {
-        CommandMode mode = new CommandMode.StartView("");
+        CommandMode mode = createStartView();
         return createAbstractCommandArguments(mode);
     }
 
     private AbstractCommandArgument createAbstractCommandArguments(CommandMode mode) {
         ModeToArgumentsConverter converter = new ModeToArgumentsConverter();
         return converter.convert(mode);
+    }
+    
+    private CommandMode.StartView createStartView(){
+        String testStage="";
+        String buildSessionId ="fake-buildSessionId";
+        String additionalArguments ="key=value";
+        return new CommandMode.StartView(testStage,buildSessionId,additionalArguments);
+    }
+
+    private CommandMode.EndView createEndView(){
+        String buildSesionId = "fake-build-session";
+        String additionalArga = "key=value";
+        return new CommandMode.EndView(buildSesionId,additionalArga);
     }
 }

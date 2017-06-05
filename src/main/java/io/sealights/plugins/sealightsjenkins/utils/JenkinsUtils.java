@@ -3,10 +3,12 @@ package io.sealights.plugins.sealightsjenkins.utils;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Util;
-import hudson.model.AbstractBuild;
-import hudson.model.Cause;
+import hudson.model.*;
+import jenkins.model.Jenkins;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,5 +97,33 @@ public class JenkinsUtils {
         }
         String workingDir = ws.getRemote();
         return workingDir;
+    }
+
+    public String resolveCurrentJobName(Descriptor descriptor) throws UnsupportedEncodingException {
+        String descFullUrl = descriptor.getDescriptorFullUrl();
+        URLDecoder.decode(descFullUrl,"UTF-8");
+        String resolvedJobName = descFullUrl.substring(0, descFullUrl.lastIndexOf("/descriptor"));
+        resolvedJobName = resolvedJobName.substring(resolvedJobName.lastIndexOf("/") + 1);
+        return resolvedJobName;
+    }
+
+    /*
+    * this code currently not used we save the logic only because its was hard to find out how to get the job name
+    * */
+
+
+    public Job getCurrentJob(Descriptor descriptor){
+        try {
+            List<Job> items = Jenkins.getInstance().getItems(Job.class);
+            String currentJobName = resolveCurrentJobName(descriptor);
+            for (Job j : items) {
+                if (j.getName().equals(currentJobName)) {
+                    return j;
+                }
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 }

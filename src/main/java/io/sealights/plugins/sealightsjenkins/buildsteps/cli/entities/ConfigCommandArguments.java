@@ -1,23 +1,26 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities;
 
+import hudson.util.DescribableList;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.CommandMode;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
+
 /**
  * Created by shahar on 12/26/2016.
  */
 public class ConfigCommandArguments extends AbstractCommandArgument {
-    private String packagesIncluded;
-    private String packagesExcluded;
+    private DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> techOptions ;
 
-    public ConfigCommandArguments(String packagesIncluded, String packagesExcluded) {
-        this.packagesIncluded = packagesIncluded;
-        this.packagesExcluded = packagesExcluded;
+    public ConfigCommandArguments(DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> techOptions ) {
+        this.techOptions =techOptions;
     }
 
-    public String getPackagesIncluded() {
-        return packagesIncluded;
+    public DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> getTechOptions() {
+        return techOptions;
     }
 
-    public String getPackagesExcluded() {
-        return packagesExcluded;
+    public void setTechOptions(DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> techOptions) {
+        this.techOptions = techOptions;
     }
 
     @Override

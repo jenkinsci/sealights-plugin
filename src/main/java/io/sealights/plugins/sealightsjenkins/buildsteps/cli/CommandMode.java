@@ -3,15 +3,23 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionPoint;
+import hudson.Util;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
+import hudson.model.Saveable;
+import hudson.util.DescribableList;
+import io.sealights.plugins.sealightsjenkins.BeginAnalysis;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * This class holds the different command options and their arguments in the UI
@@ -19,9 +27,33 @@ import java.io.Serializable;
 public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Serializable {
 
     private final CommandModes currentMode;
+    private  String buildSessionId;
+    private  String additionalArguments;
 
-    private CommandMode(final CommandModes currentMode) {
+    private CommandMode(final CommandModes currentMode, final String buildSessionId, final String additionalArguments) {
         this.currentMode = currentMode;
+        this.buildSessionId = buildSessionId;
+        this.additionalArguments = additionalArguments;
+    }
+
+    @Exported
+    public void setBuildSessionId(String buildSessionId) {
+        this.buildSessionId = buildSessionId;
+    }
+
+    @Exported
+    public void setAdditionalArguments(String additionalArguments) {
+        this.additionalArguments = additionalArguments;
+    }
+
+    @Exported
+    public String getBuildSessionId() {
+        return buildSessionId;
+    }
+
+    @Exported
+    public String getAdditionalArguments() {
+        return additionalArguments;
     }
 
     @Exported
@@ -62,8 +94,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private String testStage;
 
         @DataBoundConstructor
-        public StartView(String testStage) {
-            super(CommandModes.Start);
+        public StartView(String testStage, String buildSessionId, String additionalArguments) {
+            super(CommandModes.Start, buildSessionId, additionalArguments);
             this.testStage = testStage;
         }
 
@@ -80,7 +112,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
             @Override
             public boolean isDefault() {
-                return true;
+                return false;
             }
 
             public StartDescriptor() {
@@ -93,8 +125,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     public static class EndView extends CommandMode {
 
         @DataBoundConstructor
-        public EndView() {
-            super(CommandModes.End);
+        public EndView(String buildSessionId, String additionalArguments) {
+            super(CommandModes.End, buildSessionId, additionalArguments);
         }
 
         @Extension
@@ -114,11 +146,12 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private String source;
 
         @DataBoundConstructor
-        public UploadReportsView(String reportFiles, String reportsFolders, boolean hasMoreRequests, String source) {
-            super(CommandModes.UploadReports);
+        public UploadReportsView(String reportFiles, String reportsFolders,
+                                 String source, String buildSessionId, String additionalArguments) {
+            super(CommandModes.UploadReports, buildSessionId, additionalArguments);
             this.reportFiles = reportFiles;
             this.reportsFolders = reportsFolders;
-            this.hasMoreRequests = hasMoreRequests;
+            this.hasMoreRequests = true;
             this.source = source;
         }
 
@@ -176,8 +209,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         }
 
         @DataBoundConstructor
-        public ExternalReportView(String report) {
-            super(CommandModes.ExternalReport);
+        public ExternalReportView(String report, String buildSessionId, String additionalArguments) {
+            super(CommandModes.ExternalReport, buildSessionId, additionalArguments);
             this.report = report;
         }
 
@@ -192,20 +225,89 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
     public static class ConfigView extends CommandMode {
 
-        private String packagesIncluded;
-        private String packagesExcluded;
+        private DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> techOptions;
+        private List<BeginAnalysis> branches;
+        private String appName;
+        private String branchName;
+        private CommandBuildName buildName;
+        private transient String packagesIncluded;
+        private transient String packagesExcluded;
+        private String labId;
 
-        @DataBoundConstructor
-        public ConfigView(String packagesIncluded, String packagesExcluded) {
-            super(CommandModes.Config);
-            this.packagesIncluded = packagesIncluded;
-            this.packagesExcluded = packagesExcluded;
+        public List<BeginAnalysis> getBranches() {
+            return branches;
         }
 
+        public void setBranches(List<BeginAnalysis> branches) {
+            this.branches = branches;
+        }
+
+        @DataBoundConstructor
+        public ConfigView(String appName, String branchName,
+                          CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments,
+                          List<TechnologyOptions> techOptions) {
+            super(CommandModes.Config, buildSessionId, additionalArguments);
+            this.appName = appName;
+            this.branchName = branchName;
+            this.buildName = buildName;
+            this.labId = labId;
+            this.techOptions = new DescribableList<>(Saveable.NOOP, techOptions);
+        }
+
+        public DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> getTechOptions() {
+            return techOptions;
+        }
+
+        public void setTechOptions(DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> techOptions) {
+            this.techOptions = techOptions;
+        }
+
+        @Exported
+        public String getAppName() {
+            return appName;
+        }
+
+        @Exported
+        public void setAppName(String appName) {
+            this.appName = appName;
+        }
+
+        @Exported
+        public String getBranchName() {
+            return branchName;
+        }
+
+        @Exported
+        public void setBranchName(String branchName) {
+            this.branchName = branchName;
+        }
+
+        @Exported
+        public CommandBuildName getBuildName() {
+            return buildName;
+        }
+
+        @Exported
+        public void setBuildName(CommandBuildName buildName) {
+            this.buildName = buildName;
+        }
+
+        @Exported
+        public String getLabId() {
+            return labId;
+        }
+
+        @Exported
+        public void setLabId(String labId) {
+            this.labId = labId;
+        }
+
+        @Exported
         public String getPackagesIncluded() {
             return packagesIncluded;
         }
 
+        @Exported
         public void setPackagesIncluded(String packagesIncluded) {
             this.packagesIncluded = packagesIncluded;
         }
@@ -229,8 +331,16 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             public ConfigDescriptor() {
                 super(ConfigView.class, CommandModes.Config.getDisplayName());
             }
-        }
 
+            public DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> getTechnologiesDescriptors() {
+                return TechnologyOptionsDescriptor.all();
+            }
+
+            public DescriptorExtensionList<CommandBuildName, CommandBuildName.CommandBuildNameDescriptor> getBuildNameDescriptorList() {
+                return Jenkins.getInstance().getDescriptorList(CommandBuildName.class);
+            }
+        }
     }
+
 
 }

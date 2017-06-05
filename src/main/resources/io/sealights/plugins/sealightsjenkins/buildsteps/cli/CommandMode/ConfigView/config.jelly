@@ -1,15 +1,37 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <f:advanced title="Java options">
-        <f:entry title="Monitored Application Packages" field="packagesIncluded"
-                 description="Java packages that will be analyzed by SeaLights. Supports wildcards (* = any string, ? = any character). For example: 'com.example.*'">
-            <f:textbox value="${packagesIncluded}" default="com.example.*"/>
-        </f:entry>
 
-        <f:entry title="Unmonitored Application Packages" field="packagesExcluded"
-                 description="Java packages to exclude from SeaLights' analysis. Supports wildcards (* = any string, ? = any character).">
-            <f:textbox value="${packagesExcluded}"/>
+    <f:entry title="${%Technologies Options}">
+        <f:hetero-list name="techOptions" items="${instance.techOptions}" descriptors="${descriptor.technologiesDescriptors}"
+                       hasHeader="true" oneEach="true"/>
+    </f:entry>
+
+    <f:entry title="App Name" field="appName">
+        <f:textbox value="${appName}" default="$${JOB_NAME}"/>
+    </f:entry>
+
+    <f:entry title="Branch Name" field="branchName">
+        <f:textbox value="${branchName}" default="$${GIT_BRANCH}"/>
+    </f:entry>
+
+    <f:dropdownList name="buildName" title="Build Name">
+        <j:forEach var="currentDescriptor" items="${descriptor.buildNameDescriptorList}" varStatus="loop">
+            <f:dropdownListBlock title="${currentDescriptor.displayName}" value="${loop.index}"
+                                 selected="${currentDescriptor == instance.buildName.descriptor || (instance.buildName.descriptor == null &amp;&amp; currentDescriptor.default)}"
+                                 staplerClass="${currentDescriptor.clazz.name}">
+                <j:set var="instance" value="${instance.buildName}"/>
+                <j:set var="descriptor" value="${instance.descriptor}"/>
+                <st:include page="${currentDescriptor.configPage}" from="${currentDescriptor}"/>
+            </f:dropdownListBlock>
+        </j:forEach>
+    </f:dropdownList>
+    <f:advanced title="SeaLights CLI Advanced">
+        <f:entry title="Build Session Id" field="buildSessionId">
+            <f:textbox value="${buildSessionId}" />
+        </f:entry>
+        <f:entry title="${%Additional Arguments}" field="additionalArguments">
+            <f:expandableTextbox value="${additionalArguments}"/>
         </f:entry>
     </f:advanced>
 </j:jelly>
