@@ -77,7 +77,7 @@ public class SealightsCLIBuildStep extends Builder {
             if (!StringUtils.isNullOrEmpty(cliRunner.getBranchName())) {
                 additionalArgs.append("branchname=" + cliRunner.getBranchName() + "\n");
             }
-            if (cliRunner.getBuildName()!=null) {
+            if (shouldAddBuildName()) {
                 additionalArgs.append("buildname=" + resolveBuildName(cliRunner.getBuildName()) + "\n");
             }
 
@@ -184,6 +184,10 @@ public class SealightsCLIBuildStep extends Builder {
 
         @Override
         public Builder newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+            JSONObject commandMode = (JSONObject) formData.get("commandMode");
+            if(!commandMode.containsKey("techOptions")){
+                commandMode.put("techOptions",new ArrayList<TechnologyOptions>());
+            }
             return req.bindJSON(SealightsCLIBuildStep.class, formData);
         }
 
@@ -221,5 +225,10 @@ public class SealightsCLIBuildStep extends Builder {
         if(CommandBuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
             return "SL_UPSTREAM_BUILD";
         return null;
+    }
+
+    private boolean shouldAddBuildName(){
+        return cliRunner.getBuildName() != null &&
+                cliRunner.getBuildName().getBuildNamingStrategy() != CommandBuildNamingStrategy.EMPTY_BUILD;
     }
 }
