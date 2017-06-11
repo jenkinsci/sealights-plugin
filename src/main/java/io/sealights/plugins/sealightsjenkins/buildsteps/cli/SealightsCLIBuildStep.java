@@ -19,6 +19,7 @@ import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.PropertiesUtils;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -185,6 +186,9 @@ public class SealightsCLIBuildStep extends Builder {
         @Override
         public Builder newInstance(StaplerRequest req, JSONObject formData) throws FormException {
             JSONObject commandMode = (JSONObject) formData.get("commandMode");
+            if(commandMode == null){
+                return null;
+            }
             if(!commandMode.containsKey("techOptions")){
                 commandMode.put("techOptions",new ArrayList<TechnologyOptions>());
             }
