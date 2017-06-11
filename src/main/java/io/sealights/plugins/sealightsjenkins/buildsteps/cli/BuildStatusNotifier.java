@@ -39,8 +39,10 @@ public class BuildStatusNotifier extends Notifier {
     private String branchName;
     private CommandBuildName buildName;
     private String additionalArguments;
-    private String reportTitle = "report";
+    private String reportTitle;
     private BeginAnalysis beginAnalysis = new BeginAnalysis();
+
+    private final String DEFAULT_REPORT_TITLE ="CI Status";
 
     /*
     * Start - For when working on slave
@@ -89,6 +91,9 @@ public class BuildStatusNotifier extends Notifier {
 
             // we creates a report file on the file system
             String reportFilePath = resolveReportFilePath(workingDir, logger);
+            if (StringUtils.isNullOrEmpty(reportTitle)){
+                reportTitle = DEFAULT_REPORT_TITLE;
+            }
             createReportFile(build.getResult(), build.getDuration(), reportFilePath, logger, reportTitle);
 
             logger.info("About to report build status.");
@@ -186,8 +191,8 @@ public class BuildStatusNotifier extends Notifier {
         return workingDir;
     }
 
-    private void createReportFile(final Result result, long duration, String fileName, Logger logger, String reportTitlr) {
-        Map reportMap = createReportMap(result, duration, reportTitlr);
+    private void createReportFile(final Result result, long duration, String fileName, Logger logger, String reportTitle) {
+        Map reportMap = createReportMap(result, duration, reportTitle);
         saveReportToFS(reportMap, fileName, logger);
     }
 

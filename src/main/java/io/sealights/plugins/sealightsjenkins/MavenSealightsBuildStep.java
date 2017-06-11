@@ -165,7 +165,7 @@ public class MavenSealightsBuildStep extends Builder {
             additionalArgs.append("packagesexcluded=" + beginAnalysis.getPackagesExcluded() + "\n");
         }
 
-        if (beginAnalysis.getBuildName() != null) {
+        if (shouldAddBuildName()) {
             additionalArgs.append("buildname=" + resolveBuildName(beginAnalysis.getBuildName()) + "\n");
         }
 
@@ -198,6 +198,11 @@ public class MavenSealightsBuildStep extends Builder {
         if (BuildNamingStrategy.JENKINS_UPSTREAM.equals(buildName.getBuildNamingStrategy()))
             return "SL_UPSTREAM_BUILD";
         return null;
+    }
+
+    private boolean shouldAddBuildName(){
+        return beginAnalysis.getBuildName() != null &&
+                beginAnalysis.getBuildName().getBuildNamingStrategy() != BuildNamingStrategy.EMPTY_BUILD;
     }
 
 
