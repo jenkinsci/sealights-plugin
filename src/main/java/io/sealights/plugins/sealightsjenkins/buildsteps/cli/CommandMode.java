@@ -251,7 +251,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
             this.branchName = branchName;
             this.buildName = buildName;
             this.labId = labId;
-            this.techOptions = new DescribableList<>(Saveable.NOOP, techOptions);
+            this.techOptions = new DescribableList<>(this.getDescriptor(), techOptions);
         }
 
         public DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> getTechOptions() {
