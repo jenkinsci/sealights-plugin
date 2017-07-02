@@ -60,7 +60,6 @@ public class SealightsCLIBuildStep extends Builder {
         CommandMode.ConfigView config = (CommandMode.ConfigView) commandMode;
         DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = config.getTechOptions();
         config.setTechOptions(technologyOptions);
-        commandMode=config;
         return this;
     }
 
