@@ -1,16 +1,17 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.CommandMode;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.AbstractCommandArgument;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandModes;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.utils.ModeToArgumentsConverter;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.NullLogger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 public class CommandExecutorsFactoryTest {
 
@@ -68,7 +69,9 @@ public class CommandExecutorsFactoryTest {
     public void createExecutor_withConfigMode_shouldGetUploadReportCommandExecutor() {
         //Arrange
         CommandExecutorsFactory factory = new CommandExecutorsFactory();
-        CommandMode mode = new CommandMode.ConfigView("", "",null,"","","",new ArrayList<TechnologyOptions>());
+        CommandMode mode = mock(CommandMode.ConfigView.class);
+        when(mode.getCurrentMode()).thenReturn(CommandModes.Config);
+
         //Act
         ICommandExecutor executor = factory.createExecutor(nullLogger, createBaseCommandArguments(), createAbstractCommandArguments(mode));
         //Assert
