@@ -17,4 +17,3 @@ target/*
 work/*
 *.orig
 src/test/cases/MavenIntegration/*/actual.xml
-
