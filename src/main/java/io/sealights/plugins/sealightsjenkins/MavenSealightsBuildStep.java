@@ -525,9 +525,6 @@ public class MavenSealightsBuildStep extends Builder {
         private volatile MavenInstallation[] installations = new MavenInstallation[0];
 
         public DescriptorImpl() {
-            if (this.installations.length == 0) {
-                getOriginalMavenInstallations();
-            }
 //            DESCRIPTOR = this;
 //            load();
         }
@@ -555,6 +552,7 @@ public class MavenSealightsBuildStep extends Builder {
         }
 
         public MavenInstallation[] getInstallations() {
+            getOriginalMavenInstallations();
             return this.installations;
         }
 
