@@ -11,7 +11,7 @@ import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 public class BuildNameResolver {
 
     public String getFinalBuildName(
-            AbstractBuild<?, ?> build, EnvVars envVars, CommandBuildName buildName, Logger logger) throws IllegalStateException {
+            AbstractBuild<?, ?> build, EnvVars envVars, CommandBuildName buildName,String buildSessionId, Logger logger) throws IllegalStateException {
 
         String finalBuildName = null;
 
@@ -29,7 +29,7 @@ public class BuildNameResolver {
             finalBuildName = JenkinsUtils.getUpstreamBuildName(build, upstreamProjectName, logger);
         }
 
-        if (StringUtils.isNullOrEmpty(finalBuildName)) {
+        if (StringUtils.isNullOrEmpty(finalBuildName) && StringUtils.isNullOrEmpty(buildSessionId)) {
             return String.valueOf(build.getNumber());
         }
 

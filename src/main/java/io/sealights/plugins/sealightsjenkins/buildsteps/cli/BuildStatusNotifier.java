@@ -272,7 +272,7 @@ public class BuildStatusNotifier extends Notifier {
         baseArgs.setAppName(resolveEnvVar(envVars, appName));
 
         BuildNameResolver buildNameResolver = new BuildNameResolver();
-        baseArgs.setBuildName(buildNameResolver.getFinalBuildName(build, envVars, buildName, logger));
+        baseArgs.setBuildName(buildNameResolver.getFinalBuildName(build, envVars, buildName, baseArgs.getBuildSessionId(), logger));
 
         baseArgs.setBranchName(resolveEnvVar(envVars, branchName));
 

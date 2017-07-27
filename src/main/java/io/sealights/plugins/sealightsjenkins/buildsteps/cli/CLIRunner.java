@@ -322,7 +322,7 @@ public class CLIRunner extends Builder {
         baseArgs.setAppName(resolveEnvVar(envVars, appName));
 
         BuildNameResolver buildNameResolver = new BuildNameResolver();
-        baseArgs.setBuildName(buildNameResolver.getFinalBuildName(build, envVars, buildName, logger));
+        baseArgs.setBuildName(buildNameResolver.getFinalBuildName(build, envVars, buildName, baseArgs.getBuildSessionId(), logger));
 
         baseArgs.setBranchName(resolveEnvVar(envVars, branchName));
         baseArgs.setLabId(resolveEnvVar(envVars, labId));
@@ -336,7 +336,7 @@ public class CLIRunner extends Builder {
 
     private void setDefaultValues() {
 
-        if (this.buildName == null)
+        if (this.buildName == null && this.buildSessionId == null)
             this.buildName = new CommandBuildName.DefaultBuildName();
     }
 
