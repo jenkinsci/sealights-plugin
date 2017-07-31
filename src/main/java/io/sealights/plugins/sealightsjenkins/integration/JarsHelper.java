@@ -10,7 +10,7 @@ import java.util.UUID;
  * Created by Nadav on 4/20/2016.
  */
 public class JarsHelper {
-    private static void copyInputStreamToFile(InputStream inputStream, File targetFile) throws IOException {
+    public static void copyInputStreamToFile(InputStream inputStream, File targetFile) throws IOException {
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(targetFile);
@@ -22,6 +22,7 @@ public class JarsHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         } finally {
             if (outputStream != null)
                 outputStream.close();

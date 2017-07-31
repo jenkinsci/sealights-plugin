@@ -1,5 +1,6 @@
 package io.sealights.plugins.sealightsjenkins.integration.upgrade;
 
+import io.sealights.plugins.sealightsjenkins.integration.JarsHelper;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeConfiguration;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeResponse;
 import io.sealights.plugins.sealightsjenkins.services.ApacheHttpClient;
@@ -8,14 +9,11 @@ import io.sealights.plugins.sealightsjenkins.utils.JsonSerializer;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.StreamUtils;
 import io.sealights.plugins.sealightsjenkins.utils.UrlBuilder;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 public class UpgradeProxy {
 
@@ -32,7 +30,7 @@ public class UpgradeProxy {
         logger.info("Trying to get recommended version. Url: '" + serverUrl + "'");
         ApacheHttpClient client = new ApacheHttpClient();
         HttpResponse httpResponse = client.getJson(
-                serverUrl, upgradeConfiguration.getProxy(), upgradeConfiguration.getToken(),true);
+                serverUrl, upgradeConfiguration.getProxy(), upgradeConfiguration.getToken(), true);
         String jsonOrServerError = StreamUtils.toString(httpResponse.getResponseStream());
         UpgradeResponse upgradeResponse = JsonSerializer.deserialize(jsonOrServerError, UpgradeResponse.class);
         return upgradeResponse;
@@ -59,14 +57,7 @@ public class UpgradeProxy {
             ApacheHttpClient client = new ApacheHttpClient();
             HttpResponse response = client.getFile(urlToAgent, upgradeConfiguration.getProxy(), upgradeConfiguration.getToken(), false);
             InputStream responseStream = response.getResponseStream();
-            FileOutputStream agentFile = new FileOutputStream(new File(destFile));
-            int inByte;
-            while ((inByte = responseStream.read()) != -1) {
-                agentFile.write(inByte);
-            }
-
-            responseStream.close();
-            agentFile.close();
+            JarsHelper.copyInputStreamToFile(responseStream, new File(destFile));
 
             if (!agentDestination.exists()) {
                 logger.error("Failed to download recommended agent.");
