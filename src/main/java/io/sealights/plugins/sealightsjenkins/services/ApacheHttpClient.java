@@ -23,14 +23,19 @@ public class ApacheHttpClient {
     private final String AUTHORIZATION_HEADER = "Authorization";
     private final String BEARER = "Bearer ";
 
-    public HttpResponse getJson(String url, String proxy, String token) throws IOException {
+    public HttpResponse getJson(String url, String proxy, String token, boolean fromSealights) throws IOException {
         HttpGet httpGet = new HttpGet(url);
-        return get(proxy, token, httpGet);
+        return get(proxy, token, httpGet, fromSealights);
     }
 
-    private HttpResponse get(String proxy, String token, HttpGet httpGet) throws IOException {
+    public HttpResponse getFile(String url, String proxy, String token, boolean fromSealights) throws IOException {
+        HttpGet httpGet = new HttpGet(url);
+        return get(proxy, token, httpGet, fromSealights);
+    }
+
+    private HttpResponse get(String proxy, String token, HttpGet httpGet, boolean fromSealights) throws IOException {
         CloseableHttpClient httpClient = createHttpClient(proxy);
-        if (!isNullOrEmpty(token)){
+        if (!isNullOrEmpty(token) && fromSealights){
             httpGet.setHeader(AUTHORIZATION_HEADER, BEARER + token);
         }
 
