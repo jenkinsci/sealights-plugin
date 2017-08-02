@@ -4,6 +4,7 @@ import io.sealights.plugins.sealightsjenkins.integration.JarsHelper;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeConfiguration;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeResponse;
 import io.sealights.plugins.sealightsjenkins.services.ApacheHttpClient;
+import io.sealights.plugins.sealightsjenkins.services.HttpRequest;
 import io.sealights.plugins.sealightsjenkins.services.HttpResponse;
 import io.sealights.plugins.sealightsjenkins.utils.JsonSerializer;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
@@ -29,8 +30,8 @@ public class UpgradeProxy {
         String serverUrl = createUrlToGetRecommendedVersion(componentName);
         logger.info("Trying to get recommended version. Url: '" + serverUrl + "'");
         ApacheHttpClient client = new ApacheHttpClient();
-        HttpResponse httpResponse = client.getJson(
-                serverUrl, upgradeConfiguration.getProxy(), upgradeConfiguration.getToken(), true);
+        HttpRequest request = new HttpRequest(serverUrl, upgradeConfiguration.getProxy(), upgradeConfiguration.getToken());
+        HttpResponse httpResponse = client.getJson(request);
         String jsonOrServerError = StreamUtils.toString(httpResponse.getResponseStream());
         UpgradeResponse upgradeResponse = JsonSerializer.deserialize(jsonOrServerError, UpgradeResponse.class);
         return upgradeResponse;
@@ -55,7 +56,8 @@ public class UpgradeProxy {
         try {
             File agentDestination = new File(destFile);
             ApacheHttpClient client = new ApacheHttpClient();
-            HttpResponse response = client.getFile(urlToAgent, upgradeConfiguration.getProxy(), upgradeConfiguration.getToken(), false);
+            HttpRequest request = new HttpRequest(urlToAgent, upgradeConfiguration.getProxy());
+            HttpResponse response = client.getFile(request);
             InputStream responseStream = response.getResponseStream();
             JarsHelper.copyInputStreamToFile(responseStream, new File(destFile));
 
