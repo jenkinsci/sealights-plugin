@@ -23,19 +23,19 @@ public class ApacheHttpClient {
     private final String AUTHORIZATION_HEADER = "Authorization";
     private final String BEARER = "Bearer ";
 
-    public HttpResponse getJson(String url, String proxy, String token, boolean fromSealights) throws IOException {
-        HttpGet httpGet = new HttpGet(url);
-        return get(proxy, token, httpGet, fromSealights);
+    public HttpResponse getJson(HttpRequest request) throws IOException {
+        HttpGet httpGet = new HttpGet(request.getUrl());
+        return get(request.getProxy(), request.getToken(), httpGet);
     }
 
-    public HttpResponse getFile(String url, String proxy, String token, boolean fromSealights) throws IOException {
-        HttpGet httpGet = new HttpGet(url);
-        return get(proxy, token, httpGet, fromSealights);
+    public HttpResponse getFile(HttpRequest request) throws IOException {
+        HttpGet httpGet = new HttpGet(request.getUrl());
+        return get(request.getProxy(), request.getToken(), httpGet);
     }
 
-    private HttpResponse get(String proxy, String token, HttpGet httpGet, boolean fromSealights) throws IOException {
+    private HttpResponse get(String proxy, String token, HttpGet httpGet) throws IOException {
         CloseableHttpClient httpClient = createHttpClient(proxy);
-        if (!isNullOrEmpty(token) && fromSealights){
+        if (!isNullOrEmpty(token) ){
             httpGet.setHeader(AUTHORIZATION_HEADER, BEARER + token);
         }
 
