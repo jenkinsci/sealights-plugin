@@ -718,6 +718,9 @@ public class BeginAnalysis extends Builder {
 
         // set proxy
         String proxy = (String) additionalProps.get("proxy");
+        if(StringUtils.isNullOrEmpty(proxy)){
+            proxy = getDescriptor().getProxy();
+        }
         slInfo.setProxy(proxy);
 
         String filesstorage = resolveFilesStorage(additionalProps, envVars);
