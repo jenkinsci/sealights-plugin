@@ -24,6 +24,7 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
     private static String BUILD_SESSION_ID_ENV_VAR = "SL_BUILD_SESSION_ID";
     private static String BUILD_SESSION_ID_FILE_ENV_VAR = "SL_BUILD_SESSION_ID_FILE";
     private static String BUILD_SESSION_ID_FILE_NAME = "buildSessionId.txt";
+    private static String DEFAULT_PACKAGES_INCLUDED = "com.example.*";
 
     private String buildSessionIdFileOnMaster = null;
     private String buildSessionIdFileOnSlave = null;
@@ -145,11 +146,15 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
 
     @Override
     public void addAdditionalArguments(List<String> commandsList) {
-        //TODO: description for other technologies
-        for(TechnologyOptions opt: configCommandArguments.getTechOptions()){
-            if(opt instanceof JavaOptions){
-                addArgumentKeyVal("packagesincluded", ((JavaOptions) opt).getPackagesIncluded(), commandsList);
-                addArgumentKeyVal("packagesexcluded", ((JavaOptions) opt).getPackagesExcluded(), commandsList);
+        if(configCommandArguments.getTechOptions().size() == 0){
+            addArgumentKeyVal("packagesincluded", DEFAULT_PACKAGES_INCLUDED, commandsList);
+        }else {
+            //TODO: description for other technologies
+            for (TechnologyOptions opt : configCommandArguments.getTechOptions()) {
+                if (opt instanceof JavaOptions) {
+                    addArgumentKeyVal("packagesincluded", ((JavaOptions) opt).getPackagesIncluded(), commandsList);
+                    addArgumentKeyVal("packagesexcluded", ((JavaOptions) opt).getPackagesExcluded(), commandsList);
+                }
             }
         }
         addArgumentKeyVal("buildsessionidfile", this.buildSessionIdFileOnMaster, commandsList);
