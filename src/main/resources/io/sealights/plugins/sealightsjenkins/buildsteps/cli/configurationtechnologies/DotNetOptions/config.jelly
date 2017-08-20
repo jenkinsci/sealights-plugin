@@ -10,4 +10,14 @@
              description="Namespaces to exclude from SeaLights' analysis. Supports wildcards (* = any string, ? = any character).">
         <f:textbox value="${namespacesExcluded}"/>
     </f:entry>
+
+    <f:entry title="Monitored File patterns" field="includedFilePatterns"
+             description="File patterns that will be analyzed by SeaLights. Supports wildcards (* = any string, ? = any character). For example: 'file.dll'">
+        <f:textbox value="${includedFilePatterns}" default="*.dll"/>
+    </f:entry>
+
+    <f:entry title="Unmonitored File patterns" field="excludedFilePatterns"
+             description="File patterns to exclude from SeaLights' analysis. Supports wildcards (* = any string, ? = any character).">
+        <f:textbox value="${excludedFilePatterns}"/>
+    </f:entry>
 </j:jelly>

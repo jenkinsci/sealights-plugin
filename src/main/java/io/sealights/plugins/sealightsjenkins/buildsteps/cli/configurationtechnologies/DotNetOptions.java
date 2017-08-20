@@ -8,34 +8,51 @@ import hudson.model.AbstractProject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
-public class DotNetOptions /*extends TechnologyOptions*/ {
+public class DotNetOptions extends TechnologyOptions{
+
     private String namespacesIncluded;
     private String namespacesExcluded;
+    private String includedFilePatterns;
+    private String excludedFilePatterns;
 
     @DataBoundConstructor
-    public DotNetOptions(String namespacesIncluded, String namespacesExcluded) {
+    public DotNetOptions(String namespacesIncluded, String namespacesExcluded, String includedFilePatterns, String excludedFilePatterns) {
         this.namespacesIncluded = namespacesIncluded;
         this.namespacesExcluded = namespacesExcluded;
+        this.includedFilePatterns = includedFilePatterns;
+        this.excludedFilePatterns = excludedFilePatterns;
     }
 
-    @Exported
     public String getNamespacesIncluded() {
         return namespacesIncluded;
     }
 
-    @Exported
     public void setNamespacesIncluded(String namespacesIncluded) {
         this.namespacesIncluded = namespacesIncluded;
     }
 
-    @Exported
     public String getNamespacesExcluded() {
         return namespacesExcluded;
     }
 
-    @Exported
     public void setNamespacesExcluded(String namespacesExcluded) {
         this.namespacesExcluded = namespacesExcluded;
+    }
+
+    public String getIncludedFilePatterns() {
+        return includedFilePatterns;
+    }
+
+    public void setIncludedFilePatterns(String includedFilePatterns) {
+        this.includedFilePatterns = includedFilePatterns;
+    }
+
+    public String getExcludedFilePatterns() {
+        return excludedFilePatterns;
+    }
+
+    public void setExcludedFilePatterns(String excludedFilePatterns) {
+        this.excludedFilePatterns = excludedFilePatterns;
     }
 
     @Extension
@@ -45,4 +62,5 @@ public class DotNetOptions /*extends TechnologyOptions*/ {
             return "DotNet options";
         }
     }
+
 }
