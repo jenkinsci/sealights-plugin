@@ -2,11 +2,10 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
-import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.CleanupManager;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.DotNetOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.ConfigCommandArguments;
 import io.sealights.plugins.sealightsjenkins.utils.*;
@@ -152,8 +151,10 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
             //TODO: description for other technologies
             for (TechnologyOptions opt : configCommandArguments.getTechOptions()) {
                 if (opt instanceof JavaOptions) {
-                    addArgumentKeyVal("packagesincluded", ((JavaOptions) opt).getPackagesIncluded(), commandsList);
-                    addArgumentKeyVal("packagesexcluded", ((JavaOptions) opt).getPackagesExcluded(), commandsList);
+                    handleIncludedExcludeJava(opt, commandsList);
+                }
+                if(opt instanceof  DotNetOptions){
+                    handleIncludedExcludeDotNet(opt, commandsList);
                 }
             }
         }
@@ -168,5 +169,17 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
 
     public void setJenkinsUtils(JenkinsUtils jenkinsUtils) {
         this.jenkinsUtils = jenkinsUtils;
+    }
+
+    private void handleIncludedExcludeJava(TechnologyOptions opt, List<String> commandsList){
+        addArgumentKeyVal("packagesincluded", ((JavaOptions) opt).getPackagesIncluded(), commandsList);
+        addArgumentKeyVal("packagesexcluded", ((JavaOptions) opt).getPackagesExcluded(), commandsList);
+    }
+    private void handleIncludedExcludeDotNet(TechnologyOptions opt, List<String> commandsList){
+        addArgumentKeyVal("includedNamespaces", ((DotNetOptions) opt).getNamespacesIncluded(), commandsList);
+        addArgumentKeyVal("excludedNamespaces", ((DotNetOptions) opt).getNamespacesExcluded(), commandsList);
+        addArgumentKeyVal("includedFilePatterns", ((DotNetOptions) opt).getIncludedFilePatterns(), commandsList);
+        addArgumentKeyVal("excludedFilePatterns", ((DotNetOptions) opt).getExcludedFilePatterns(), commandsList);
+
     }
 }
