@@ -50,6 +50,12 @@
                         <build>someBuildInfo</build>
                         <plugin>somPluginInfo</plugin>
                     </metadata>
+                    <sealightsJvmParams>
+                        <param>value</param>
+                    </sealightsJvmParams>
+                    <buildScannerParams>
+                        <param>value</param>
+                    </buildScannerParams>
                 </configuration>
                 <executions>
                     <execution>
@@ -118,6 +124,12 @@
                                 <build>someBuildInfo</build>
                                 <plugin>somPluginInfo</plugin>
                             </metadata>
+                            <sealightsJvmParams>
+                                <param>value</param>
+                            </sealightsJvmParams>
+                            <buildScannerParams>
+                                <param>value</param>
+                            </buildScannerParams>
                         </configuration>
                         <executions>
                             <execution>

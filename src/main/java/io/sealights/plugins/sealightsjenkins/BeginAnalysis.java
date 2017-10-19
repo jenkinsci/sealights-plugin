@@ -44,6 +44,9 @@ import java.util.logging.Level;
  */
 @ExportedBean
 public class BeginAnalysis extends Builder {
+    private static final String SL_JVM_PARAMS_KEY ="sealightsJvmParams";
+    private static final String BUILD_SCANNER_PARAMS="buildScannerParams";
+    private static final String TEST_LISTENER_JVM_PARAMS="testListenerJvmParams";
 
     private String buildSessionId;
     private String appName;
@@ -471,6 +474,7 @@ public class BeginAnalysis extends Builder {
             Properties additionalProps = PropertiesUtils.toProperties(additionalArguments);
             Map<String, String> metadata = JenkinsUtils.createMetadataFromEnvVars(envVars);
 
+
             FilePath ws = build.getWorkspace();
             if (ws == null) {
                 return true;
@@ -653,6 +657,24 @@ public class BeginAnalysis extends Builder {
         slInfo.setRecursiveOnBuildFilesFolders(enableMultipleBuildFiles);
         slInfo.setBuildFilesFolders(foldersToSearch);
         slInfo.setBuildFilesPatterns(patternsToSearch);
+
+        if(additionalProps.get(SL_JVM_PARAMS_KEY)!= null){
+            String jvmParams = (String)additionalProps.get(SL_JVM_PARAMS_KEY);
+            Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(jvmParams);
+            slInfo.setSelightsJvmParams(paramsMap);
+        }
+
+        if(additionalProps.get(BUILD_SCANNER_PARAMS)!= null){
+            String scannerParams = (String)additionalProps.get(BUILD_SCANNER_PARAMS);
+            Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(scannerParams);
+            slInfo.setBuildScannerParams(paramsMap);
+        }
+
+        if(additionalProps.get(TEST_LISTENER_JVM_PARAMS)!= null){
+            String listenerParams = (String)additionalProps.get(TEST_LISTENER_JVM_PARAMS);
+            Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(listenerParams);
+            slInfo.setBuildScannerParams(paramsMap);
+        }
 
         return slInfo;
     }
@@ -1059,4 +1081,6 @@ public class BeginAnalysis extends Builder {
             return hasBuildSessionId || hasBuildSessionIdFile;
         }
     }
+
+
 }
