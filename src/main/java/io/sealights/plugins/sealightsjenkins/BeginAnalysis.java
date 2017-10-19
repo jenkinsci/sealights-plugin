@@ -666,11 +666,20 @@ public class BeginAnalysis extends Builder {
     private void trySetMapParams(SeaLightsPluginInfo slInfo, Properties additionalProps){
         for(String key: MAP_PARAMS_KEYS) {
             if (additionalProps.get(key) != null) {
-                String listenerParams = (String) additionalProps.get(key);
-                Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(listenerParams);
-                slInfo.setBuildScannerParams(paramsMap);
+                String params = (String) additionalProps.get(key);
+                Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(params);
+                setParamByKey(paramsMap, key, slInfo);
             }
         }
+    }
+
+    private void setParamByKey(Map<String, String> paramsMap, String key, SeaLightsPluginInfo slInfo){
+        if(key.equals(SL_JVM_PARAMS_KEY))
+            slInfo.setSelightsJvmParams(paramsMap);
+        if(key.equals(BUILD_SCANNER_PARAMS))
+            slInfo.setBuildScannerParams(paramsMap);
+        if(key.equals(TEST_LISTENER_JVM_PARAMS))
+            slInfo.setTestListenerJvmParams(paramsMap);
     }
 
     private String resolveBuildSessionId(Logger logger, SeaLightsPluginInfo slInfo, Properties additionalProps) {

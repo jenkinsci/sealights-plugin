@@ -96,11 +96,27 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void convertKeyValueStringToMap_multipleColon_shouldSplitByFirst(){
+    public void convertKeyValueStringToMap_colonInValue_shouldSplitByFirst(){
         //Arrange
         String original = "url:http://some.com";
         Map<String, String> expected = new HashMap<>();
         expected.put("url", "http://some.com");
+
+        //Act
+        Map<String, String> actual = StringUtils.convertKeyValueStringToMap(original);
+
+        //Assert
+        Assert.assertEquals(actual, expected);
+
+
+    }
+
+    @Test
+    public void convertKeyValueStringToMap_multipleColonInValue_shouldSplitByFirst(){
+        //Arrange
+        String original = "url:http://some.com:8080";
+        Map<String, String> expected = new HashMap<>();
+        expected.put("url", "http://some.com:8080");
 
         //Act
         Map<String, String> actual = StringUtils.convertKeyValueStringToMap(original);
