@@ -69,12 +69,15 @@ public class StringUtils {
         }
         return "..."+str.substring(str.length()-wantedLength);
     }
+
     public static Map<String, String> convertKeyValueStringToMap(String str){
         Map<String, String> result = new HashMap<>();
-        String[] pairs = str.split(PAIRES_DELIMITER);
-        for(int i = 0; i < pairs.length; i++){
-            String[] keyValArr = pairs[i].split(KEY_VALUE_DELIMITER,2);
-            result.put(keyValArr[0], keyValArr[1]);
+        if(!StringUtils.isNullOrEmpty(str)) {
+            String[] pairs = str.split(PAIRES_DELIMITER);
+            for (int i = 0; i < pairs.length; i++) {
+                String[] keyValArr = pairs[i].split(KEY_VALUE_DELIMITER, 2);
+                result.put(keyValArr[0], keyValArr[1]);
+            }
         }
         return result;
     }

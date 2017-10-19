@@ -47,7 +47,7 @@ public class BeginAnalysis extends Builder {
     private static final String SL_JVM_PARAMS_KEY ="sealightsJvmParams";
     private static final String BUILD_SCANNER_PARAMS="buildScannerParams";
     private static final String TEST_LISTENER_JVM_PARAMS="testListenerJvmParams";
-
+    private static final String[] MAP_PARAMS_KEYS ={SL_JVM_PARAMS_KEY, BUILD_SCANNER_PARAMS, TEST_LISTENER_JVM_PARAMS};
     private String buildSessionId;
     private String appName;
     private String moduleName;
@@ -658,25 +658,19 @@ public class BeginAnalysis extends Builder {
         slInfo.setBuildFilesFolders(foldersToSearch);
         slInfo.setBuildFilesPatterns(patternsToSearch);
 
-        if(additionalProps.get(SL_JVM_PARAMS_KEY)!= null){
-            String jvmParams = (String)additionalProps.get(SL_JVM_PARAMS_KEY);
-            Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(jvmParams);
-            slInfo.setSelightsJvmParams(paramsMap);
-        }
-
-        if(additionalProps.get(BUILD_SCANNER_PARAMS)!= null){
-            String scannerParams = (String)additionalProps.get(BUILD_SCANNER_PARAMS);
-            Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(scannerParams);
-            slInfo.setBuildScannerParams(paramsMap);
-        }
-
-        if(additionalProps.get(TEST_LISTENER_JVM_PARAMS)!= null){
-            String listenerParams = (String)additionalProps.get(TEST_LISTENER_JVM_PARAMS);
-            Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(listenerParams);
-            slInfo.setBuildScannerParams(paramsMap);
-        }
+        trySetMapParams(slInfo, additionalProps);
 
         return slInfo;
+    }
+
+    private void trySetMapParams(SeaLightsPluginInfo slInfo, Properties additionalProps){
+        for(String key: MAP_PARAMS_KEYS) {
+            if (additionalProps.get(key) != null) {
+                String listenerParams = (String) additionalProps.get(key);
+                Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(listenerParams);
+                slInfo.setBuildScannerParams(paramsMap);
+            }
+        }
     }
 
     private String resolveBuildSessionId(Logger logger, SeaLightsPluginInfo slInfo, Properties additionalProps) {
