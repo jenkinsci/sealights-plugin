@@ -266,6 +266,12 @@ public class MavenIntegrationTest {
         List<FileBackupInfo> files = new ArrayList<>();
         files.add(new FileBackupInfo(source, target));
         MavenIntegrationInfo info = new MavenIntegrationInfo(files, slInfo, specificVersion);
+        Map<String, String> sealightsJvmParams = new HashMap<>();
+        sealightsJvmParams.put("param", "value");
+        slInfo.setSelightsJvmParams(sealightsJvmParams);
+        Map<String, String> buildScannerParams = new HashMap<>();
+        buildScannerParams.put("param", "value");
+        slInfo.setBuildScannerParams(buildScannerParams);
         info.setSeaLightsPluginInfo(slInfo);
 
         return info;

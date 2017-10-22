@@ -1,13 +1,13 @@
 package io.sealights.plugins.sealightsjenkins.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class StringUtils {
 
     public static final String windows_newline = "\r\n";
     public static final String unix_newline = "\n";
+    private static final String PAIRES_DELIMITER = "\\$\\$";
+    private static final String KEY_VALUE_DELIMITER = ":";
 
     public static String join(String[] strings, char delimiter){
 
@@ -68,5 +68,17 @@ public class StringUtils {
             return str;
         }
         return "..."+str.substring(str.length()-wantedLength);
+    }
+
+    public static Map<String, String> convertKeyValueStringToMap(String str){
+        Map<String, String> result = new HashMap<>();
+        if(!StringUtils.isNullOrEmpty(str)) {
+            String[] pairs = str.split(PAIRES_DELIMITER);
+            for (int i = 0; i < pairs.length; i++) {
+                String[] keyValArr = pairs[i].split(KEY_VALUE_DELIMITER, 2);
+                result.put(keyValArr[0], keyValArr[1]);
+            }
+        }
+        return result;
     }
 }

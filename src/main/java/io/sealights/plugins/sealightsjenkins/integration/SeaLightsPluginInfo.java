@@ -59,6 +59,10 @@ public class SeaLightsPluginInfo {
     private String buildSessionId;
     private boolean createBuildSessionId;
 
+    private Map<String, String> selightsJvmParams;
+    private Map<String, String> buildScannerParams;
+    private Map<String, String> testListenerJvmParams;
+
     public boolean isRecursiveOnBuildFilesFolders() {
         return recursiveOnBuildFilesFolders;
     }
@@ -361,6 +365,30 @@ public class SeaLightsPluginInfo {
 
     public void setCreateBuildSessionId(boolean createBuildSessionId) {
         this.createBuildSessionId = createBuildSessionId;
+    }
+
+    public Map<String, String> getSelightsJvmParams() {
+        return selightsJvmParams;
+    }
+
+    public void setSelightsJvmParams(Map<String, String> selightsJvmParams) {
+        this.selightsJvmParams = selightsJvmParams;
+    }
+
+    public Map<String, String> getBuildScannerParams() {
+        return buildScannerParams;
+    }
+
+    public void setBuildScannerParams(Map<String, String> buildScannerParams) {
+        this.buildScannerParams = buildScannerParams;
+    }
+
+    public Map<String, String> getTestListenerJvmParams() {
+        return testListenerJvmParams;
+    }
+
+    public void setTestListenerJvmParams(Map<String, String> testListenerJvmParams) {
+        this.testListenerJvmParams = testListenerJvmParams;
     }
 }
 

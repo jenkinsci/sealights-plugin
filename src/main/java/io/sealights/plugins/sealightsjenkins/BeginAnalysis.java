@@ -44,7 +44,10 @@ import java.util.logging.Level;
  */
 @ExportedBean
 public class BeginAnalysis extends Builder {
-
+    private static final String SL_JVM_PARAMS_KEY ="sealightsJvmParams";
+    private static final String BUILD_SCANNER_PARAMS="buildScannerParams";
+    private static final String TEST_LISTENER_JVM_PARAMS="testListenerJvmParams";
+    private static final String[] MAP_PARAMS_KEYS ={SL_JVM_PARAMS_KEY, BUILD_SCANNER_PARAMS, TEST_LISTENER_JVM_PARAMS};
     private String buildSessionId;
     private String appName;
     private String moduleName;
@@ -471,6 +474,7 @@ public class BeginAnalysis extends Builder {
             Properties additionalProps = PropertiesUtils.toProperties(additionalArguments);
             Map<String, String> metadata = JenkinsUtils.createMetadataFromEnvVars(envVars);
 
+
             FilePath ws = build.getWorkspace();
             if (ws == null) {
                 return true;
@@ -654,7 +658,28 @@ public class BeginAnalysis extends Builder {
         slInfo.setBuildFilesFolders(foldersToSearch);
         slInfo.setBuildFilesPatterns(patternsToSearch);
 
+        trySetMapParams(slInfo, additionalProps);
+
         return slInfo;
+    }
+
+    private void trySetMapParams(SeaLightsPluginInfo slInfo, Properties additionalProps){
+        for(String key: MAP_PARAMS_KEYS) {
+            if (additionalProps.get(key) != null) {
+                String params = (String) additionalProps.get(key);
+                Map<String, String> paramsMap = StringUtils.convertKeyValueStringToMap(params);
+                setParamByKey(paramsMap, key, slInfo);
+            }
+        }
+    }
+
+    private void setParamByKey(Map<String, String> paramsMap, String key, SeaLightsPluginInfo slInfo){
+        if(key.equals(SL_JVM_PARAMS_KEY))
+            slInfo.setSelightsJvmParams(paramsMap);
+        if(key.equals(BUILD_SCANNER_PARAMS))
+            slInfo.setBuildScannerParams(paramsMap);
+        if(key.equals(TEST_LISTENER_JVM_PARAMS))
+            slInfo.setTestListenerJvmParams(paramsMap);
     }
 
     private String resolveBuildSessionId(Logger logger, SeaLightsPluginInfo slInfo, Properties additionalProps) {
@@ -1059,4 +1084,6 @@ public class BeginAnalysis extends Builder {
             return hasBuildSessionId || hasBuildSessionIdFile;
         }
     }
+
+
 }

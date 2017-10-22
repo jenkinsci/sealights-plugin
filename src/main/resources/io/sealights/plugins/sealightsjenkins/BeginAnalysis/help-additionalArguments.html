@@ -73,5 +73,33 @@
                 A folder where sealights files for this build will be kept (override the global 'Files storage' value for this build).
             </td>
         </tr>
+        <tr>
+            <td>
+                sealightsJvmParams
+            </td>
+            <td>
+                <!--we put 3 times '$' because html ignores one-->
+                Key value pairs of environments variables which will be added to both buildscanner and test listener
+                ('$$$'- separated pairs, ':'- separated key and value. i.e: sealightsJvmParams=param:value$$$anotherparam:anothervalue)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                buildScannerParams
+            </td>
+            <td>
+                Key value pairs of environments variables which will be added to  buildscanner
+                ('$$$'- separated pairs, ':'- separated key and value. i.e: buildScannerParams=param:value$$$anotherparam:anothervalue)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                testListenerJvmParams
+            </td>
+            <td>
+                Key value pairs of environments variables which will be added to  test listener
+                ('$$$'- separated pairs, ':'- separated key and value i.e: testListenerJvmParams=param:value$$$anotherparam:anothervalue)
+            </td>
+        </tr>
      </table>
 </div>

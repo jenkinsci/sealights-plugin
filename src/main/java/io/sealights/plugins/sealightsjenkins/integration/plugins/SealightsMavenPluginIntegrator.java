@@ -19,6 +19,9 @@ import static io.sealights.plugins.sealightsjenkins.utils.StringUtils.isNullOrEm
  * This class helps add the sealights-maven plugin to a pom file.
  */
 public class SealightsMavenPluginIntegrator extends PluginIntegrator {
+    private static final String METADATA_KEY = "metadata";
+    private static final String SEALIGHTS_JVM_PARAMS_KEY = "sealightsJvmParams";
+    private static final String BUILD_SCANNER_PARAMS_KEY="buildScannerParams";
 
     private String overridePluginVersion;
     private SeaLightsPluginInfo pluginInfo;
@@ -116,7 +119,15 @@ public class SealightsMavenPluginIntegrator extends PluginIntegrator {
 
         tryAppendValue(plugin, pluginInfo.getLogFolder(), "logFolder");
 
-        plugin = addMetadataToConfigurationInPluginText(plugin);
+        if(pluginInfo.getMetadata()!=null) {
+            plugin = addMetadataToConfigurationInPluginText(plugin);
+        }
+        if(pluginInfo.getSelightsJvmParams()!=null) {
+            plugin = addJvmParamsToConfigurationInPluginText(plugin);
+        }
+        if(pluginInfo.getBuildScannerParams()!=null) {
+            plugin = addBuildScannerParamsToConfigurationInPluginText(plugin);
+        }
 
         plugin.append("</configuration>");
 
@@ -125,14 +136,28 @@ public class SealightsMavenPluginIntegrator extends PluginIntegrator {
 
     private StringBuilder addMetadataToConfigurationInPluginText(StringBuilder plugin) {
         Map<String, String> metadata = new TreeMap<String, String>(pluginInfo.getMetadata());
-        if (!(metadata == null || metadata.isEmpty())) {
-            plugin.append("<metadata>");
-            Iterator it = metadata.entrySet().iterator();
+        return addMapConfigurationToPluginText(plugin,  METADATA_KEY, metadata);
+    }
+
+    private StringBuilder addJvmParamsToConfigurationInPluginText(StringBuilder plugin) {
+        Map<String, String> jvmParams = new TreeMap<String, String>(pluginInfo.getSelightsJvmParams());
+        return addMapConfigurationToPluginText(plugin,SEALIGHTS_JVM_PARAMS_KEY , jvmParams);
+    }
+
+    private StringBuilder addBuildScannerParamsToConfigurationInPluginText(StringBuilder plugin) {
+        Map<String, String> jvmParams = new TreeMap<String, String>(pluginInfo.getBuildScannerParams());
+        return addMapConfigurationToPluginText(plugin,BUILD_SCANNER_PARAMS_KEY , jvmParams);
+    }
+
+    private StringBuilder addMapConfigurationToPluginText(StringBuilder plugin, String key, Map<String, String> configMap) {
+        if (!(configMap == null || configMap.isEmpty())) {
+            plugin.append("<" + key +">");
+            Iterator it = configMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, String> pair = (Map.Entry) it.next();
                 tryAppendValue(plugin, pair.getValue(), pair.getKey());
             }
-            plugin.append("</metadata>");
+            plugin.append("</" +key + ">");
         }
 
         return plugin;
