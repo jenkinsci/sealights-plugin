@@ -170,6 +170,7 @@ public class SealightsMavenPluginIntegrator extends PluginIntegrator {
         if (shouldExecuteScanner)
             appendExecution(plugin, "a1", "build-scanner");
         appendExecution(plugin, "a2", "test-listener");
+        appendExecution(plugin, "a3", "prepare-test-listener");
         plugin.append("</executions>");
 
         return plugin;
