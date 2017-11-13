@@ -57,6 +57,12 @@
                                 <goal>test-listener</goal>
                             </goals>
                         </execution>
+                        <execution>
+                            <id>a3</id>
+                            <goals>
+                                <goal>prepare-test-listener</goal>
+                            </goals>
+                        </execution>
                     </executions>
                 </plugin>
             </plugins>
@@ -98,6 +104,12 @@
                         <id>a2</id>
                         <goals>
                             <goal>test-listener</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>a3</id>
+                        <goals>
+                            <goal>prepare-test-listener</goal>
                         </goals>
                     </execution>
                 </executions>
