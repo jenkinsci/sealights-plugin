@@ -122,13 +122,18 @@ public class SealightsMavenPluginIntegrator extends PluginIntegrator {
         if(pluginInfo.getMetadata()!=null) {
             plugin = addMetadataToConfigurationInPluginText(plugin);
         }
+
         if(pluginInfo.getSelightsJvmParams()!=null) {
             plugin = addJvmParamsToConfigurationInPluginText(plugin);
         }
+
         if(pluginInfo.getBuildScannerParams()!=null) {
             plugin = addBuildScannerParamsToConfigurationInPluginText(plugin);
         }
 
+        if(!pluginInfo.isIncludeResources()){
+            plugin.append("<includeResources>false</includeResources>");
+        }
         plugin.append("</configuration>");
 
         return plugin;

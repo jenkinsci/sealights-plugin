@@ -1,13 +1,16 @@
 package io.sealights.plugins.sealightsjenkins.integration;
 
+import hudson.EnvVars;
 import io.sealights.plugins.sealightsjenkins.BuildStrategy;
 import io.sealights.plugins.sealightsjenkins.ExecutionType;
 import io.sealights.plugins.sealightsjenkins.LogDestination;
 import io.sealights.plugins.sealightsjenkins.LogLevel;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
+import io.sealights.plugins.sealightsjenkins.utils.JenkinsUtils;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by Nadav on 4/19/2016.
@@ -29,6 +32,7 @@ public class SeaLightsPluginInfo {
     private String workspacepath;
     private String proxy;
     private boolean recursive;
+    private boolean includeResources;
 
     @Deprecated
     private String environment;
@@ -389,6 +393,30 @@ public class SeaLightsPluginInfo {
 
     public void setTestListenerJvmParams(Map<String, String> testListenerJvmParams) {
         this.testListenerJvmParams = testListenerJvmParams;
+    }
+
+    public boolean isIncludeResources() {
+        return includeResources;
+    }
+
+    public void setIncludeResources(boolean includeResources) {
+        this.includeResources = includeResources;
+    }
+
+    public void resolveFromAdditionalProperties(Properties additionalProps, EnvVars envVars){
+        setPackagesIncluded(additionalProps.get("packagesincluded") != null ?
+                additionalProps.get("packagesincluded").toString() : null);
+        setPackagesExcluded(additionalProps.get("packagesexcluded") != null ?
+                additionalProps.get("packagesexcluded").toString() : null);
+        setClassLoadersExcluded(classLoadersExcluded);
+        setListenerJar(additionalProps.getProperty("testlistenerjar"));
+        setScannerJar(additionalProps.getProperty("buildscannerjar"));
+
+        setAppName(JenkinsUtils.resolveEnvVarsInString(envVars,
+                additionalProps.get("appname") != null ? additionalProps.get("appname").toString() : null));
+        setModuleName(moduleName);
+        setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars,
+                additionalProps.get("branch") != null ? additionalProps.get("branch").toString() : null));
     }
 }
 

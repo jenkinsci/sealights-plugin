@@ -64,6 +64,11 @@
             <f:expandableTextbox value="${additionalArguments}"/>
         </f:entry>
 
+        <f:entry title="include sealights resources" field="includeResources"
+                 description="When checked, the build session id and token files will added to jar as resources.">
+            <f:checkbox default="true"/>
+        </f:entry>
+
         <f:advanced title="Multiple build files">
 
             <f:entry title="Enable" field="enableMultipleBuildFiles"

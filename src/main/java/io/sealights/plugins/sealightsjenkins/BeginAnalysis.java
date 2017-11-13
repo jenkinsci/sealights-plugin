@@ -87,6 +87,7 @@ public class BeginAnalysis extends Builder {
     private String override_url;
     private String override_proxy;
     private String additionalArguments;
+    private boolean includeResources;
 
     public BeginAnalysis() {
     }
@@ -104,7 +105,7 @@ public class BeginAnalysis extends Builder {
                          boolean logEnabled, LogDestination logDestination, String logFolder,
                          BuildStrategy buildStrategy, String slMvnPluginVersion,
                          BuildName buildName, ExecutionType executionType, String override_customerId,
-                         String override_url, String override_proxy, String additionalArguments)
+                         String override_url, String override_proxy, String additionalArguments, boolean includeResources)
             throws IOException {
 
         this.buildSessionId = buildSessionId;
@@ -145,6 +146,7 @@ public class BeginAnalysis extends Builder {
         this.slMvnPluginVersion = slMvnPluginVersion;
 
         this.additionalArguments = additionalArguments;
+        this.includeResources = includeResources;
     }
 
     private void setDefaultValuesForStrings(Logger logger) {
@@ -604,46 +606,8 @@ public class BeginAnalysis extends Builder {
         SeaLightsPluginInfo slInfo = new SeaLightsPluginInfo();
         setGlobalConfiguration(logger, slInfo, additionalProps, envVars);
 
-        slInfo.setBuildSessionId(resolveBuildSessionId(logger, slInfo, additionalProps));
 
-        slInfo.setMetadata(metadata);
-
-        String workingDir = ws.getRemote();
-        slInfo.setEnabled(true);
-
-        slInfo.setBuildName(getFinalBuildName(build, additionalProps, logger));
-
-        if (workspacepath != null && !"".equals(workspacepath))
-            slInfo.setWorkspacepath(workspacepath);
-        else
-            slInfo.setWorkspacepath(workingDir);
-
-        slInfo.setAppName(JenkinsUtils.resolveEnvVarsInString(envVars,
-                additionalProps.get("appname") != null ? additionalProps.get("appname").toString() : null));
-        slInfo.setModuleName(moduleName);
-        slInfo.setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars,
-                additionalProps.get("branch") != null ? additionalProps.get("branch").toString() : null));
-        slInfo.setFilesIncluded(filesIncluded);
-        slInfo.setFilesExcluded(filesExcluded);
-        slInfo.setRecursive(recursive);
-        slInfo.setPackagesIncluded(additionalProps.get("packagesincluded") != null ?
-                additionalProps.get("packagesincluded").toString() : null);
-        slInfo.setPackagesExcluded(additionalProps.get("packagesexcluded") != null ?
-                additionalProps.get("packagesexcluded").toString() : null);
-        slInfo.setClassLoadersExcluded(classLoadersExcluded);
-        slInfo.setListenerJar(additionalProps.getProperty("testlistenerjar"));
-        slInfo.setListenerConfigFile(testListenerConfigFile);
-        slInfo.setScannerJar(additionalProps.getProperty("buildscannerjar"));
-        slInfo.setBuildStrategy(buildStrategy);
-        slInfo.setEnvironment(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
-        slInfo.setTestStage(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
-        slInfo.setLabId(JenkinsUtils.resolveEnvVarsInString(envVars, labId));
-        slInfo.setLogEnabled(!(LogLevel.OFF.equals(logLevel)));
-        slInfo.setLogLevel(logLevel);
-        slInfo.setLogDestination(logDestination);
-        slInfo.setLogFolder(logFolder);
-        slInfo.setExecutionType(executionType);
-
+        String workingDir = resolveWorkspacePath(ws);
         String foldersToSearch;
         String patternsToSearch;
         if (enableMultipleBuildFiles) {
@@ -653,14 +617,41 @@ public class BeginAnalysis extends Builder {
             foldersToSearch = workingDir;
             patternsToSearch = "**/pom.xml";
         }
-
+        slInfo.setWorkspacepath(workingDir);
+        slInfo.setEnabled(true);
+        slInfo.setBuildName(getFinalBuildName(build, additionalProps, logger));
+        slInfo.setFilesIncluded(filesIncluded);
+        slInfo.setFilesExcluded(filesExcluded);
+        slInfo.setRecursive(recursive);
+        slInfo.setListenerConfigFile(testListenerConfigFile);
+        slInfo.setBuildStrategy(buildStrategy);
+        slInfo.setEnvironment(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
+        slInfo.setTestStage(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
+        slInfo.setLabId(JenkinsUtils.resolveEnvVarsInString(envVars, labId));
+        slInfo.setLogEnabled(!(LogLevel.OFF.equals(logLevel)));
+        slInfo.setLogLevel(logLevel);
+        slInfo.setLogDestination(logDestination);
+        slInfo.setLogFolder(logFolder);
+        slInfo.setExecutionType(executionType);
+        slInfo.resolveFromAdditionalProperties(additionalProps, envVars);
+        slInfo.setBuildSessionId(resolveBuildSessionId(logger, slInfo, additionalProps));
+        slInfo.setMetadata(metadata);
         slInfo.setRecursiveOnBuildFilesFolders(enableMultipleBuildFiles);
         slInfo.setBuildFilesFolders(foldersToSearch);
         slInfo.setBuildFilesPatterns(patternsToSearch);
+        slInfo.setIncludeResources(includeResources);
 
         trySetMapParams(slInfo, additionalProps);
 
         return slInfo;
+    }
+
+    private String resolveWorkspacePath(FilePath ws) {
+        String workingDir = ws.getRemote();
+        if (workspacepath != null && !"".equals(workspacepath)) {
+            return workspacepath;
+        }
+        return workingDir;
     }
 
     private void trySetMapParams(SeaLightsPluginInfo slInfo, Properties additionalProps){
