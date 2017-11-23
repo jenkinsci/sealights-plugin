@@ -273,6 +273,7 @@ public class MavenIntegrationTest {
         buildScannerParams.put("param", "value");
         slInfo.setBuildScannerParams(buildScannerParams);
         info.setSeaLightsPluginInfo(slInfo);
+        slInfo.setIncludeResources(true);
 
         return info;
     }

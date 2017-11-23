@@ -404,19 +404,12 @@ public class SeaLightsPluginInfo {
     }
 
     public void resolveFromAdditionalProperties(Properties additionalProps, EnvVars envVars){
-        setPackagesIncluded(additionalProps.get("packagesincluded") != null ?
-                additionalProps.get("packagesincluded").toString() : null);
-        setPackagesExcluded(additionalProps.get("packagesexcluded") != null ?
-                additionalProps.get("packagesexcluded").toString() : null);
-        setClassLoadersExcluded(classLoadersExcluded);
+        setPackagesIncluded(additionalProps.getProperty("packagesincluded"));
+        setPackagesExcluded(additionalProps.getProperty("packagesexcluded"));
         setListenerJar(additionalProps.getProperty("testlistenerjar"));
         setScannerJar(additionalProps.getProperty("buildscannerjar"));
-
-        setAppName(JenkinsUtils.resolveEnvVarsInString(envVars,
-                additionalProps.get("appname") != null ? additionalProps.get("appname").toString() : null));
-        setModuleName(moduleName);
-        setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars,
-                additionalProps.get("branch") != null ? additionalProps.get("branch").toString() : null));
+        setAppName(JenkinsUtils.resolveEnvVarsInString(envVars, additionalProps.getProperty("appname")));
+        setBranchName(JenkinsUtils.resolveEnvVarsInString(envVars, additionalProps.getProperty("branch")));
     }
 }
 

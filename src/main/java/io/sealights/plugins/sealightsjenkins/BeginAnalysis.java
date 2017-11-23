@@ -640,7 +640,8 @@ public class BeginAnalysis extends Builder {
         slInfo.setBuildFilesFolders(foldersToSearch);
         slInfo.setBuildFilesPatterns(patternsToSearch);
         slInfo.setIncludeResources(includeResources);
-
+        slInfo.setClassLoadersExcluded(classLoadersExcluded);
+        slInfo.setModuleName(moduleName);
         trySetMapParams(slInfo, additionalProps);
 
         return slInfo;
