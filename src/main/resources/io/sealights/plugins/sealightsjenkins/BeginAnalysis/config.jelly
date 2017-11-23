@@ -64,7 +64,7 @@
             <f:expandableTextbox value="${additionalArguments}"/>
         </f:entry>
 
-        <f:entry title="include sealights resources" field="includeResources"
+        <f:entry title="Include sealights resources" field="includeResources"
                  description="Add token and session ID files to the built artifact as resources.">
             <f:checkbox default="true"/>
         </f:entry>
