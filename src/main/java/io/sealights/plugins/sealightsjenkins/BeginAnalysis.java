@@ -334,6 +334,16 @@ public class BeginAnalysis extends Builder {
     }
 
     @Exported
+    public boolean isIncludeResources() {
+        return includeResources;
+    }
+
+    @Exported
+    public void setIncludeResources(boolean includeResources) {
+        this.includeResources = includeResources;
+    }
+
+    @Exported
     public String getSealightsMavenPluginInstallationArguments() {
         return sealightsMavenPluginInstallationArguments;
     }
