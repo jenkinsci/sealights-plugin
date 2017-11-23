@@ -49,6 +49,7 @@
                     <buildScannerParams>
                         <param>value</param>
                     </buildScannerParams>
+                    <includeResources>true</includeResources>
                 </configuration>
                 <executions>
                     <execution>

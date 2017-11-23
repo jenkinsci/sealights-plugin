@@ -54,6 +54,7 @@
                             <buildScannerParams>
                                 <param>value</param>
                             </buildScannerParams>
+                            <includeResources>true</includeResources>
                         </configuration>
                         <executions>
                             <execution>
@@ -137,6 +138,7 @@
                             <buildScannerParams>
                                 <param>value</param>
                             </buildScannerParams>
+                            <includeResources>true</includeResources>
                         </configuration>
                         <executions>
                             <execution>
@@ -195,6 +197,7 @@
                     <buildScannerParams>
                         <param>value</param>
                     </buildScannerParams>
+                    <includeResources>true</includeResources>
                 </configuration>
                 <executions>
                     <execution>
