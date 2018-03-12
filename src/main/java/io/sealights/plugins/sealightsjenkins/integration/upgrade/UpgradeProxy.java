@@ -8,7 +8,6 @@ import io.sealights.plugins.sealightsjenkins.services.ApacheHttpClient;
 import io.sealights.plugins.sealightsjenkins.services.HttpRequest;
 import io.sealights.plugins.sealightsjenkins.services.HttpResponse;
 import io.sealights.plugins.sealightsjenkins.utils.JsonSerializer;
-import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.StreamUtils;
 import io.sealights.plugins.sealightsjenkins.utils.UrlBuilder;
 
