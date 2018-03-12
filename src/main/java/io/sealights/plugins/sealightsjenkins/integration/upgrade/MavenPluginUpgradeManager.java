@@ -1,7 +1,8 @@
 package io.sealights.plugins.sealightsjenkins.integration.upgrade;
 
+import io.sealights.agents.infra.pomIntegration.SeaLightsPluginInfo;
+import io.sealights.onpremise.agents.java.agent.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
-import io.sealights.plugins.sealightsjenkins.integration.SeaLightsPluginInfo;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeConfiguration;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeResponse;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
@@ -14,9 +15,9 @@ import java.io.IOException;
 public class MavenPluginUpgradeManager {
 
     private SeaLightsPluginInfo slInfo;
-    private Logger logger;
+    private ILogger logger;
 
-    public MavenPluginUpgradeManager(SeaLightsPluginInfo slInfo, Logger logger) {
+    public MavenPluginUpgradeManager(SeaLightsPluginInfo slInfo, ILogger logger) {
         this.slInfo = slInfo;
         this.logger = logger;
     }
@@ -34,7 +35,7 @@ public class MavenPluginUpgradeManager {
         String customerId = slInfo.getCustomerId();
         String server = slInfo.getServerUrl();
 
-        TokenData tokenData = slInfo.getTokenData();
+        TokenData tokenData = TokenData.parse(slInfo.getToken());
         if (tokenData != null){
             token = tokenData.getToken();
             customerId = tokenData.getCustomerId();

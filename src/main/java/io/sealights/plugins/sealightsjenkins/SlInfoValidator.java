@@ -1,6 +1,6 @@
 package io.sealights.plugins.sealightsjenkins;
 
-import io.sealights.plugins.sealightsjenkins.integration.SeaLightsPluginInfo;
+import io.sealights.agents.infra.pomIntegration.SeaLightsPluginInfo;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 

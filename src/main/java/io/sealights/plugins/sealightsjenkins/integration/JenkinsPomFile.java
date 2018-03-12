@@ -3,6 +3,8 @@ package io.sealights.plugins.sealightsjenkins.integration;
 import hudson.FilePath;
 import hudson.model.Computer;
 import hudson.remoting.VirtualChannel;
+import io.sealights.agents.infra.pomIntegration.entities.PomFile;
+import io.sealights.onpremise.agents.java.agent.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import org.w3c.dom.Document;
@@ -20,7 +22,7 @@ import java.io.IOException;
  * Created by Nadav on 5/21/2016.
  */
 public class JenkinsPomFile extends PomFile {
-    public JenkinsPomFile(String filename, Logger log) {
+    public JenkinsPomFile(String filename, ILogger log) {
         super(filename, log);
     }
 
