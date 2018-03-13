@@ -50,4 +50,10 @@ public class JenkinsPomFile extends PomFile {
         Document doc = fp.act(new GetDocumentFileCallable());
         return doc;
     }
+
+    @Override
+    //TODO implement
+    public void backup(){
+
+    }
 }
