@@ -1,0 +1,15 @@
+com.sun.org.apache.xerces.internal.dom.DeferredDocumentImpl
+com.sun.org.apache.xerces.internal.dom.DocumentImpl
+com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl
+com.sun.org.apache.xerces.internal.dom.ParentNode
+com.sun.org.apache.xerces.internal.dom.ChildNode
+com.sun.org.apache.xerces.internal.dom.NodeImpl
+com.sun.org.apache.xerces.internal.dom.DeferredElementImpl
+com.sun.org.apache.xerces.internal.dom.ElementImpl
+com.sun.org.apache.xerces.internal.dom.DeferredTextImpl
+com.sun.org.apache.xerces.internal.dom.TextImpl
+com.sun.org.apache.xerces.internal.dom.CharacterDataImpl
+com.sun.org.apache.xerces.internal.dom.AttributeMap
+com.sun.org.apache.xerces.internal.dom.NamedNodeMapImpl
+com.sun.org.apache.xerces.internal.dom.DeferredAttrImpl
+com.sun.org.apache.xerces.internal.dom.AttrImpl
