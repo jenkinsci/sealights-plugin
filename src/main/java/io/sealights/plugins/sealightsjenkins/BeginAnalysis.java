@@ -11,13 +11,20 @@ import hudson.tasks.Builder;
 import hudson.util.DescribableList;
 import hudson.util.FormValidation;
 import hudson.util.XStream2;
+import io.sealights.agents.infra.pomIntegration.SeaLightsPluginInfo;
+import io.sealights.agents.infra.pomIntegration.entities.PomFile;
+import io.sealights.agents.infra.pomIntegration.enums.ExecutionType;
+import io.sealights.agents.infra.pomIntegration.enums.LogDestination;
+import io.sealights.agents.infra.pomIntegration.enums.LogLevel;
+import io.sealights.agents.infra.pomIntegration.integration.MavenIntegration;
+import io.sealights.agents.infra.pomIntegration.integration.MavenIntegrationInfo;
+import io.sealights.onpremise.agents.java.agent.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.entities.FileBackupInfo;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
 import io.sealights.plugins.sealightsjenkins.entities.ValidationError;
 import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateException;
-import io.sealights.plugins.sealightsjenkins.integration.MavenIntegration;
-import io.sealights.plugins.sealightsjenkins.integration.MavenIntegrationInfo;
-import io.sealights.plugins.sealightsjenkins.integration.SeaLightsPluginInfo;
+import io.sealights.plugins.sealightsjenkins.integration.JenkinsPomFile;
+import io.sealights.plugins.sealightsjenkins.integration.JenkinsSeaLightsPluginInfo;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.MavenPluginUpgradeManager;
 import io.sealights.plugins.sealightsjenkins.utils.*;
 import jenkins.model.Jenkins;
@@ -171,9 +178,6 @@ public class BeginAnalysis extends Builder {
 
         if (this.logLevel == null)
             this.logLevel = LogLevel.OFF;
-
-        if (this.buildStrategy == null)
-            this.buildStrategy = BuildStrategy.ONE_BUILD;
 
         if (this.buildName == null)
             this.buildName = new BuildName.DefaultBuildName();
@@ -453,7 +457,7 @@ public class BeginAnalysis extends Builder {
         }
     }
 
-    private String tryGetSlMvnPluginVersion(SeaLightsPluginInfo slInfo, Logger logger, Properties additionalProps) {
+    private String tryGetSlMvnPluginVersion(SeaLightsPluginInfo slInfo, ILogger logger, Properties additionalProps) {
 
         String recommendedVersion = additionalProps.getProperty("mvnpluginversion");
 
@@ -566,10 +570,10 @@ public class BeginAnalysis extends Builder {
         return pomPath;
     }
 
-    private void doMavenIntegration(Logger logger, SeaLightsPluginInfo slInfo, String mvnPluginVersionToUse) throws IOException, InterruptedException {
+    private void doMavenIntegration(ILogger logger, SeaLightsPluginInfo slInfo, String mvnPluginVersionToUse) throws IOException, InterruptedException {
 
         List<String> folders = Arrays.asList(slInfo.getBuildFilesFolders().split("\\s*,\\s*"));
-        List<FileBackupInfo> pomFiles = getPomFiles(folders, slInfo.getBuildFilesPatterns(), logger, pomPath);
+        List<PomFile> pomFiles = getPomFiles(folders, slInfo.getBuildFilesPatterns(), logger, pomPath);
 
         MavenIntegrationInfo info = new MavenIntegrationInfo(
                 pomFiles,
@@ -613,7 +617,7 @@ public class BeginAnalysis extends Builder {
             Properties additionalProps, Logger logger)
             throws SeaLightsIllegalStateException {
 
-        SeaLightsPluginInfo slInfo = new SeaLightsPluginInfo();
+        JenkinsSeaLightsPluginInfo slInfo = new JenkinsSeaLightsPluginInfo();
         setGlobalConfiguration(logger, slInfo, additionalProps, envVars);
 
 
@@ -634,7 +638,6 @@ public class BeginAnalysis extends Builder {
         slInfo.setFilesExcluded(filesExcluded);
         slInfo.setRecursive(recursive);
         slInfo.setListenerConfigFile(testListenerConfigFile);
-        slInfo.setBuildStrategy(buildStrategy);
         slInfo.setEnvironment(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
         slInfo.setTestStage(JenkinsUtils.resolveEnvVarsInString(envVars, testStage));
         slInfo.setLabId(JenkinsUtils.resolveEnvVarsInString(envVars, labId));
@@ -811,12 +814,12 @@ public class BeginAnalysis extends Builder {
             return false;
         }
 
-        slInfo.setTokenData(tokenData);
+        slInfo.setToken(token);
         return true;
     }
 
-    private List<FileBackupInfo> getPomFiles(List<String> folders, String patterns, Logger logger, String pomPath) throws IOException, InterruptedException {
-        List<FileBackupInfo> pomFiles = new ArrayList<>();
+    private List<PomFile> getPomFiles(List<String> folders, String patterns, ILogger logger, String pomPath) throws IOException, InterruptedException {
+        List<PomFile> pomFiles = new ArrayList<>();
         boolean isParentPomInList = false;
         VirtualChannel channel = Computer.currentComputer().getChannel();
         if (!patterns.startsWith("**" + File.separator))
@@ -828,13 +831,13 @@ public class BeginAnalysis extends Builder {
                 logger.debug("Adding pom:" + matchingPom);
                 if (matchingPom.equalsIgnoreCase(pomPath))
                     isParentPomInList = true;
-                pomFiles.add(new FileBackupInfo(matchingPom, null));
+                pomFiles.add(new JenkinsPomFile(matchingPom, logger));
             }
         }
 
 
         if (!isParentPomInList) {
-            pomFiles.add(new FileBackupInfo(pomPath, null));
+            pomFiles.add(new JenkinsPomFile(pomPath, logger));
         }
 
         return pomFiles;

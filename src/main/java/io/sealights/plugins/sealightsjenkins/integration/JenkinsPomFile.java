@@ -3,6 +3,8 @@ package io.sealights.plugins.sealightsjenkins.integration;
 import hudson.FilePath;
 import hudson.model.Computer;
 import hudson.remoting.VirtualChannel;
+import io.sealights.agents.infra.pomIntegration.entities.PomFile;
+import io.sealights.onpremise.agents.java.agent.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import org.w3c.dom.Document;
@@ -20,7 +22,7 @@ import java.io.IOException;
  * Created by Nadav on 5/21/2016.
  */
 public class JenkinsPomFile extends PomFile {
-    public JenkinsPomFile(String filename, Logger log) {
+    public JenkinsPomFile(String filename, ILogger log) {
         super(filename, log);
     }
 
@@ -47,5 +49,16 @@ public class JenkinsPomFile extends PomFile {
         FilePath fp = new FilePath(channel, this.filename);
         Document doc = fp.act(new GetDocumentFileCallable());
         return doc;
+    }
+
+    @Override
+    //TODO implement
+    public void backup() throws Exception {
+        String backupFile = this.filename + BACKUP_EXTENSION;
+        log.info("JenkinsPomFile - creating a back up file: " + backupFile);
+        VirtualChannel channel = Computer.currentComputer().getChannel();
+        FilePath sourceFile = new FilePath(channel, this.filename);
+        FilePath targetFile = new FilePath(channel, backupFile);
+        sourceFile.copyTo(targetFile);
     }
 }

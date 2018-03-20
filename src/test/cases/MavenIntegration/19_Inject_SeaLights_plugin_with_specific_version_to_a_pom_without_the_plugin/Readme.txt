@@ -1,1 +1,0 @@
-In this test a pom exists without Sealights plugin. The test should verify that Sealights plugin is added with specific version.

@@ -1,5 +1,6 @@
 package io.sealights.plugins.sealightsjenkins.integration.upgrade;
 
+import io.sealights.onpremise.agents.java.agent.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.integration.JarsHelper;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeConfiguration;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeResponse;
@@ -7,7 +8,6 @@ import io.sealights.plugins.sealightsjenkins.services.ApacheHttpClient;
 import io.sealights.plugins.sealightsjenkins.services.HttpRequest;
 import io.sealights.plugins.sealightsjenkins.services.HttpResponse;
 import io.sealights.plugins.sealightsjenkins.utils.JsonSerializer;
-import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.StreamUtils;
 import io.sealights.plugins.sealightsjenkins.utils.UrlBuilder;
 
@@ -19,9 +19,9 @@ import java.net.MalformedURLException;
 public class UpgradeProxy {
 
     protected UpgradeConfiguration upgradeConfiguration;
-    private Logger logger;
+    private ILogger logger;
 
-    public UpgradeProxy(UpgradeConfiguration upgradeConfiguration, Logger logger) {
+    public UpgradeProxy(UpgradeConfiguration upgradeConfiguration, ILogger logger) {
         this.upgradeConfiguration = upgradeConfiguration;
         this.logger = logger;
     }
