@@ -53,7 +53,12 @@ public class JenkinsPomFile extends PomFile {
 
     @Override
     //TODO implement
-    public void backup(){
-
+    public void backup() throws Exception {
+        String backupFile = this.filename + BACKUP_EXTENSION;
+        log.info("JenkinsPomFile - creating a back up file: " + backupFile);
+        VirtualChannel channel = Computer.currentComputer().getChannel();
+        FilePath sourceFile = new FilePath(channel, this.filename);
+        FilePath targetFile = new FilePath(channel, backupFile);
+        sourceFile.copyTo(targetFile);
     }
 }
