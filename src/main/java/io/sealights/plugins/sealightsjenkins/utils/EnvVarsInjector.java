@@ -13,7 +13,7 @@ public class EnvVarsInjector {
 
     private HashMap<String, String> additionalEnvVars = new HashMap<String, String>();
     private AbstractBuild<?, ?> build;
-    private Logger logger;
+    private transient Logger logger;
 
     public EnvVarsInjector(AbstractBuild<?, ?> build, Logger logger) {
         this.build = build;
