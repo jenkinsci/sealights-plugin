@@ -16,7 +16,7 @@ import java.util.Set;
 public class VariableInjectionAction implements EnvironmentContributingAction {
 
     private Map<String, String> additionalEnvVars;
-    private Logger logger;
+    private transient Logger logger;
 
     public VariableInjectionAction(Map<String, String> additionalEnvVars, Logger logger) {
         this.additionalEnvVars = additionalEnvVars;
