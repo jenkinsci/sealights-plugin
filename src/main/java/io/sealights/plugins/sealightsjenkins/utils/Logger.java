@@ -13,10 +13,10 @@ import java.io.StringWriter;
  */
 public class Logger implements ILogger {
     private String PREFIX;
-    private transient PrintStream printStream;
+    private static PrintStream printStream;
 
     public Logger(PrintStream printStream, String prefix) {
-        this.printStream = printStream;
+        Logger.printStream = printStream;
         this.PREFIX = prefix;
     }
 
