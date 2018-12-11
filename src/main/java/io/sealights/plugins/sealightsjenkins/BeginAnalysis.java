@@ -572,7 +572,7 @@ public class BeginAnalysis extends Builder {
     }
 
     private void doMavenIntegration(ILogger logger, SeaLightsPluginInfo slInfo, String mvnPluginVersionToUse) throws IOException, InterruptedException {
-        // Set build logger as actual logger in p[om integration process
+        // Set build logger as actual logger in pom integration process
         PomIntegrationLogger.setPluginLogger(logger);
         List<String> folders = Arrays.asList(slInfo.getBuildFilesFolders().split("\\s*,\\s*"));
         List<PomFile> pomFiles = getPomFiles(folders, slInfo.getBuildFilesPatterns(), logger, pomPath);
