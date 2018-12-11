@@ -13,6 +13,10 @@ import java.io.StringWriter;
  */
 public class Logger implements ILogger {
     private String PREFIX;
+
+    /* This member is static in order to avoid serialization
+      (see https://sealights.atlassian.net/browse/SLDEV-4430?filter=10625)
+    */
     private static PrintStream printStream;
 
     public Logger(PrintStream printStream, String prefix) {

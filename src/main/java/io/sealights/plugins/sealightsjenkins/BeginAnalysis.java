@@ -18,6 +18,7 @@ import io.sealights.agents.infra.pomIntegration.enums.LogDestination;
 import io.sealights.agents.infra.pomIntegration.enums.LogLevel;
 import io.sealights.agents.infra.pomIntegration.integration.MavenIntegration;
 import io.sealights.agents.infra.pomIntegration.integration.MavenIntegrationInfo;
+import io.sealights.agents.infra.pomIntegration.integration.PomIntegrationLogger;
 import io.sealights.onpremise.agents.java.agent.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.entities.FileBackupInfo;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
@@ -571,7 +572,8 @@ public class BeginAnalysis extends Builder {
     }
 
     private void doMavenIntegration(ILogger logger, SeaLightsPluginInfo slInfo, String mvnPluginVersionToUse) throws IOException, InterruptedException {
-
+        // Set build logger as actual logger in pom integration process
+        PomIntegrationLogger.setPluginLogger(logger);
         List<String> folders = Arrays.asList(slInfo.getBuildFilesFolders().split("\\s*,\\s*"));
         List<PomFile> pomFiles = getPomFiles(folders, slInfo.getBuildFilesPatterns(), logger, pomPath);
 
@@ -580,7 +582,7 @@ public class BeginAnalysis extends Builder {
                 slInfo,
                 mvnPluginVersionToUse
         );
-        MavenIntegration mavenIntegration = new MavenIntegration(logger, info);
+        MavenIntegration mavenIntegration = new MavenIntegration(info);
         mavenIntegration.integrate();
 
     }
@@ -592,7 +594,7 @@ public class BeginAnalysis extends Builder {
         }
         return Paths.get(path1, path2).toAbsolutePath().toString();
     }
-    
+
     private String getFinalBuildName(AbstractBuild<?, ?> build, Properties additionalProps, Logger logger) throws IllegalStateException {
         String finalBuildName = null;
         if (additionalProps.getProperty("buildname") != null) {

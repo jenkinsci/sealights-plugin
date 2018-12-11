@@ -23,7 +23,7 @@ import java.io.IOException;
  */
 public class JenkinsPomFile extends PomFile {
     public JenkinsPomFile(String filename, ILogger log) {
-        super(filename, log);
+        super(filename);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class JenkinsPomFile extends PomFile {
 
         String result = filePath.act(new SaveFileCallable(str));
         if (!StringUtils.isNullOrEmpty(result))
-            log.info("save - Result:" + result);
+            LOGGER.info("save - Result:" + result);
     }
 
     @Override
@@ -52,10 +52,9 @@ public class JenkinsPomFile extends PomFile {
     }
 
     @Override
-    //TODO implement
     public void backup() throws Exception {
         String backupFile = this.filename + BACKUP_EXTENSION;
-        log.info("JenkinsPomFile - creating a back up file: " + backupFile);
+        LOGGER.info("JenkinsPomFile - creating a back up file: " + backupFile);
         VirtualChannel channel = Computer.currentComputer().getChannel();
         FilePath sourceFile = new FilePath(channel, this.filename);
         FilePath targetFile = new FilePath(channel, backupFile);
