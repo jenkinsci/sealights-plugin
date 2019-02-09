@@ -110,10 +110,10 @@ public class FileUtils {
     }
 
     public static void tryDeleteFile(Logger logger, String filename) throws IOException, InterruptedException {
-        logger.info("Try deleting file: " + filename);
+        logger.info("Try deleting file or folder: " + filename);
         FilePath fpOnMaster = new FilePath(new File(filename));
         if (fpOnMaster.exists()) {
-            fpOnMaster.delete();
+            fpOnMaster.deleteRecursive();
         }
 
         if (Computer.currentComputer() instanceof SlaveComputer) {
@@ -122,7 +122,7 @@ public class FileUtils {
             logger.debug("Jenkins current computer is: " + Jenkins.MasterComputer.currentComputer().getName());
             FilePath filePathOnSlave = new FilePath(channel, filename);
             if (filePathOnSlave.exists()) {
-                filePathOnSlave.delete();
+                filePathOnSlave.deleteRecursive();
             }
         }
 

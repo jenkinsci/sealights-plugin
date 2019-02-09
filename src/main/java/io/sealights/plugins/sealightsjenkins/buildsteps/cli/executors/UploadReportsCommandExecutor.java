@@ -49,10 +49,10 @@ public class UploadReportsCommandExecutor extends AbstractCommandExecutor {
                 }
                 return true;
             } else {
-                logger.error("Failed to create SeaLights Build Session Id");
+                logger.error("Failed to upload report");
             }
         } catch (Exception e) {
-            logger.error("Failed to create SeaLights Build Session Id due to an error. Error:", e);
+            logger.error("Failed to upload report due to an error. Error:", e);
         }
 
         return false;
