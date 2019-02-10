@@ -156,10 +156,6 @@ public class CLIRunner extends Builder {
 
             return cliHandler.handle();
         } catch (Exception e) {
-            // for cases when property fields setup is invalid.
-            if (e instanceof SeaLightsIllegalStateException) {
-                throw e;
-            }
             logger.error("Error occurred while performing 'Sealights CLI'. Error: ", e);
         }
 
