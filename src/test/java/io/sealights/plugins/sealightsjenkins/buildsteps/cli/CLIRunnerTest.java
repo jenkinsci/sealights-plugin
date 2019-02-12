@@ -41,97 +41,6 @@ public class CLIRunnerTest {
         Assert.assertFalse("Execution should return 'false' when providing invalid token", successfulExecution);
     }
 
-    @Test(expected = SeaLightsIllegalStateException.class)
-    public void perform_withoutBuildSessionIdAndAppName_shouldThrowSeaLightsIllegalStateException()
-            throws IOException, InterruptedException {
-        // Arrange
-        String additionalArguments = "token=invalid-token";
-
-        CLIRunner cliRunner = createCLIRunner(additionalArguments);
-        cliRunner.setBuildSessionId(null);
-        cliRunner.setAppName(null);
-        cliRunner.setBuildName(new CommandBuildName.ManualBuildName("1"));
-        cliRunner.setBranchName("branchy");
-
-        CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
-        AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
-        BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = createEndView();
-
-        // Act & Assert
-        cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
-        Assert.fail("SeaLightsIllegalStateException wasn't thrown");
-
-    }
-
-    @Test(expected = SeaLightsIllegalStateException.class)
-    public void perform_withoutBuildSessionIdAndEmptyBuildName_shouldThrowSeaLightsIllegalStateException()
-            throws IOException, InterruptedException {
-        // Arrange
-        String additionalArguments = "token=invalid-token";
-
-        CLIRunner cliRunner = createCLIRunner(additionalArguments);
-        cliRunner.setBuildSessionId(null);
-        cliRunner.setAppName("app");
-        cliRunner.setBuildName(new CommandBuildName.EmptyBuildName());
-        cliRunner.setBranchName("branchy");
-
-        CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
-        AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
-        BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = createEndView();
-
-        // Act & Assert
-        cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
-        Assert.fail("SeaLightsIllegalStateException wasn't thrown");
-
-    }
-
-    @Test(expected = SeaLightsIllegalStateException.class)
-    public void perform_withoutBuildSessionIdAndReportOnLatestBuildName_shouldThrowSeaLightsIllegalStateException()
-            throws IOException, InterruptedException {
-        // Arrange
-        String additionalArguments = "token=invalid-token";
-
-        CLIRunner cliRunner = createCLIRunner(additionalArguments);
-        cliRunner.setBuildSessionId(null);
-        cliRunner.setAppName("app");
-        cliRunner.setBuildName(new CommandBuildName.LatestBuildName());
-        cliRunner.setBranchName("branchy");
-
-        CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
-        AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
-        BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = createEndView();
-
-        // Act & Assert
-        cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
-        Assert.fail("SeaLightsIllegalStateException wasn't thrown");
-    }
-
-    @Test(expected = SeaLightsIllegalStateException.class)
-    public void perform_withoutBuildSessionIdAndBranchName_shouldThrowSeaLightsIllegalStateException()
-            throws IOException, InterruptedException {
-        // Arrange
-        String additionalArguments = "token=invalid-token";
-
-        CLIRunner cliRunner = createCLIRunner(additionalArguments);
-        cliRunner.setBuildSessionId(null);
-        cliRunner.setAppName("app");
-        cliRunner.setBuildName(new CommandBuildName.ManualBuildName("1"));
-        cliRunner.setBranchName(null);
-
-        CLIHandler cliHandler = new CLIHandlerMock(nullLogger);
-        AbstractBuild<?, ?> build = createJenkinsBuildObject(new EnvVars());
-        BuildListener listener = mock(BuildListener.class);
-        CommandMode commandMode = createEndView();
-
-        // Act & Assert
-        cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
-        Assert.fail("SeaLightsIllegalStateException wasn't thrown");
-
-    }
-
     @Test
     public void perform_withOnlyBuildSessionId_shouldNotThrowException()
             throws IOException, InterruptedException {
@@ -505,7 +414,7 @@ public class CLIRunnerTest {
 
         return beginAnalysis;
     }
-    
+
     private CommandMode.EndView createEndView(){
         String buildSesionId = "fake-build-session";
         String additionalArga = "key=value";

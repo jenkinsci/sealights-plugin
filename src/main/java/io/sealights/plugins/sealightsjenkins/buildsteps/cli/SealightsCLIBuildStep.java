@@ -148,11 +148,9 @@ public class SealightsCLIBuildStep extends Builder {
 
             isStepSuccessful = cliRunner.perform(build, launcher, listener, commandMode, cliHandler, logger);
         } catch (Exception e) {
-            // for cases when property fields setup is invalid.
-            if (e instanceof SeaLightsIllegalStateException) {
-                throw e;
-            }
-            logger.error("Error occurred while performing 'Sealights CLI Build Step'. Error: ", e);
+            logger.error("Error occurred while performing 'Sealights CLI Build Step' Skipping sealights integration. " +
+             "Error: ", e);
+            enabled = false;
         }
 
         if (failBuildIfStepFail) {
