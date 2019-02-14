@@ -12,10 +12,6 @@
         <f:textbox value="${appName}" default="$${JOB_NAME}"/>
     </f:entry>
 
-    <f:entry title="Branch Name" field="branchName">
-        <f:textbox value="${branchName}" default="$${GIT_BRANCH}"/>
-    </f:entry>
-
     <f:entry title="Latest Commit" field="latestCommit">
         <f:textbox value="${latestCommit}"/>
     </f:entry>
@@ -31,22 +27,7 @@
     <f:entry title="Pull Request Number" field="pullRequestNumber">
         <f:textbox value="${pullRequestNumber}"/>
     </f:entry>
-
-    <f:dropdownList name="buildName" title="Build Name">
-        <j:forEach var="currentDescriptor" items="${descriptor.buildNameDescriptorList}" varStatus="loop">
-            <f:dropdownListBlock title="${currentDescriptor.displayName}" value="${loop.index}"
-                                 selected="${currentDescriptor == instance.buildName.descriptor || (instance.buildName.descriptor == null &amp;&amp; currentDescriptor.default)}"
-                                 staplerClass="${currentDescriptor.clazz.name}">
-                <j:set var="instance" value="${instance.buildName}"/>
-                <j:set var="descriptor" value="${instance.descriptor}"/>
-                <st:include page="${currentDescriptor.configPage}" from="${currentDescriptor}"/>
-            </f:dropdownListBlock>
-        </j:forEach>
-    </f:dropdownList>
     <f:advanced title="SeaLights CLI Advanced">
-        <f:entry title="Build Session Id" field="buildSessionId">
-            <f:textbox value="${buildSessionId}" />
-        </f:entry>
         <f:entry title="${%Additional Arguments}" field="additionalArguments">
             <f:expandableTextbox value="${additionalArguments}"/>
         </f:entry>
