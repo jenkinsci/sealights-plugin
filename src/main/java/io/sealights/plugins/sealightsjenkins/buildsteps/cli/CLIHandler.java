@@ -112,7 +112,8 @@ public class CLIHandler {
     private AbstractUpgradeManager getRelevantUpgradeManager(
             UpgradeProxy upgradeProxy, UpgradeConfiguration upgradeConfiguration) {
 
-        boolean useScannerUpgradeManager = CommandModes.Config.equals(commandArgument.getMode());
+        boolean useScannerUpgradeManager =
+         CommandModes.Config.equals(commandArgument.getMode()) || CommandModes.PrConfig.equals(commandArgument.getMode());
 
         if (useScannerUpgradeManager) {
             return new BuildScannerUpgradeManager(upgradeProxy, upgradeConfiguration, logger);

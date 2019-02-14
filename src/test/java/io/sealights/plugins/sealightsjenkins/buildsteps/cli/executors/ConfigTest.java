@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 public class ConfigTest {
 
     private TestHelper testHelper = new TestHelper();
-    private Logger nullLogger = new NullLogger();
+    protected Logger nullLogger = new NullLogger();
 
     @Test
     public void execute_giveValidConfigArguments_shouldExecuteCorrectCommand() throws IOException {
@@ -54,7 +54,7 @@ public class ConfigTest {
                 expectedCommandLine, actualCommandLine);
     }
 
-    private JenkinsUtils createMockJenkinsUtils() {
+    protected JenkinsUtils createMockJenkinsUtils() {
         JenkinsUtils jenkinsUtilsMock = mock(JenkinsUtils.class);
         when(jenkinsUtilsMock.getWorkspace((AbstractBuild<?, ?>) any(Object.class))).thenReturn("/path/to/workspace");
         return jenkinsUtilsMock;
@@ -88,7 +88,7 @@ public class ConfigTest {
         return configArguments;
     }
 
-    private BaseCommandArguments createBaseCommandArguments() throws IOException {
+    protected BaseCommandArguments createBaseCommandArguments() throws IOException {
         BaseCommandArguments baseCommandArguments = new BaseCommandArguments();
         baseCommandArguments.setJavaPath("path/to/java");
         baseCommandArguments.setAgentPath("agent.jar");
