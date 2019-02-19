@@ -42,6 +42,7 @@ public class PrConfigCommandExecutor extends ConfigCommandExecutor{
         if(prConfigCommandArguments.getTechOptions().size() > 0){
            addPackagesIncluded(commandsList);
         }
+        addArgumentKeyVal("buildsessionidfile", this.buildSessionIdFileOnMaster, commandsList);
         commandsList.add("-enableNoneZeroErrorCode");
     }
 }

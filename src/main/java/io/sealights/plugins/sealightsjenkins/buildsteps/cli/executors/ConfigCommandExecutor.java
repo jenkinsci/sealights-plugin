@@ -25,7 +25,7 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
     private static String BUILD_SESSION_ID_FILE_NAME = "buildSessionId.txt";
     private static String DEFAULT_PACKAGES_INCLUDED = "com.example.*";
 
-    private String buildSessionIdFileOnMaster = null;
+    protected String buildSessionIdFileOnMaster = null;
     private String buildSessionIdFileOnSlave = null;
     private boolean isSlaveMachine = false;
 
