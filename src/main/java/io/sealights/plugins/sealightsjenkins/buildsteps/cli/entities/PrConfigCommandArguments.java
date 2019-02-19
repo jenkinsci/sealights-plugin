@@ -4,6 +4,9 @@ import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 
+/**
+ * Extra arguments for build scanner that relevant to PR buildSessionId creation.
+ */
 public class PrConfigCommandArguments extends ConfigCommandArguments {
     private String latestCommit;
     private String pullRequestNumber;

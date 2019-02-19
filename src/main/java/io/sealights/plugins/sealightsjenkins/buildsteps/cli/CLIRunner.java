@@ -195,9 +195,10 @@ public class CLIRunner extends Builder {
         }
     }
 
-    private void validatePrConfigMode(CommandMode.PrConfigView comandMode) {
-        if (StringUtils.isNullOrEmpty(comandMode.getAppName()) || StringUtils.isNullOrEmpty(comandMode.getLatestCommit()) ||
-                StringUtils.isNullOrEmpty(comandMode.getPullRequestNumber()) || StringUtils.isNullOrEmpty(comandMode.getRepoUrl())) {
+    private void validatePrConfigMode(CommandMode.PrConfigView commandMode) {
+        if (StringUtils.isNullOrEmpty(commandMode.getAppName()) || StringUtils.isNullOrEmpty(commandMode.getLatestCommit()) ||
+                StringUtils.isNullOrEmpty(commandMode.getPullRequestNumber()) || StringUtils.isNullOrEmpty(commandMode.getRepoUrl()) ||
+                StringUtils.isNullOrEmpty(commandMode.getTargetBranch())) {
             throw new SeaLightsIllegalStateException(
                     "'App Name', 'Target Branch', 'Latest Commit', 'Pull request number' and 'Repository url'  are " +
                      "mandatory for the SeaLights 'prConfig' command");

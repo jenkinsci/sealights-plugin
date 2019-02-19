@@ -17,10 +17,10 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 public class PrConfigTest extends ConfigTest {
-    private String latestCommit = "latestCommit";
-    private String pullRequestNumber = "1";
-    private String repoUrl = "http://repo.url";
-    private String targetBranch = "master";
+    private final String LATEST_COMMIT = "LATEST_COMMIT";
+    private final String PULL_REQUEST_NUMBER = "1";
+    private final String REPO_URL = "http://repo.url";
+    private final String TARGET_BRANCH = "master";
 
     @Test
     public void execute_noTechOptions_shouldNotAdd() throws IOException {
@@ -37,10 +37,10 @@ public class PrConfigTest extends ConfigTest {
         String actualPullRequestNumber = findValueInArray(commandAsList, "-pullRequestNumber");
         String actualRepoUrl = findValueInArray(commandAsList, "-repoUrl");
         String actualTargetBranch = findValueInArray(commandAsList, "-targetBranch");
-        Assert.assertEquals(latestCommit, actualLatestCommit);
-        Assert.assertEquals(pullRequestNumber, actualPullRequestNumber);
-        Assert.assertEquals(repoUrl, actualRepoUrl);
-        Assert.assertEquals(targetBranch, actualTargetBranch);
+        Assert.assertEquals(LATEST_COMMIT, actualLatestCommit);
+        Assert.assertEquals(PULL_REQUEST_NUMBER, actualPullRequestNumber);
+        Assert.assertEquals(REPO_URL, actualRepoUrl);
+        Assert.assertEquals(TARGET_BRANCH, actualTargetBranch);
 
     }
 
@@ -80,17 +80,10 @@ public class PrConfigTest extends ConfigTest {
 
     private PrConfigCommandArguments createPrConfigArguments(DescribableList<TechnologyOptions,
      TechnologyOptionsDescriptor> technologyOptions) {
-        PrConfigCommandArguments configArguments = new PrConfigCommandArguments(technologyOptions, latestCommit,
-                pullRequestNumber, repoUrl, targetBranch);
+        PrConfigCommandArguments configArguments = new PrConfigCommandArguments(technologyOptions, LATEST_COMMIT,
+                PULL_REQUEST_NUMBER, REPO_URL, TARGET_BRANCH);
 
         return configArguments;
-    }
-
-    private DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> createTechnologyOptions() {
-        DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions =
-         new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
-        technologyOptions.add(new JavaOptions("io.include.*", "io.exclude.*"));
-        return technologyOptions;
     }
 
     private String findValueInArray(List<String> list, String key){

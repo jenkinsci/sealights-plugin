@@ -6,6 +6,9 @@ import io.sealights.plugins.sealightsjenkins.utils.Logger;
 
 import java.util.List;
 
+/**
+ * Executes the build scanner with prConfig command, extends from ConfigCommandExecutor
+ */
 public class PrConfigCommandExecutor extends ConfigCommandExecutor{
     private PrConfigCommandArguments prConfigCommandArguments;
     public PrConfigCommandExecutor(Logger logger, BaseCommandArguments baseCommandArguments,
