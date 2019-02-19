@@ -246,7 +246,25 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         public ConfigView(String appName, String branchName,
                           CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments,
                           List<TechnologyOptions> techOptions) {
-            super(CommandModes.Config, buildSessionId, additionalArguments);
+                          this(appName, branchName, buildName, labId, buildSessionId, additionalArguments,
+                           techOptions, CommandModes.Config);
+        }
+
+        /**
+         * Extra constructor used in sub class PrConfig
+         * @param appName
+         * @param branchName
+         * @param buildName
+         * @param labId
+         * @param buildSessionId
+         * @param additionalArguments
+         * @param techOptions
+         * @param currentMode
+         */
+        private ConfigView(String appName, String branchName,
+                          CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments,
+                          List<TechnologyOptions> techOptions, CommandModes currentMode) {
+            super(currentMode, buildSessionId, additionalArguments);
             this.appName = appName;
             this.branchName = branchName;
             this.buildName = buildName;
@@ -332,12 +350,85 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
                 super(ConfigView.class, CommandModes.Config.getDisplayName());
             }
 
+            public ConfigDescriptor(Class<? extends CommandMode> clazz, final String selectedMode) {
+                super(clazz, selectedMode);
+            }
+
             public DescriptorExtensionList<TechnologyOptions, TechnologyOptionsDescriptor> getTechnologiesDescriptors() {
                 return TechnologyOptionsDescriptor.all();
             }
 
             public DescriptorExtensionList<CommandBuildName, CommandBuildName.CommandBuildNameDescriptor> getBuildNameDescriptorList() {
                 return Jenkins.getInstance().getDescriptorList(CommandBuildName.class);
+            }
+        }
+    }
+
+    public static class PrConfigView extends ConfigView {
+        private String latestCommit;
+        private String pullRequestNumber;
+        private String repoUrl;
+        private String targetBranch;
+
+        @DataBoundConstructor
+        public PrConfigView(String appName, String branchName, CommandBuildName buildName, String labId,
+         String buildSessionId, String additionalArguments, List<TechnologyOptions> techOptions, String latestCommit,
+          String pullRequestNumber, String repoUrl, String targetBranch) {
+            super(appName, branchName, buildName, labId, buildSessionId, additionalArguments, techOptions,
+             CommandModes.PrConfig);
+            this.latestCommit = latestCommit;
+            this.pullRequestNumber = pullRequestNumber;
+            this.repoUrl = repoUrl;
+            this.targetBranch = targetBranch;
+        }
+
+        @Exported
+        public String getLatestCommit() {
+            return latestCommit;
+        }
+
+        @Exported
+        public void setLatestCommit(String latestCommit) {
+            this.latestCommit = latestCommit;
+        }
+
+        @Exported
+        public String getPullRequestNumber() {
+            return pullRequestNumber;
+        }
+
+        @Exported
+        public void setPullRequestNumber(String pullRequestNumber) {
+            this.pullRequestNumber = pullRequestNumber;
+        }
+
+        @Exported
+        public String getRepoUrl() {
+            return repoUrl;
+        }
+
+        @Exported
+        public void setRepoUrl(String repoUrl) {
+            this.repoUrl = repoUrl;
+        }
+
+        @Exported
+        public String getTargetBranch() {
+            return targetBranch;
+        }
+
+        @Exported
+        public void setTargetBranch(String targetBranch) {
+            this.targetBranch = targetBranch;
+        }
+
+        @Extension
+        public static class PrConfigDescriptor extends ConfigDescriptor {
+            public boolean isDefault() {
+                return false;
+            }
+            public PrConfigDescriptor() {
+                super(PrConfigView.class, CommandModes.PrConfig.getDisplayName());
             }
         }
     }

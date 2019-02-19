@@ -28,6 +28,11 @@ public enum CommandModes {
         @Override public String getDisplayName() {
             return "Config - Create build session data";
         }
+    },
+    PrConfig("PrConfig") {
+        @Override public String getDisplayName() {
+            return "PrConfig - Create build session data for PR integration";
+        }
     };
 
     private final String name;

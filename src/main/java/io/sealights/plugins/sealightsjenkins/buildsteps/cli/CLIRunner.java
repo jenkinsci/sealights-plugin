@@ -133,7 +133,7 @@ public class CLIRunner extends Builder {
 
             // This step must be first
             setDefaultValues();
-            
+
             if (additionalProps != null && additionalProps.get("sl.httpClient.timeout") != null && additionalProps.get("sl.httpClient.timeout") != ""){
                 System.setProperty("sl.httpClient.timeout", additionalProps.get("sl.httpClient.timeout").toString())   ;
             }
@@ -168,6 +168,10 @@ public class CLIRunner extends Builder {
             validateConfigMode();
             return;
         }
+        if (CommandModes.PrConfig.equals(commandMode.getCurrentMode())) {
+            validatePrConfigMode((CommandMode.PrConfigView)commandMode);
+            return;
+        }
         if (!StringUtils.isNullOrEmpty(buildSessionId)){
             return;
         }
@@ -188,6 +192,16 @@ public class CLIRunner extends Builder {
                 CommandBuildNamingStrategy.LATEST_BUILD.equals(buildName.getBuildNamingStrategy())) {
             throw new SeaLightsIllegalStateException(
                     "'App Name', 'Branch Name' and 'Build Name' are mandatory for the SeaLights 'config' command");
+        }
+    }
+
+    private void validatePrConfigMode(CommandMode.PrConfigView commandMode) {
+        if (StringUtils.isNullOrEmpty(commandMode.getAppName()) || StringUtils.isNullOrEmpty(commandMode.getLatestCommit()) ||
+                StringUtils.isNullOrEmpty(commandMode.getPullRequestNumber()) || StringUtils.isNullOrEmpty(commandMode.getRepoUrl()) ||
+                StringUtils.isNullOrEmpty(commandMode.getTargetBranch())) {
+            throw new SeaLightsIllegalStateException(
+                    "'App Name', 'Target Branch', 'Latest Commit', 'Pull request number' and 'Repository url'  are " +
+                     "mandatory for the SeaLights 'prConfig' command");
         }
     }
 

@@ -26,6 +26,8 @@ public class CommandExecutorsFactory {
                 executor = new ExternalReportCommandExecutor(logger, baseArgs, (ExternalReportCommandArguments) commandArgument);
             } else if (CommandModes.Config.equals(commandArgument.getMode())) {
                 executor = new ConfigCommandExecutor(logger, baseArgs, (ConfigCommandArguments) commandArgument);
+            } else if (CommandModes.PrConfig.equals(commandArgument.getMode())) {
+                executor = new PrConfigCommandExecutor(logger, baseArgs, (PrConfigCommandArguments) commandArgument);
             } else {
                 logger.error("Current mode is invalid! Cannot create executor.");
                 executor = new NullCommandExecutor();

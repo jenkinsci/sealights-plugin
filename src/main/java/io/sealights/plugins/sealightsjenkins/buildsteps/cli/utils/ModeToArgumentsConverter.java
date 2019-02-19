@@ -24,6 +24,8 @@ public class ModeToArgumentsConverter {
             return toExternalReportArguments((CommandMode.ExternalReportView) mode);
         } else if (CommandModes.Config.equals(mode.getCurrentMode())) {
             return toConfigCommandArguments((CommandMode.ConfigView) mode);
+        } else if (CommandModes.PrConfig.equals(mode.getCurrentMode())) {
+            return toPrConfigCommandArguments((CommandMode.PrConfigView) mode);
         }
 
         throw new IllegalStateException("toCommandArgument() - The provided CommandMode is not one of the expected types");
@@ -52,5 +54,10 @@ public class ModeToArgumentsConverter {
 
     private ConfigCommandArguments toConfigCommandArguments(CommandMode.ConfigView configView){
         return new ConfigCommandArguments(configView.getTechOptions());
+    }
+
+    private PrConfigCommandArguments toPrConfigCommandArguments(CommandMode.PrConfigView prConfigView){
+        return new PrConfigCommandArguments(prConfigView.getTechOptions(), prConfigView.getLatestCommit(),
+         prConfigView.getPullRequestNumber(), prConfigView.getRepoUrl(), prConfigView.getTargetBranch());
     }
 }

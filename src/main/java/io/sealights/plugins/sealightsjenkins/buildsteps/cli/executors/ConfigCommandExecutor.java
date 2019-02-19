@@ -25,7 +25,7 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
     private static String BUILD_SESSION_ID_FILE_NAME = "buildSessionId.txt";
     private static String DEFAULT_PACKAGES_INCLUDED = "com.example.*";
 
-    private String buildSessionIdFileOnMaster = null;
+    protected String buildSessionIdFileOnMaster = null;
     private String buildSessionIdFileOnSlave = null;
     private boolean isSlaveMachine = false;
 
@@ -148,18 +148,22 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
         if(configCommandArguments.getTechOptions().size() == 0){
             addArgumentKeyVal("packagesincluded", DEFAULT_PACKAGES_INCLUDED, commandsList);
         }else {
-            //TODO: description for other technologies
-            for (TechnologyOptions opt : configCommandArguments.getTechOptions()) {
-                if (opt instanceof JavaOptions) {
-                    handleIncludedExcludeJava(opt, commandsList);
-                }
-                if(opt instanceof  DotNetOptions){
-                    handleIncludedExcludeDotNet(opt, commandsList);
-                }
-            }
+            addPackagesIncluded(commandsList);
         }
         addArgumentKeyVal("buildsessionidfile", this.buildSessionIdFileOnMaster, commandsList);
         commandsList.add("-enableNoneZeroErrorCode");
+    }
+
+    protected void addPackagesIncluded(List<String> commandsList) {
+        //TODO: description for other technologies
+        for (TechnologyOptions opt : configCommandArguments.getTechOptions()) {
+            if (opt instanceof JavaOptions) {
+                handleIncludedExcludeJava(opt, commandsList);
+            }
+            if(opt instanceof DotNetOptions){
+                handleIncludedExcludeDotNet(opt, commandsList);
+            }
+        }
     }
 
     @Override
@@ -171,11 +175,11 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
         this.jenkinsUtils = jenkinsUtils;
     }
 
-    private void handleIncludedExcludeJava(TechnologyOptions opt, List<String> commandsList){
+    protected void handleIncludedExcludeJava(TechnologyOptions opt, List<String> commandsList){
         addArgumentKeyVal("packagesincluded", ((JavaOptions) opt).getPackagesIncluded(), commandsList);
         addArgumentKeyVal("packagesexcluded", ((JavaOptions) opt).getPackagesExcluded(), commandsList);
     }
-    private void handleIncludedExcludeDotNet(TechnologyOptions opt, List<String> commandsList){
+    protected void handleIncludedExcludeDotNet(TechnologyOptions opt, List<String> commandsList){
         addArgumentKeyVal("includedNamespaces", ((DotNetOptions) opt).getNamespacesIncluded(), commandsList);
         addArgumentKeyVal("excludedNamespaces", ((DotNetOptions) opt).getNamespacesExcluded(), commandsList);
         addArgumentKeyVal("includedFilePatterns", ((DotNetOptions) opt).getIncludedFilePatterns(), commandsList);
