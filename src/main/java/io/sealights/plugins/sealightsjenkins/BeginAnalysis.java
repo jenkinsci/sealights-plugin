@@ -869,7 +869,10 @@ public class BeginAnalysis extends Builder {
         DescribableList publishersList = build.getProject().getPublishersList();
         for (Object item : publishersList) {
             if (item.toString().contains("RestoreBuildFile")) {
-                ((RestoreBuildFile) item).setFolders(foldersToSearch);
+                RestoreBuildFile restoreBuildFile = (RestoreBuildFile) item;
+                if(StringUtils.isNullOrEmpty(restoreBuildFile.getFolders())){
+                    restoreBuildFile.setFolders(foldersToSearch);
+                }
                 return;
             }
         }
