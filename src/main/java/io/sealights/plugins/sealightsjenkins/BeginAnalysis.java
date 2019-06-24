@@ -19,7 +19,7 @@ import io.sealights.agents.infra.pomIntegration.enums.LogLevel;
 import io.sealights.agents.infra.pomIntegration.integration.MavenIntegration;
 import io.sealights.agents.infra.pomIntegration.integration.MavenIntegrationInfo;
 import io.sealights.agents.infra.pomIntegration.integration.PomIntegrationLogger;
-import io.sealights.onpremise.agents.java.agent.infra.logging.ILogger;
+import io.sealights.onpremise.agents.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.entities.FileBackupInfo;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
 import io.sealights.plugins.sealightsjenkins.entities.ValidationError;
