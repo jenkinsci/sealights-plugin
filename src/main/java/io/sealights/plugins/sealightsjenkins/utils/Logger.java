@@ -1,8 +1,8 @@
 package io.sealights.plugins.sealightsjenkins.utils;
 
 
-import io.sealights.onpremise.agents.java.agent.infra.logging.ILogger;
-import io.sealights.onpremise.agents.java.agent.infra.logging.LogFormatAdapter;
+import io.sealights.onpremise.agents.infra.logging.ILogger;
+import io.sealights.onpremise.agents.infra.logging.LogFormatAdapter;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
