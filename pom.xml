@@ -54,26 +54,26 @@
 
     <developers>
         <developer>
-            <id>sl3vi</id>
-            <name>Shahar Levi</name>
-            <email>shahar@sealights.io</email>
-            <organization>sealights</organization>
-        </developer>
-        <developer>
             <id>nadavye</id>
             <name>Nadav Yeheskel</name>
             <email>nadav@sealights.io</email>
             <organization>sealights</organization>
         </developer>
+        <developer>
+            <id>nadavye</id>
+            <name>Roni Segal</name>
+            <email>rsegal@sealights.io</email>
+            <organization>sealights</organization>
+        </developer>
     </developers>
 
-    <!-- Assuming you want to host on @jenkinsci:
-    <scm>
-      <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-      <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-      <url>http://github.com/jenkinsci/${project.artifactId}-plugin</url>
+    <!-- Required info in order to host on @jenkinsci:-->
+     <scm>
+      <connection>scm:git:git://github.com/jenkinsci/sealights-plugin.git</connection>
+      <developerConnection>scm:git:git@github.com:jenkinsci/sealights-plugin.git</developerConnection>
+      <url>http://github.com/jenkinsci/sealights-plugin</url>
     </scm>
-     -->
+     
     <repositories>
         <repository>
             <id>sealights-internal</id>
