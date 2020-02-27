@@ -69,7 +69,7 @@
 
     <!-- Required info in order to host on @jenkinsci:-->
      <scm>
-      <connection>scm:git:git://github.com/jenkinsci/sealights-plugin.git</connection>
+      <connection>scm:git:https://${SL_GITHUB_USER}:${SL_GITHUB_PASSWORD}@github.com/jenkinsci/sealights-Plugin.git</connection>
       <developerConnection>scm:git:git@github.com:jenkinsci/sealights-plugin.git</developerConnection>
       <url>http://github.com/jenkinsci/sealights-plugin</url>
     </scm>
