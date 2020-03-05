@@ -13,7 +13,7 @@
 
     <groupId>io.sealights.plugins</groupId>
     <artifactId>sealights</artifactId>
-    <version>1.3.311-SNAPSHOT</version>
+    <version>1.3.312-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <name>SeaLights Continuous Testing Plugin</name>
 
