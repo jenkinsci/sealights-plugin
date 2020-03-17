@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
         <version>2.3</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
 
     <groupId>io.sealights.plugins</groupId>
     <artifactId>sealights</artifactId>
-    <version>1.3.313-SNAPSHOT</version>
+    <version>1.3.313</version>
     <packaging>hpi</packaging>
     <name>SeaLights Continuous Testing Plugin</name>
 
@@ -72,7 +71,8 @@
       <connection>scm:git:https://${SL_GITHUB_USER}:${SL_GITHUB_PASSWORD}@github.com/jenkinsci/sealights-Plugin.git</connection>
       <developerConnection>scm:git:https://${SL_GITHUB_USER}:${SL_GITHUB_PASSWORD}@github.com/jenkinsci/sealights-Plugin.git</developerConnection>
       <url>http://github.com/jenkinsci/sealights-plugin</url>
-    </scm>
+      <tag>sealights-1.3.313</tag>
+  </scm>
      
     <repositories>
         <repository>
@@ -289,15 +289,12 @@
                                 <phase>pre-integration-test</phase>
                                 <configuration>
                                     <target>
-                                        <echo message="Unzipping SeaLights artifacts file."/>
-                                        <unzip src="${resources.folder}/sealights-java-${sealights.version}.tgz"
-                                               dest="${resources.folder}/"/>
-                                        <echo message="Finished unzipping. Copying the files to the resources folder."/>
-                                        <copy file="${artifacts.folder}/sl-test-listener-${sealights.version}.jar"
-                                              tofile="${resources.folder}/sl-test-listener.jar"/>
-                                        <copy file="${artifacts.folder}/sl-build-scanner-${sealights.version}.jar"
-                                              tofile="${resources.folder}/sl-build-scanner.jar"/>
-                                        <echo message="Finished copying. Deleting the zip file."/>
+                                        <echo message="Unzipping SeaLights artifacts file." />
+                                        <unzip src="${resources.folder}/sealights-java-${sealights.version}.tgz" dest="${resources.folder}/" />
+                                        <echo message="Finished unzipping. Copying the files to the resources folder." />
+                                        <copy file="${artifacts.folder}/sl-test-listener-${sealights.version}.jar" tofile="${resources.folder}/sl-test-listener.jar" />
+                                        <copy file="${artifacts.folder}/sl-build-scanner-${sealights.version}.jar" tofile="${resources.folder}/sl-build-scanner.jar" />
+                                        <echo message="Finished copying. Deleting the zip file." />
                                     </target>
                                 </configuration>
                                 <goals>
