@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>2.3</version>
-        <relativePath />
+        <version>2.11</version>
+        <relativePath/>
     </parent>
 
 
     <groupId>io.sealights.plugins</groupId>
     <artifactId>sealights</artifactId>
-    <version>1.3.314-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <name>SeaLights Continuous Testing Plugin</name>
 
@@ -23,7 +23,7 @@
         <java.level>7</java.level>
         <!-- Jenkins Test Harness version you use to test the plugin. -->
         <!-- For Jenkins version >= 1.580.1 use JTH 2.x or higher. -->
-        <jenkins-test-harness.version>2.1</jenkins-test-harness.version>
+        <jenkins-test-harness.version>2.13</jenkins-test-harness.version>
         <!-- Other properties you may want to use:
              ~ hpi-plugin.version: The HPI MAVEN Plugin version used by the plugin..
              ~ stapler-plugin.version: The Stapler MAVEN plugin version required by the plugin.
