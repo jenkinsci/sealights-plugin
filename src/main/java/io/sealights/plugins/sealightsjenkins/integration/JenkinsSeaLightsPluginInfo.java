@@ -1,7 +1,7 @@
 package io.sealights.plugins.sealightsjenkins.integration;
 
 import hudson.EnvVars;
-import io.sealights.agents.infra.pomIntegration.SeaLightsPluginInfo;
+import io.sealights.agents.infra.integration.SeaLightsPluginInfo;
 import io.sealights.plugins.sealightsjenkins.utils.JenkinsUtils;
 
 import java.util.Properties;

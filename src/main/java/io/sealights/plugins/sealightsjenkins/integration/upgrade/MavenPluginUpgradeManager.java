@@ -1,6 +1,6 @@
 package io.sealights.plugins.sealightsjenkins.integration.upgrade;
 
-import io.sealights.agents.infra.pomIntegration.SeaLightsPluginInfo;
+import io.sealights.agents.infra.integration.SeaLightsPluginInfo;
 import io.sealights.onpremise.agents.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeConfiguration;

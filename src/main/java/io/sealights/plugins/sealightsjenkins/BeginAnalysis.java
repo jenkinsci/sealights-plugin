@@ -11,14 +11,14 @@ import hudson.tasks.Builder;
 import hudson.util.DescribableList;
 import hudson.util.FormValidation;
 import hudson.util.XStream2;
-import io.sealights.agents.infra.pomIntegration.SeaLightsPluginInfo;
-import io.sealights.agents.infra.pomIntegration.entities.PomFile;
-import io.sealights.agents.infra.pomIntegration.enums.ExecutionType;
-import io.sealights.agents.infra.pomIntegration.enums.LogDestination;
-import io.sealights.agents.infra.pomIntegration.enums.LogLevel;
-import io.sealights.agents.infra.pomIntegration.integration.MavenIntegration;
-import io.sealights.agents.infra.pomIntegration.integration.MavenIntegrationInfo;
-import io.sealights.agents.infra.pomIntegration.integration.PomIntegrationLogger;
+import io.sealights.agents.infra.integration.SeaLightsPluginInfo;
+import io.sealights.agents.infra.integration.maven.entities.PomFile;
+import io.sealights.agents.infra.integration.enums.ExecutionType;
+import io.sealights.agents.infra.integration.enums.LogDestination;
+import io.sealights.agents.infra.integration.enums.LogLevel;
+import io.sealights.agents.infra.integration.maven.integration.MavenIntegration;
+import io.sealights.agents.infra.integration.maven.integration.MavenIntegrationInfo;
+import io.sealights.agents.infra.integration.IntegrationLogger;
 import io.sealights.onpremise.agents.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.entities.FileBackupInfo;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
@@ -573,7 +573,7 @@ public class BeginAnalysis extends Builder {
 
     private void doMavenIntegration(ILogger logger, SeaLightsPluginInfo slInfo, String mvnPluginVersionToUse) throws IOException, InterruptedException {
         // Set build logger as actual logger in pom integration process
-        PomIntegrationLogger.setPluginLogger(logger);
+        IntegrationLogger.setPluginLogger(logger);
         List<String> folders = Arrays.asList(slInfo.getBuildFilesFolders().split("\\s*,\\s*"));
         List<PomFile> pomFiles = getPomFiles(folders, slInfo.getBuildFilesPatterns(), logger, pomPath);
 

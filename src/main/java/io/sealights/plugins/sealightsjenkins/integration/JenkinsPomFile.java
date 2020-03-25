@@ -3,7 +3,7 @@ package io.sealights.plugins.sealightsjenkins.integration;
 import hudson.FilePath;
 import hudson.model.Computer;
 import hudson.remoting.VirtualChannel;
-import io.sealights.agents.infra.pomIntegration.entities.PomFile;
+import io.sealights.agents.infra.integration.maven.entities.PomFile;
 import io.sealights.onpremise.agents.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import org.w3c.dom.Document;
