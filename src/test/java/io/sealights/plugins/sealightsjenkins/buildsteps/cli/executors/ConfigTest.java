@@ -1,5 +1,6 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
+import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.TestHelper;
@@ -97,6 +98,7 @@ public class ConfigTest {
         baseCommandArguments.setBuildName("1");
         baseCommandArguments.setBranchName("branchy");
         baseCommandArguments.setBuildSessionIdFile("/path/to/buildsessionid.txt");
+        baseCommandArguments.setEnvVars(new EnvVars());
 
         TestHelper.BuildMock build = testHelper.createBuildMock();
         baseCommandArguments.setBuild(build);

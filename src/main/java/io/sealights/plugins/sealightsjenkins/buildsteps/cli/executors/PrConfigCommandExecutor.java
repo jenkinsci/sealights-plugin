@@ -24,6 +24,7 @@ public class PrConfigCommandExecutor extends ConfigCommandExecutor{
 
     @Override
     protected void addBaseArgumentsLine(List<String> commandsList) {
+        this.prConfigCommandArguments.resolveValuesFromEnvVars(baseArgs.getEnvVars());
         if (baseArgs.getTokenData() != null) {
             addArgumentKeyVal("token", baseArgs.getTokenData().getToken(), commandsList);
         } else {
