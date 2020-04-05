@@ -21,12 +21,13 @@ public class PrConfigTest extends ConfigTest {
     private final String PULL_REQUEST_NUMBER = "1";
     private final String REPO_URL = "http://repo.url";
     private final String TARGET_BRANCH = "master";
+    private final DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> TECH_OPTIONS =
+            new DescribableList<>(Saveable.NOOP);
 
     @Test
     public void execute_noTechOptions_shouldNotAdd() throws IOException {
         //Arrange
-        PrConfigCommandExecutor executor = createTestedExecutor(new DescribableList<TechnologyOptions,
-         TechnologyOptionsDescriptor>(Saveable.NOOP));
+        PrConfigCommandExecutor executor = createTestedExecutor(TECH_OPTIONS);
 
         //Act
         String[] executionCommand = executor.createExecutionCommand();
@@ -49,9 +50,8 @@ public class PrConfigTest extends ConfigTest {
         //Arrange
         String packagesIncluded = "io.include.*";
         String packagesExcluded = "io.exclude.*";
-        DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = new DescribableList<>(JavaOptions.DescriptorImpl.NOOP);
-        technologyOptions.add(new JavaOptions(packagesIncluded, packagesExcluded));
-        PrConfigCommandExecutor executor = createTestedExecutor(technologyOptions);
+        TECH_OPTIONS.add(new JavaOptions(packagesIncluded, packagesExcluded));
+        PrConfigCommandExecutor executor = createTestedExecutor(TECH_OPTIONS);
 
         //Act
         String[] executionCommand = executor.createExecutionCommand();
@@ -63,6 +63,25 @@ public class PrConfigTest extends ConfigTest {
         Assert.assertEquals(packagesIncluded, actualIncluded);
         Assert.assertEquals(packagesExcluded, actualExcluded);
 
+    }
+
+    @Test
+    public void execute_hasProxy_shouldAdd() throws IOException {
+        //Arrange
+        String proxy = "http://localhost:8888";
+        BaseCommandArguments baseCommandArguments = new BaseCommandArguments();
+        baseCommandArguments.setProxy(proxy);
+        PrConfigCommandExecutor executor = new PrConfigCommandExecutor(nullLogger,
+                baseCommandArguments, createPrConfigArguments(TECH_OPTIONS));
+
+
+        //Act
+        String[] executionCommand = executor.createExecutionCommand();
+        List<String> commandAsList = Arrays.asList(executionCommand);
+
+        // Assert
+        String actualProxy = findValueInArray(commandAsList, "-proxy");
+        Assert.assertEquals(proxy, actualProxy);
     }
 
     private PrConfigCommandExecutor createTestedExecutor(DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions) throws IOException {

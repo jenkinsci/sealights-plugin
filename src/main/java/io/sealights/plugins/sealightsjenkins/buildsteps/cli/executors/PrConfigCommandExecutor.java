@@ -31,6 +31,7 @@ public class PrConfigCommandExecutor extends ConfigCommandExecutor{
             addArgumentKeyVal("tokenfile", baseArgs.getTokenFile(), commandsList);
         }
         addArgumentKeyVal("appname", baseArgs.getAppName(), commandsList);
+        addArgumentKeyVal("proxy", baseArgs.getProxy(), commandsList);
         addArgumentKeyVal("latestCommit", prConfigCommandArguments.getLatestCommit(), commandsList);
         addArgumentKeyVal("pullRequestNumber", prConfigCommandArguments.getPullRequestNumber(), commandsList);
         addArgumentKeyVal("repoUrl", prConfigCommandArguments.getRepoUrl(), commandsList);
