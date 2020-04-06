@@ -24,12 +24,14 @@ public class PrConfigCommandExecutor extends ConfigCommandExecutor{
 
     @Override
     protected void addBaseArgumentsLine(List<String> commandsList) {
+        this.prConfigCommandArguments.resolveValuesFromEnvVars(baseArgs.getEnvVars());
         if (baseArgs.getTokenData() != null) {
             addArgumentKeyVal("token", baseArgs.getTokenData().getToken(), commandsList);
         } else {
             addArgumentKeyVal("tokenfile", baseArgs.getTokenFile(), commandsList);
         }
         addArgumentKeyVal("appname", baseArgs.getAppName(), commandsList);
+        addArgumentKeyVal("proxy", baseArgs.getProxy(), commandsList);
         addArgumentKeyVal("latestCommit", prConfigCommandArguments.getLatestCommit(), commandsList);
         addArgumentKeyVal("pullRequestNumber", prConfigCommandArguments.getPullRequestNumber(), commandsList);
         addArgumentKeyVal("repoUrl", prConfigCommandArguments.getRepoUrl(), commandsList);
