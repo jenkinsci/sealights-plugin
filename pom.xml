@@ -12,7 +12,7 @@
 
     <groupId>io.sealights.plugins</groupId>
     <artifactId>sealights</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>hpi</packaging>
     <name>SeaLights Continuous Testing Plugin</name>
 
@@ -71,7 +71,7 @@
       <connection>scm:git:https://${SL_GITHUB_USER}:${SL_GITHUB_PASSWORD}@github.com/jenkinsci/sealights-Plugin.git</connection>
       <developerConnection>scm:git:https://${SL_GITHUB_USER}:${SL_GITHUB_PASSWORD}@github.com/jenkinsci/sealights-Plugin.git</developerConnection>
       <url>http://github.com/jenkinsci/sealights-plugin</url>
-      <tag>HEAD</tag>
+      <tag>sealights-1.2</tag>
   </scm>
      
     <repositories>
