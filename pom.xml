@@ -47,7 +47,7 @@
     <licenses>
         <license>
             <name>Sealights Jenkins License</name>
-            <url>https://github.com/Sealights/SL.OnPremise.JenkinsPlugin/blob/master/LICENSE.txt</url>
+            <url>https://github.com/jenkinsci/sealights-plugin/blob/master/LICENSE.txt</url>
         </license>
     </licenses>
 
