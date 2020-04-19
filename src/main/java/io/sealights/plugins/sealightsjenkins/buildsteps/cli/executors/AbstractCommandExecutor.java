@@ -16,6 +16,8 @@ import java.util.List;
  * Abstract class for command executors.
  */
 public abstract class AbstractCommandExecutor implements ICommandExecutor {
+    public static final String SL_TAGS = "sl.tags";
+    public static final String JENKINS = "jenkins";
 
     protected Logger logger;
     protected BaseCommandArguments baseArgs;
@@ -73,6 +75,7 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 
         String javaPath = resolvedJavaPath();
         commands.add(javaPath);
+        commands.add("-D" + SL_TAGS + "=" + JENKINS);
         commands.add("-jar");
         commands.add(baseArgs.getAgentPath());
         commands.add(getCommandName());
