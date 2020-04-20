@@ -47,7 +47,8 @@ public class ConfigTest {
         configExecutor.execute();
         verify(runtimeMock).exec(captor.capture());
         final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java", "-jar", "agent.jar", "-config", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-packagesincluded", "io.include.*", "-packagesexcluded", "io.exclude.*", "-buildsessionidfile", "/path/to/workspace" + File.separator + "buildSessionId.txt", "-enableNoneZeroErrorCode"};
+        String[] expectedCommandLine = {"path/to/java", AbstractCommandExecutor.formatTagProp(), "-jar", "agent.jar",
+        "-config", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-packagesincluded", "io.include.*", "-packagesexcluded", "io.exclude.*", "-buildsessionidfile", "/path/to/workspace" + File.separator + "buildSessionId.txt", "-enableNoneZeroErrorCode"};
 
         // Assert
         Assert.assertArrayEquals(

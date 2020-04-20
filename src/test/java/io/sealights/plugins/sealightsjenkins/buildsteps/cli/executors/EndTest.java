@@ -38,7 +38,8 @@ public class EndTest {
         endExecutor.execute();
         verify(runtimeMock).exec(captor.capture());
         final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java", "-jar", "agent.jar", "end", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-labid", "someEnv"};
+        String[] expectedCommandLine = {"path/to/java", AbstractCommandExecutor.formatTagProp(), "-jar", "agent.jar", "end", "-token", "fake-token",
+        "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-labid", "someEnv"};
 
         // Assert
         Assert.assertArrayEquals(

@@ -43,7 +43,8 @@ public class UploadsReportsTest {
         uploadReportsExecutor.execute();
         verify(runtimeMock).exec(captor.capture());
         final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java", "-jar", "agent.jar", "uploadReports", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-labid", "someEnv", "-reportFile", "report1.txt", "-reportFile", "report2.txt", "-reportFilesFolder", "folders", "-hasMoreRequests", "false", "-source", "someSource"};
+        String[] expectedCommandLine = {"path/to/java", AbstractCommandExecutor.formatTagProp(), "-jar", "agent.jar",
+        "uploadReports", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-labid", "someEnv", "-reportFile", "report1.txt", "-reportFile", "report2.txt", "-reportFilesFolder", "folders", "-hasMoreRequests", "false", "-source", "someSource"};
 
         // Assert
         Assert.assertArrayEquals(

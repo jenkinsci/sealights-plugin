@@ -37,7 +37,9 @@ public class StartTest {
         startExecutor.execute();
         verify(runtimeMock).exec(captor.capture());
         final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java", "-jar", "agent.jar", "start", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-labid", "someEnv", "-testStage", "newEnv"};
+        String[] expectedCommandLine = {"path/to/java", AbstractCommandExecutor.formatTagProp(), "-jar", "agent.jar",
+         "start", "-token", "fake-token",
+        "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-labid", "someEnv", "-testStage", "newEnv"};
 
         // Assert
         Assert.assertArrayEquals(
