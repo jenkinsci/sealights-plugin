@@ -75,7 +75,7 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 
         String javaPath = resolvedJavaPath();
         commands.add(javaPath);
-        commands.add("-D" + SL_TAGS + "=" + JENKINS);
+        commands.add(formatTagProp());
         commands.add("-jar");
         commands.add(baseArgs.getAgentPath());
         commands.add(getCommandName());
@@ -86,6 +86,10 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
         String[] commandsArray = new String[commands.size()];
         commandsArray = commands.toArray(commandsArray);
         return commandsArray;
+    }
+
+    public static String formatTagProp(){
+        return String.format("-D%s=%s", SL_TAGS, JENKINS);
     }
 
     protected abstract String getCommandName();
