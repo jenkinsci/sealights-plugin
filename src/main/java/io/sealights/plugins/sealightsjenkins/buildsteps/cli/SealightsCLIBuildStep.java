@@ -9,20 +9,20 @@ import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.DescribableList;
-import io.sealights.plugins.sealightsjenkins.BuildNamingStrategy;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
+import io.sealights.agents.infra.integration.enums.LogDestination;
+import io.sealights.agents.infra.integration.enums.LogLevel;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.CommandBuildNamingStrategy;
-import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateException;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.PropertiesUtils;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import jenkins.model.Jenkins;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import java.io.IOException;
 import java.util.*;
@@ -33,14 +33,21 @@ public class SealightsCLIBuildStep extends Builder {
     public boolean failBuildIfStepFail;
     public CommandMode commandMode;
     public CLIRunner cliRunner;
+    private String logFolder;
+    private LogDestination logDestination = LogDestination.CONSOLE;
+    private LogLevel logLevel = LogLevel.OFF;
 
     @DataBoundConstructor
     public SealightsCLIBuildStep(boolean enabled, boolean failBuildIfStepFail,
-                                 CommandMode commandMode, CLIRunner cliRunner) {
+                                 CommandMode commandMode, CLIRunner cliRunner,
+                                  LogDestination logDestination, String logFolder, LogLevel logLevel) {
         this.enabled = enabled;
         this.failBuildIfStepFail = failBuildIfStepFail;
         this.commandMode = commandMode;
         this.cliRunner = cliRunner;
+        this.logLevel = logLevel;
+        this.logDestination = logDestination;
+        this.logFolder = logFolder;
     }
 
     /* * The goal of this method is to support migration of data between versions
@@ -132,6 +139,31 @@ public class SealightsCLIBuildStep extends Builder {
         this.failBuildIfStepFail = failBuildIfStepFail;
     }
 
+    @Exported
+    public LogDestination getLogDestination() {
+        return logDestination;
+    }
+
+    @Exported
+    public void setLogDestination(LogDestination logDestination) {
+        this.logDestination = logDestination;
+    }
+
+    @Exported
+    public String getLogFolder() {
+        return logFolder;
+    }
+
+    @Exported
+    public LogLevel getLogLevel() {
+        return logLevel;
+    }
+
+    @Exported
+    public void setLogLevel(LogLevel logLevel) {
+        this.logLevel = logLevel;
+    }
+
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
         boolean isStepSuccessful = false;
@@ -145,8 +177,8 @@ public class SealightsCLIBuildStep extends Builder {
 
             CLIHandler cliHandler = new CLIHandler(logger);
             cliRunner = createCLIRunner(commandMode);
-
-            isStepSuccessful = cliRunner.perform(build, launcher, listener, commandMode, cliHandler, logger);
+            LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel);
+            isStepSuccessful = cliRunner.perform(build, launcher, listener, commandMode, cliHandler, logger, logConfiguration);
         } catch (Exception e) {
             logger.error("Error occurred while performing 'Sealights CLI Build Step' Skipping sealights integration. " +
              "Error: ", e);

@@ -1,6 +1,7 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import hudson.EnvVars;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.LogConfiguration;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.StartCommandArguments;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
@@ -8,10 +9,12 @@ import io.sealights.plugins.sealightsjenkins.utils.NullLogger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -28,23 +31,20 @@ public class StartTest {
         StartCommandArguments startArguments = new StartCommandArguments("newEnv");
         StartCommandExecutor startExecutor = new StartCommandExecutor(nullLogger, baseCommandArguments, startArguments);
 
-        Runtime runtimeMock = mock(Runtime.class);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
 
-        final ArgumentCaptor<String[]> captor = ArgumentCaptor.forClass(String[].class);
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 
         //Act
-        startExecutor.setRuntime(runtimeMock);
+        startExecutor.setProcessExecutor(execMock);
         startExecutor.execute();
-        verify(runtimeMock).exec(captor.capture());
-        final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java", AbstractCommandExecutor.formatTagProp(), "-jar", "agent.jar",
-         "start", "-token", "fake-token",
-        "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-labid", "someEnv", "-testStage", "newEnv"};
+        verify(execMock).command(captor.capture());
+        final List<String> actualCommandLine = captor.getValue();
 
         // Assert
-        Assert.assertArrayEquals(
+        Assert.assertEquals(
                 "The command line that was executed for the 'start' executor is not as expected",
-                expectedCommandLine, actualCommandLine);
+                createExpectedCommand(baseCommandArguments), actualCommandLine);
     }
 
     @Test
@@ -54,12 +54,12 @@ public class StartTest {
         StartCommandArguments startArguments = new StartCommandArguments("newEnv");
         StartCommandExecutor startExecutor = new StartCommandExecutor(nullLogger, baseCommandArguments, startArguments);
 
-        Runtime runtimeMock = mock(Runtime.class);
-        when(runtimeMock.exec(any(String.class))).thenThrow(new IOException());
-
-        //Act
-        startExecutor.setRuntime(runtimeMock);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
         try {
+            when(execMock.execute()).thenThrow(new IOException());
+
+            //Act
+            startExecutor.setProcessExecutor(execMock);
             boolean result = startExecutor.execute();
             Assert.assertFalse("startExecutor.execute() should be false!", result);
         } catch (Exception e) {
@@ -67,6 +67,30 @@ public class StartTest {
         }
     }
 
+    private List<String> createExpectedCommand(BaseCommandArguments baseCommandArguments) {
+        List<String> expected = new ArrayList<>();
+        expected.add("path/to/java");
+        expected.add(AbstractCommandExecutor.formatTagProp());
+        expected.addAll(baseCommandArguments.getLogConfiguration().toSystemProperties());
+        expected.add("-jar");
+        expected.add("agent.jar");
+        expected.add("start");
+        expected.add("-token");
+        expected.add("fake-token");
+        expected.add("-buildsessionidfile");
+        expected.add("/path/to/buildsessionid.txt");
+        expected.add("-appname");
+        expected.add("demoApp");
+        expected.add("-buildname");
+        expected.add("1");
+        expected.add("-branchname");
+        expected.add("branchy");
+        expected.add("-labid");
+        expected.add("someEnv");
+        expected.add("-testStage");
+        expected.add("newEnv");
+        return expected;
+    }
     private BaseCommandArguments createBaseCommandArguments() {
         BaseCommandArguments baseCommandArguments = new BaseCommandArguments();
         baseCommandArguments.setJavaPath("path/to/java");
@@ -78,6 +102,7 @@ public class StartTest {
         baseCommandArguments.setBuildSessionIdFile("/path/to/buildsessionid.txt");
         baseCommandArguments.setLabId("someEnv");
         baseCommandArguments.setEnvVars(new EnvVars());
+        baseCommandArguments.setLogConfiguration(new LogConfiguration());
         return baseCommandArguments;
     }
 

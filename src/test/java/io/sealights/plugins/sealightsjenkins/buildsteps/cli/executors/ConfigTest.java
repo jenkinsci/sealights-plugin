@@ -4,6 +4,7 @@ import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.util.DescribableList;
 import io.sealights.plugins.sealightsjenkins.TestHelper;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.LogConfiguration;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
@@ -15,9 +16,12 @@ import io.sealights.plugins.sealightsjenkins.utils.NullLogger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -38,22 +42,20 @@ public class ConfigTest {
         ConfigCommandExecutor configExecutor = new ConfigCommandExecutor(nullLogger, baseCommandArguments, configArguments);
         configExecutor.setJenkinsUtils(createMockJenkinsUtils());
 
-        Runtime runtimeMock = mock(Runtime.class);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
 
-        final ArgumentCaptor<String[]> captor = ArgumentCaptor.forClass(String[].class);
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 
         //Act
-        configExecutor.setRuntime(runtimeMock);
+        configExecutor.setProcessExecutor(execMock);
         configExecutor.execute();
-        verify(runtimeMock).exec(captor.capture());
-        final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java", AbstractCommandExecutor.formatTagProp(), "-jar", "agent.jar",
-        "-config", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-packagesincluded", "io.include.*", "-packagesexcluded", "io.exclude.*", "-buildsessionidfile", "/path/to/workspace" + File.separator + "buildSessionId.txt", "-enableNoneZeroErrorCode"};
+        verify(execMock).command(captor.capture());
+        final List<String > actualCommandLine = captor.getValue();
 
         // Assert
-        Assert.assertArrayEquals(
+        Assert.assertEquals(
                 "The command line that was executed for the 'start' executor is not as expected",
-                expectedCommandLine, actualCommandLine);
+                createExpectedCommand(baseCommandArguments), actualCommandLine);
     }
 
     protected JenkinsUtils createMockJenkinsUtils() {
@@ -67,14 +69,15 @@ public class ConfigTest {
         //Arrange
         BaseCommandArguments baseCommandArguments = createBaseCommandArguments();
         ConfigCommandArguments configArguments = createConfigArguments();
-        ConfigCommandExecutor configExecutor = new ConfigCommandExecutor(nullLogger, baseCommandArguments, configArguments);
+        ConfigCommandExecutor configExecutor = new ConfigCommandExecutor(nullLogger, baseCommandArguments,
+         configArguments);
 
-        Runtime runtimeMock = mock(Runtime.class);
-        when(runtimeMock.exec(any(String.class))).thenThrow(new IOException());
-
-        //Act
-        configExecutor.setRuntime(runtimeMock);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
         try {
+            when(execMock.execute()).thenThrow(new IOException());
+
+            //Act
+            configExecutor.setProcessExecutor(execMock);
             boolean result = configExecutor.execute();
             Assert.assertFalse("configExecutor.execute() should be false!", result);
         } catch (Exception e) {
@@ -98,12 +101,37 @@ public class ConfigTest {
         baseCommandArguments.setAppName("demoApp");
         baseCommandArguments.setBuildName("1");
         baseCommandArguments.setBranchName("branchy");
-        baseCommandArguments.setBuildSessionIdFile("/path/to/buildsessionid.txt");
         baseCommandArguments.setEnvVars(new EnvVars());
-
+        baseCommandArguments.setLogConfiguration(new LogConfiguration());
         TestHelper.BuildMock build = testHelper.createBuildMock();
         baseCommandArguments.setBuild(build);
 
         return baseCommandArguments;
+    }
+
+    private List<String> createExpectedCommand(BaseCommandArguments baseCommandArguments) {
+        List<String> expected = new ArrayList<>();
+        expected.add("path/to/java");
+        expected.add(AbstractCommandExecutor.formatTagProp());
+        expected.addAll(baseCommandArguments.getLogConfiguration().toSystemProperties());
+        expected.add("-jar");
+        expected.add("agent.jar");
+        expected.add("-config");
+        expected.add("-token");
+        expected.add("fake-token");
+        expected.add("-appname");
+        expected.add("demoApp");
+        expected.add("-buildname");
+        expected.add("1");
+        expected.add("-branchname");
+        expected.add("branchy");
+        expected.add("-packagesincluded");
+        expected.add("io.include.*");
+        expected.add("-packagesexcluded");
+        expected.add("io.exclude.*");
+        expected.add("-buildsessionidfile");
+        expected.add("/path/to/workspace" + File.separator + "buildSessionId.txt");
+        expected.add("-enableNoneZeroErrorCode");
+        return expected;
     }
 }
