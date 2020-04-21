@@ -23,6 +23,7 @@ public class LogConfiguration {
     private String logFolder;
     private LogDestination logDestination = LogDestination.CONSOLE;
     private LogLevel logLevel = LogLevel.INFO;
+    private String logFilename;
 
 
     public List<String> toSystemProperties() {
@@ -36,6 +37,9 @@ public class LogConfiguration {
         }
         if (logDestination.equals(LogDestination.FILE)) {
             properties.add(formatKeyValue(SL_LOG_TO_FILE, "true"));
+            if(!StringUtils.isNullOrEmpty(logFilename)){
+                properties.add(formatKeyValue(SL_LOG_FILE_NAME, logFilename));
+            }
             if (!StringUtils.isNullOrEmpty(logFolder)) {
                 properties.add(formatKeyValue(SL_LOG_FOLDER, logFolder));
             }

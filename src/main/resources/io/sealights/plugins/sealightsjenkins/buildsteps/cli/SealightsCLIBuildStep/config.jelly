@@ -44,6 +44,10 @@
             <f:textbox value="${instance.logFolder}"/>
         </f:entry>
 
+        <f:entry title="Logs filename" field="logFilename" description="The name of log file.">
+            <f:textbox value="${instance.logFilename}"/>
+        </f:entry>
+
     </f:advanced>
 
 

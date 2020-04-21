@@ -14,7 +14,7 @@ public class LogConfigurationTest {
     @Test
     public void toSystemProperties_logsLevelOff_shouldNotAddLogToConsole(){
         List<String> expectedProps = new ExpectedPropsBuilder().withLogLevel(LogLevel.OFF).build();
-        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, LogLevel.OFF);
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, LogLevel.OFF, null);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -42,7 +42,7 @@ public class LogConfigurationTest {
     @Test
     public void toSystemProperties_logsToFile_shouldAddToProperties(){
         List<String> expectedProps = new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToFile().build();
-        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.FILE, LogLevel.INFO);
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.FILE, LogLevel.INFO, null);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -52,7 +52,7 @@ public class LogConfigurationTest {
         String logFolder = "log/sl";
         List<String> expectedProps =
          new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToFile().withLogToFolder(logFolder).build();
-        LogConfiguration logConfiguration = new LogConfiguration(logFolder, LogDestination.FILE, LogLevel.INFO);
+        LogConfiguration logConfiguration = new LogConfiguration(logFolder, LogDestination.FILE, LogLevel.INFO, null);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -62,14 +62,34 @@ public class LogConfigurationTest {
         String logFolder = "log/sl";
         List<String> expectedProps =
                 new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToConsole().build();
-        LogConfiguration logConfiguration = new LogConfiguration(logFolder, LogDestination.CONSOLE, LogLevel.INFO);
+        LogConfiguration logConfiguration = new LogConfiguration(logFolder, LogDestination.CONSOLE, LogLevel.INFO, null);
+
+        runTestAndAssert(expectedProps, logConfiguration);
+    }
+
+    @Test
+    public void toSystemProperties_logsToFileWithFilename_shouldAddFileNameToProperties(){
+        String logFile = "sl-logs";
+        List<String> expectedProps =
+                new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToFile().withLogFilename(logFile).build();
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.FILE, LogLevel.INFO, logFile);
+
+        runTestAndAssert(expectedProps, logConfiguration);
+    }
+
+    @Test
+    public void toSystemProperties_logsToConsoleWithFilename_shouldNotAddFileNameToProperties(){
+        String logFile = "sl-logs";
+        List<String> expectedProps =
+                new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToConsole().build();
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, LogLevel.INFO, logFile);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
 
     private void runLogLevelTest(LogLevel level){
         List<String> expectedProps = new ExpectedPropsBuilder().withLogLevel(level).withLogToConsole().build();
-        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, level);
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, level, null);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -101,6 +121,11 @@ class ExpectedPropsBuilder {
 
     public ExpectedPropsBuilder withLogToFolder(String folder){
         props.add(LogConfiguration.formatKeyValue(LogConfiguration.SL_LOG_FOLDER, folder));
+        return this;
+    }
+
+    public ExpectedPropsBuilder withLogFilename(String filename){
+        props.add(LogConfiguration.formatKeyValue(LogConfiguration.SL_LOG_FILE_NAME, filename));
         return this;
     }
 

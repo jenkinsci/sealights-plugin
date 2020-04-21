@@ -34,13 +34,14 @@ public class SealightsCLIBuildStep extends Builder {
     public CommandMode commandMode;
     public CLIRunner cliRunner;
     private String logFolder;
+    private String logFilename;
     private LogDestination logDestination = LogDestination.CONSOLE;
     private LogLevel logLevel = LogLevel.OFF;
 
     @DataBoundConstructor
     public SealightsCLIBuildStep(boolean enabled, boolean failBuildIfStepFail,
                                  CommandMode commandMode, CLIRunner cliRunner,
-                                  LogDestination logDestination, String logFolder, LogLevel logLevel) {
+                                  LogDestination logDestination, String logFolder, LogLevel logLevel, String logFilename) {
         this.enabled = enabled;
         this.failBuildIfStepFail = failBuildIfStepFail;
         this.commandMode = commandMode;
@@ -48,6 +49,7 @@ public class SealightsCLIBuildStep extends Builder {
         this.logLevel = logLevel;
         this.logDestination = logDestination;
         this.logFolder = logFolder;
+        this.logFilename = logFilename;
     }
 
     /* * The goal of this method is to support migration of data between versions
@@ -164,6 +166,16 @@ public class SealightsCLIBuildStep extends Builder {
         this.logLevel = logLevel;
     }
 
+    @Exported
+    public String getLogFilename() {
+        return logFilename;
+    }
+
+    @Exported
+    public void setLogFilename(String logFilename) {
+        this.logFilename = logFilename;
+    }
+
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
         boolean isStepSuccessful = false;
@@ -177,7 +189,7 @@ public class SealightsCLIBuildStep extends Builder {
 
             CLIHandler cliHandler = new CLIHandler(logger);
             cliRunner = createCLIRunner(commandMode);
-            LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel);
+            LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel, logFilename);
             isStepSuccessful = cliRunner.perform(build, launcher, listener, commandMode, cliHandler, logger, logConfiguration);
         } catch (Exception e) {
             logger.error("Error occurred while performing 'Sealights CLI Build Step' Skipping sealights integration. " +
