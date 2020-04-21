@@ -22,7 +22,7 @@ public class LogConfiguration {
 
     private String logFolder;
     private LogDestination logDestination = LogDestination.CONSOLE;
-    private LogLevel logLevel = LogLevel.INFO;
+    private LogLevel logLevel = LogLevel.OFF;
     private String logFilename;
 
 
