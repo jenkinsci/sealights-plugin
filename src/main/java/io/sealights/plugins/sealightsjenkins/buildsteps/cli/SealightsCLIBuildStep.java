@@ -186,7 +186,8 @@ public class SealightsCLIBuildStep extends Builder {
                 logger.info("Sealights CLI step is disabled.");
                 return true;
             }
-            LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel, logFilename);
+            LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel, logFilename
+                    , build.getEnvironment(listener), logger);
 
             CLIHandler cliHandler = new CLIHandler(logger);
             cliRunner = createCLIRunner(commandMode);

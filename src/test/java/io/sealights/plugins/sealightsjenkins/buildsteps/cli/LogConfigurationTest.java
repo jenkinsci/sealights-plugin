@@ -1,9 +1,14 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 
 
+import hudson.EnvVars;
 import io.sealights.agents.infra.integration.enums.LogDestination;
 import io.sealights.agents.infra.integration.enums.LogLevel;
+import io.sealights.plugins.sealightsjenkins.utils.Logger;
+import io.sealights.plugins.sealightsjenkins.utils.NullLogger;
+import io.sealights.plugins.sealightsjenkins.utils.PathUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,10 +16,20 @@ import java.util.List;
 
 public class LogConfigurationTest {
 
+    private EnvVars envVars;
+    private String workspace = "/var/lib/jenkins/workspace/job";
+    private Logger nullLogger = new NullLogger();
+    @Before
+    public void setUp() throws Exception {
+        envVars = new EnvVars();
+        envVars.put("WORKSPACE", workspace);
+    }
+
     @Test
     public void toSystemProperties_logsLevelOff_shouldNotAddLogToConsole(){
         List<String> expectedProps = new ExpectedPropsBuilder().withLogLevel(LogLevel.OFF).build();
-        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, LogLevel.OFF, null);
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, LogLevel.OFF, null,
+         envVars, nullLogger);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -42,7 +57,8 @@ public class LogConfigurationTest {
     @Test
     public void toSystemProperties_logsToFile_shouldAddToProperties(){
         List<String> expectedProps = new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToFile().build();
-        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.FILE, LogLevel.INFO, null);
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.FILE, LogLevel.INFO, null,
+         envVars, nullLogger);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -51,8 +67,9 @@ public class LogConfigurationTest {
     public void toSystemProperties_logsToFileWithFolder_shouldAddFolderToProperties(){
         String logFolder = "log/sl";
         List<String> expectedProps =
-         new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToFile().withLogToFolder(logFolder).build();
-        LogConfiguration logConfiguration = new LogConfiguration(logFolder, LogDestination.FILE, LogLevel.INFO, null);
+         new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToFile().withLogToFolder(PathUtils.join(workspace, logFolder)).build();
+        LogConfiguration logConfiguration = new LogConfiguration(logFolder, LogDestination.FILE, LogLevel.INFO, null,
+         envVars, nullLogger);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -62,7 +79,8 @@ public class LogConfigurationTest {
         String logFolder = "log/sl";
         List<String> expectedProps =
                 new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToConsole().build();
-        LogConfiguration logConfiguration = new LogConfiguration(logFolder, LogDestination.CONSOLE, LogLevel.INFO, null);
+        LogConfiguration logConfiguration = new LogConfiguration(logFolder, LogDestination.CONSOLE, LogLevel.INFO,
+         null, envVars, nullLogger);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -72,7 +90,8 @@ public class LogConfigurationTest {
         String logFile = "sl-logs";
         List<String> expectedProps =
                 new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToFile().withLogFilename(logFile).build();
-        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.FILE, LogLevel.INFO, logFile);
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.FILE, LogLevel.INFO, logFile,
+         envVars, nullLogger);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
@@ -82,14 +101,15 @@ public class LogConfigurationTest {
         String logFile = "sl-logs";
         List<String> expectedProps =
                 new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToConsole().build();
-        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, LogLevel.INFO, logFile);
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, LogLevel.INFO, logFile
+        , envVars, nullLogger);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
 
     private void runLogLevelTest(LogLevel level){
         List<String> expectedProps = new ExpectedPropsBuilder().withLogLevel(level).withLogToConsole().build();
-        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, level, null);
+        LogConfiguration logConfiguration = new LogConfiguration(null, LogDestination.CONSOLE, level, null, envVars, nullLogger);
 
         runTestAndAssert(expectedProps, logConfiguration);
     }
