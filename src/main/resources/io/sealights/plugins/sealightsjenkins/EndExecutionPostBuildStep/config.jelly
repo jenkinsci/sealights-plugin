@@ -1,0 +1,10 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:entry title="buildSessionId" field="buildSessionId">
+        <f:textbox value="${buildSessionId}" default="$${SL_BUILD_SESSION_ID}"/>
+    </f:entry>
+    <f:advanced title="Sealights Advanced">
+        <f:entry title="Additional Arguments" field="additionalArguments">
+            <f:expandableTextbox value="${additionalArguments}"/>
+        </f:entry>
+    </f:advanced>
+</j:jelly>
