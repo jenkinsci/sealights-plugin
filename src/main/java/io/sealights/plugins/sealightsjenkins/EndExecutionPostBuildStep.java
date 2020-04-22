@@ -9,10 +9,9 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.CLIHandler;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.CLIRunner;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.CommandBuildName;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.CommandMode;
+import io.sealights.agents.infra.integration.enums.LogDestination;
+import io.sealights.agents.infra.integration.enums.LogLevel;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.*;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
@@ -23,11 +22,20 @@ public class EndExecutionPostBuildStep extends Recorder {
 
     private String buildSessionId;
     private String additionalArguments;
+    private String logFolder;
+    private String logFilename;
+    private LogDestination logDestination = LogDestination.CONSOLE;
+    private LogLevel logLevel = LogLevel.OFF;
 
     @DataBoundConstructor
-    public EndExecutionPostBuildStep(String buildSessionId, String additionalArguments) {
+    public EndExecutionPostBuildStep(String buildSessionId, String additionalArguments, String logFolder,
+     String logFilename, LogDestination logDestination, LogLevel logLevel) {
         this.buildSessionId = buildSessionId;
         this.additionalArguments = additionalArguments;
+        this.logFolder = logFolder;
+        this.logFilename = logFilename;
+        this.logDestination = logDestination;
+        this.logLevel = logLevel;
     }
 
     /**
@@ -43,10 +51,11 @@ public class EndExecutionPostBuildStep extends Recorder {
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, additionalArguments);
+        LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel, logFilename);
         Logger logger = new Logger(listener.getLogger(), "SeaLights CLI - " + endView.getCurrentMode());
         CLIHandler cliHandler = new CLIHandler(logger);
         return new CLIRunner(buildSessionId, additionalArguments, new CommandBuildName.DefaultBuildName()).perform(build, launcher, listener, endView,
-                cliHandler, logger);
+                cliHandler, logger, logConfiguration);
     }
 
     @Exported
@@ -67,6 +76,41 @@ public class EndExecutionPostBuildStep extends Recorder {
     @Exported
     public void setAdditionalArguments(String additionalArguments) {
         this.additionalArguments = additionalArguments;
+    }
+
+    @Exported
+    public LogDestination getLogDestination() {
+        return logDestination;
+    }
+
+    @Exported
+    public void setLogDestination(LogDestination logDestination) {
+        this.logDestination = logDestination;
+    }
+
+    @Exported
+    public String getLogFolder() {
+        return logFolder;
+    }
+
+    @Exported
+    public LogLevel getLogLevel() {
+        return logLevel;
+    }
+
+    @Exported
+    public void setLogLevel(LogLevel logLevel) {
+        this.logLevel = logLevel;
+    }
+
+    @Exported
+    public String getLogFilename() {
+        return logFilename;
+    }
+
+    @Exported
+    public void setLogFilename(String logFilename) {
+        this.logFilename = logFilename;
     }
 
     @Override
