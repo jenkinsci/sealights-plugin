@@ -1,6 +1,7 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import hudson.EnvVars;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.LogConfiguration;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.ExternalReportCommandArguments;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
@@ -8,10 +9,12 @@ import io.sealights.plugins.sealightsjenkins.utils.NullLogger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class SendExternalReportTest {
@@ -26,21 +29,19 @@ public class SendExternalReportTest {
         ExternalReportCommandExecutor externalReportExecutor = new ExternalReportCommandExecutor(nullLogger, baseCommandArguments, externalReportArguments);
 
 
-        Runtime runtimeMock = mock(Runtime.class);
-
-        final ArgumentCaptor<String[]> captor = ArgumentCaptor.forClass(String[].class);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 
         //Act
-        externalReportExecutor.setRuntime(runtimeMock);
+        externalReportExecutor.setProcessExecutor(execMock);
         externalReportExecutor.execute();
-        verify(runtimeMock).exec(captor.capture());
-        final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java",AbstractCommandExecutor.formatTagProp(), "-jar", "agent.jar", "externalReport", "-token", "fake-token", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-report", "fake-report"};
+        verify(execMock).command(captor.capture());
+        final List<String> actualCommandLine = captor.getValue();
 
         // Assert
-        Assert.assertArrayEquals(
+        Assert.assertEquals(
                 "The command line that was executed for the 'external report' executor is not as expected",
-                expectedCommandLine, actualCommandLine);
+                createExpectedCommand(baseCommandArguments), actualCommandLine);
     }
 
     @Test
@@ -48,14 +49,15 @@ public class SendExternalReportTest {
         //Arrange
         BaseCommandArguments baseCommandArguments = createBaseCommandArguments();
         ExternalReportCommandArguments externalReportArguments = createExternalReportArguments();
-        ExternalReportCommandExecutor externalReportExecutor = new ExternalReportCommandExecutor(nullLogger, baseCommandArguments, externalReportArguments);
+        ExternalReportCommandExecutor externalReportExecutor = new ExternalReportCommandExecutor(nullLogger,
+         baseCommandArguments, externalReportArguments);
 
-        Runtime runtimeMock = mock(Runtime.class);
-        when(runtimeMock.exec(any(String.class))).thenThrow(new IOException());
-
-        //Act
-        externalReportExecutor.setRuntime(runtimeMock);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
         try {
+            when(execMock.execute()).thenThrow(new IOException());
+
+            //Act
+            externalReportExecutor.setProcessExecutor(execMock);
             boolean result = externalReportExecutor.execute();
             Assert.assertFalse("externalReportExecutor.execute() should be false!", result);
         } catch (Exception e) {
@@ -80,7 +82,28 @@ public class SendExternalReportTest {
         baseCommandArguments.setBuildName("1");
         baseCommandArguments.setBranchName("branchy");
         baseCommandArguments.setEnvVars(new EnvVars());
+        baseCommandArguments.setLogConfiguration(new LogConfiguration());
         return baseCommandArguments;
     }
 
+    private List<String> createExpectedCommand(BaseCommandArguments baseCommandArguments) {
+        List<String> expected = new ArrayList<>();
+        expected.add("path/to/java");
+        expected.add(AbstractCommandExecutor.formatTagProp());
+        expected.addAll(baseCommandArguments.getLogConfiguration().toSystemProperties());
+        expected.add("-jar");
+        expected.add("agent.jar");
+        expected.add("externalReport");
+        expected.add("-token");
+        expected.add("fake-token");
+        expected.add("-appname");
+        expected.add("demoApp");
+        expected.add("-buildname");
+        expected.add("1");
+        expected.add("-branchname");
+        expected.add("branchy");
+        expected.add("-report");
+        expected.add("fake-report");
+        return expected;
+    }
 }

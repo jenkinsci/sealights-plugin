@@ -31,6 +31,25 @@
         </j:forEach>
     </f:dropdownList>
 
+    <f:advanced title="Logs">
+        <f:entry field="logLevel" title="Log Level">
+            <f:enum>${it.displayName}</f:enum>
+        </f:entry>
+
+        <f:entry field="logDestination" title="Logging Destination">
+            <f:enum>${it.displayName}</f:enum>
+        </f:entry>
+
+        <f:entry title="Logs Folder" field="logFolder" description="The path in which the logs will be saved.">
+            <f:textbox value="${instance.logFolder}"/>
+        </f:entry>
+
+        <f:entry title="Logs filename" field="logFilename" description="The name of log file.">
+            <f:textbox value="${instance.logFilename}"/>
+        </f:entry>
+
+    </f:advanced>
+
 
 
 </j:jelly>

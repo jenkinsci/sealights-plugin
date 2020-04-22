@@ -4,12 +4,11 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.PathUtils;
-import io.sealights.plugins.sealightsjenkins.utils.StreamUtils;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.ProcessResult;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,61 +20,34 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 
     protected Logger logger;
     protected BaseCommandArguments baseArgs;
-    private Runtime runtime;
+    private ProcessExecutor processExecutor;
 
     public AbstractCommandExecutor(Logger logger, BaseCommandArguments baseArgs) {
         this.logger = logger;
         this.baseArgs = baseArgs;
-        this.runtime = Runtime.getRuntime();
+        this.processExecutor = new ProcessExecutor();
     }
 
     public boolean execute() {
         try {
-            String[] execCommand = createExecutionCommand();
-
-            // Run a java app in a separate system process
-            logger.info("About to execute command: " + Arrays.toString(prettifyToken(execCommand)));
-
-            Process process = runtime.exec(execCommand);
-            process.waitFor();
-
-            printStreams(process);
-
-            if (process.exitValue() == 0) {
-                return true;
-            }
-
+            ProcessResult result = processExecutor.command(createExecutionCommand()).readOutput(true).execute();
+            String output = result.outputUTF8();
+            logger.info(output);
+            return result.getExitValue() == 0;
         } catch (Exception e) {
             logger.error("Unable to perform '" + getCommandName() + "' command. Error: ", e);
         }
-
         return false;
     }
 
-    private void printStreams(Process process) {
-        // Receive the process output
-        InputStream inputStream = process.getInputStream();
-        InputStream errorStream = process.getErrorStream();
-        String outputInfo = StreamUtils.toString(inputStream);
-        String outputErrors = StreamUtils.toString(errorStream);
-        logger.info("Process ended with exit code: " + process.exitValue());
-        if (!StringUtils.isNullOrEmpty(outputInfo)) {
-            logger.info("Process output:");
-            logger.info(outputInfo);
-        }
-        if (!StringUtils.isNullOrEmpty(outputErrors)) {
-            logger.info("Process errors output:");
-            logger.error(outputErrors);
-        }
-    }
 
-
-    public String[] createExecutionCommand() {
+    public List<String> createExecutionCommand() {
         List<String> commands = new ArrayList<>();
 
         String javaPath = resolvedJavaPath();
         commands.add(javaPath);
         commands.add(formatTagProp());
+        commands.addAll(baseArgs.getLogConfiguration().toSystemProperties());
         commands.add("-jar");
         commands.add(baseArgs.getAgentPath());
         commands.add(getCommandName());
@@ -83,9 +55,7 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
         addBaseArgumentsLine(commands);
         addAdditionalArguments(commands);
 
-        String[] commandsArray = new String[commands.size()];
-        commandsArray = commands.toArray(commandsArray);
-        return commandsArray;
+        return commands;
     }
 
     public static String formatTagProp(){
@@ -132,8 +102,8 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
         return localJava;
     }
 
-    public void setRuntime(Runtime runtime) {
-        this.runtime = runtime;
+    public void setProcessExecutor(ProcessExecutor processExecutor) {
+        this.processExecutor = processExecutor;
     }
     public String[] prettifyToken(String[] commands){
         String[] commandsClone = commands.clone();

@@ -2,6 +2,7 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import hudson.model.Saveable;
 import hudson.util.DescribableList;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.LogConfiguration;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.JavaOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptions;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.configurationtechnologies.TechnologyOptionsDescriptor;
@@ -10,9 +11,9 @@ import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.PrConfigCom
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -35,14 +36,13 @@ public class PrConfigTest extends ConfigTest {
         PrConfigCommandExecutor executor = createTestedExecutor(techOptions);
 
         //Act
-        String[] executionCommand = executor.createExecutionCommand();
-        List<String> commandAsList = Arrays.asList(executionCommand);
+        List<String> executionCommand = executor.createExecutionCommand();
 
         //Assert
-        String actualLatestCommit = findValueInArray(commandAsList, "-latestCommit");
-        String actualPullRequestNumber = findValueInArray(commandAsList, "-pullRequestNumber");
-        String actualRepoUrl = findValueInArray(commandAsList, "-repoUrl");
-        String actualTargetBranch = findValueInArray(commandAsList, "-targetBranch");
+        String actualLatestCommit = findValueInList(executionCommand, "-latestCommit");
+        String actualPullRequestNumber = findValueInList(executionCommand, "-pullRequestNumber");
+        String actualRepoUrl = findValueInList(executionCommand, "-repoUrl");
+        String actualTargetBranch = findValueInList(executionCommand, "-targetBranch");
         Assert.assertEquals(LATEST_COMMIT, actualLatestCommit);
         Assert.assertEquals(PULL_REQUEST_NUMBER, actualPullRequestNumber);
         Assert.assertEquals(REPO_URL, actualRepoUrl);
@@ -59,12 +59,11 @@ public class PrConfigTest extends ConfigTest {
         PrConfigCommandExecutor executor = createTestedExecutor(techOptions);
 
         //Act
-        String[] executionCommand = executor.createExecutionCommand();
-        List<String> commandAsList = Arrays.asList(executionCommand);
+        List<String> executionCommand = executor.createExecutionCommand();
 
         // Assert
-        String actualIncluded = findValueInArray(commandAsList, "-packagesincluded");
-        String actualExcluded = findValueInArray(commandAsList, "-packagesexcluded");
+        String actualIncluded = findValueInList(executionCommand, "-packagesincluded");
+        String actualExcluded = findValueInList(executionCommand, "-packagesexcluded");
         Assert.assertEquals(packagesIncluded, actualIncluded);
         Assert.assertEquals(packagesExcluded, actualExcluded);
 
@@ -76,16 +75,16 @@ public class PrConfigTest extends ConfigTest {
         String proxy = "http://localhost:8888";
         BaseCommandArguments baseCommandArguments = new BaseCommandArguments();
         baseCommandArguments.setProxy(proxy);
+        baseCommandArguments.setLogConfiguration(new LogConfiguration());
         PrConfigCommandExecutor executor = new PrConfigCommandExecutor(nullLogger,
                 baseCommandArguments, createPrConfigArguments(techOptions));
 
 
         //Act
-        String[] executionCommand = executor.createExecutionCommand();
-        List<String> commandAsList = Arrays.asList(executionCommand);
+        List<String> executionCommand = executor.createExecutionCommand();
 
         // Assert
-        String actualProxy = findValueInArray(commandAsList, "-proxy");
+        String actualProxy = findValueInList(executionCommand, "-proxy");
         Assert.assertEquals(proxy, actualProxy);
     }
 
@@ -95,10 +94,10 @@ public class PrConfigTest extends ConfigTest {
         PrConfigCommandExecutor executor = new PrConfigCommandExecutor(nullLogger, baseCommandArguments,
                 prConfigCommandArguments);
         executor.setJenkinsUtils(createMockJenkinsUtils());
-        Runtime runtimeMock = mock(Runtime.class);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
 
         //Act
-        executor.setRuntime(runtimeMock);
+        executor.setProcessExecutor(execMock);
         return executor;
     }
 
@@ -110,7 +109,7 @@ public class PrConfigTest extends ConfigTest {
         return configArguments;
     }
 
-    private String findValueInArray(List<String> list, String key){
+    private String findValueInList(List<String> list, String key){
         int index = list.indexOf(key);
         if(index == -1){
             return null;
