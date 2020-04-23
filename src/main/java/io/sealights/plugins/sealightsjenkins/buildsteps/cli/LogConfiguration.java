@@ -13,6 +13,10 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Logging configuration for the agent, will pass as System properties using toSystemProperties method
+ */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

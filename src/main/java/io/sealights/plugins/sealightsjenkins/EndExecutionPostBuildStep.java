@@ -22,6 +22,11 @@ import org.kohsuke.stapler.export.Exported;
 import java.io.IOException;
 import java.util.Properties;
 
+
+/**
+ * If tests are failing and start execution command used before then the execution dose not ends.
+ * This step is triggering the end execution command as post build action to avoid that scenario.
+ */
 public class EndExecutionPostBuildStep extends Recorder {
     public static final String DEFAULT_BSID_VAL = "${SL_BUILD_SESSION_ID}";
 
