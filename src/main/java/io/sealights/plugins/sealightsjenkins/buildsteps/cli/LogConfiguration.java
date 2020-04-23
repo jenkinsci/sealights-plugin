@@ -53,7 +53,7 @@ public class LogConfiguration {
             }
             if (!StringUtils.isNullOrEmpty(logFolder)) {
                 String resolvedLogFolder = resolveLogFolder(logFolder);
-                logger.info("Log folder set to " + resolvedLogFolder);
+                logger.info("Log folder set to '" + resolvedLogFolder + "'");
                 properties.add(formatKeyValue(SL_LOG_FOLDER, resolvedLogFolder));
             }
         }
