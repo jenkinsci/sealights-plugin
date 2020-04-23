@@ -78,9 +78,6 @@ public class SendExternalReportTest {
         baseCommandArguments.setJavaPath("path/to/java");
         baseCommandArguments.setAgentPath("agent.jar");
         baseCommandArguments.setToken("fake-token");
-        baseCommandArguments.setAppName("demoApp");
-        baseCommandArguments.setBuildName("1");
-        baseCommandArguments.setBranchName("branchy");
         baseCommandArguments.setEnvVars(new EnvVars());
         baseCommandArguments.setLogConfiguration(new LogConfiguration());
         return baseCommandArguments;
@@ -96,12 +93,6 @@ public class SendExternalReportTest {
         expected.add("externalReport");
         expected.add("-token");
         expected.add("fake-token");
-        expected.add("-appname");
-        expected.add("demoApp");
-        expected.add("-buildname");
-        expected.add("1");
-        expected.add("-branchname");
-        expected.add("branchy");
         expected.add("-report");
         expected.add("fake-report");
         return expected;

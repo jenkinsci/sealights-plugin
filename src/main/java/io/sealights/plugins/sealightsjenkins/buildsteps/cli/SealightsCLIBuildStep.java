@@ -243,18 +243,16 @@ public class SealightsCLIBuildStep extends Builder {
         }
     }
 
-    private CLIRunner createCLIRunner(CommandMode commandMode){
+    public CLIRunner createCLIRunner(CommandMode commandMode){
         if(commandMode instanceof CommandMode.ConfigView){
             CommandMode.ConfigView configView=(CommandMode.ConfigView) commandMode;
             return new CLIRunner(configView.getBuildSessionId(),configView.getAppName(),configView.getBranchName(),
                     configView.getBuildName(),configView.getAdditionalArguments(),null);
         }else {
             Properties properties = PropertiesUtils.toProperties(commandMode.getAdditionalArguments());
-            String appName = (properties.get("appname")!= null)? properties.get("appname").toString():null;
-            String branchName= (properties.get("branchname")!= null)? properties.get("branchname").toString():null;
             String labId= (properties.get("labid")!= null)? properties.get("labid").toString():null;
-            CommandBuildName buildName = new CommandBuildName.ManualBuildName((String) properties.get("buildname"));
-            return new CLIRunner(commandMode.getBuildSessionId(),appName,branchName,buildName,commandMode.getAdditionalArguments(),labId);
+            CommandBuildName buildName = new CommandBuildName.EmptyBuildName();
+            return new CLIRunner(commandMode.getBuildSessionId(), buildName, commandMode.getAdditionalArguments(),labId);
         }
     }
 

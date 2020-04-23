@@ -78,10 +78,6 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 
         addArgumentKeyVal("buildsessionid", baseArgs.getBuildSessionId(), commandsList);
         addArgumentKeyVal("buildsessionidfile", baseArgs.getBuildSessionIdFile(), commandsList);
-        addArgumentKeyVal("appname", baseArgs.getAppName(), commandsList);
-        addArgumentKeyVal("buildname", baseArgs.getBuildName(), commandsList);
-        addArgumentKeyVal("branchname", baseArgs.getBranchName(), commandsList);
-
         addArgumentKeyVal("labid", baseArgs.getLabId(), commandsList);
         addArgumentKeyVal("proxy", baseArgs.getProxy(), commandsList);
     }
