@@ -22,6 +22,7 @@ public class CLIRunnerTest {
 
     private Logger nullLogger = new NullLogger();
     private String validToken = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL0RFVi1BOTkuYXV0aC5zZWFsaWdodHMuaW8vIiwiand0aWQiOiJERVYtQTk5LGktNTZiMDI0ZGQsdHhJZCwxNDc4NDUwNzUxODEyIiwic3ViamVjdCI6ImFnZW50c0BDdXN0b21lcklkIiwiYXVkaWVuY2UiOlsiYWdlbnRzIl0sIngtc2wtcm9sZSI6ImFnZW50Iiwic2xfaW1wZXJfc3ViamVjdCI6IiIsIngtc2wtc2VydmVyIjoiaHR0cDovL3d3dy5nb29nbGUuY29tL3NlYWxpZ2h0cyIsImlhdCI6MTQ3ODQ1MDc1M30.awtipSFsTcRCT6sUBWaFv2GKaXXZ7gCSBRXorar1nOpOkzUPQqPB9xz0rOOHY7Kb7vFnZUjsOOTob_ui2OZe430O7MJmdFkxrbpXQcUndvWHfi63STsGepI1q61tOejjrs7WiyInsUCMV00Tr25F2NRdf70PGloK8BBs9BdOhldJcEvTYnF8LPw5trAnE8YA-TuIxgjocR0a0QdF_JOibD2mpNQwIfvOsmNrrfArTOoZS2W1XZ_pXa-n1VuWDSgRZF9yVaPMwmqcLoNsydEURgtzuQj8cP5sUg6XjSLoAyfA6guTfZ4rIdJwxJ4GdC8k24yqzhV6X0c_mJ5yrlB9HNTBdIc651SrcMyd4UIM_-zMMEL-1ItKE-txdFijv9jeyr6mQxhbvkCeh6BRRJZqNti4dRrLeztAUbfsAayBEeTnAuMXXsMzSccS-pO0aU2zQMuZaVIzCHqIV9ex7vjwXNKGw4TspFkxw2w85QssHYvIUpPoQ7bzu8sFCKJY-phTRr7i6KCPBCez-Zlu_zL0txsZgwIcXE5rNZvRRC2imjrWVzGFb6IAGVHU3lbJuGocnl4Z-td1tf1mDZqZN9_NL8mltddUugeo7emJNU1UZiHN4lHEKxcayj4LFIgeTyE1R_d8EOi9WMieuEwpRB7r_qXMUDKci07su9UR6XpKS2I";
+    private LogConfiguration logConfiguration = new LogConfiguration();
 
     @Test
     public void perform_overrideTokenFromAdditionalArgs_useInvalidToken_executionShouldReturnFalse() throws IOException, InterruptedException {
@@ -35,7 +36,7 @@ public class CLIRunnerTest {
         CommandMode commandMode = createEndView();
 
         // Act
-        boolean successfulExecution = cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
+        boolean successfulExecution = cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger, logConfiguration);
 
         // Assert
         Assert.assertFalse("Execution should return 'false' when providing invalid token", successfulExecution);
@@ -60,7 +61,7 @@ public class CLIRunnerTest {
 
         // Act & Assert
         try {
-            cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
+            cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger, logConfiguration);
         } catch (SeaLightsIllegalStateException e) {
             Assert.fail("SeaLightsIllegalStateException should not be thrown when build session id is provided");
         }
@@ -397,7 +398,7 @@ public class CLIRunnerTest {
         CommandMode commandMode = createEndView();
         //Act
 
-        cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger);
+        cliRunner.perform(build, null, listener, commandMode, cliHandler, nullLogger, logConfiguration);
         return cliHandler;
     }
 

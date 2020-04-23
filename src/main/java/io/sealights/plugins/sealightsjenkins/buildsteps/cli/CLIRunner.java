@@ -125,7 +125,7 @@ public class CLIRunner extends Builder {
     }
 
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener,
-                           CommandMode commandMode, CLIHandler cliHandler, Logger logger)
+                           CommandMode commandMode, CLIHandler cliHandler, Logger logger, LogConfiguration logConfiguration)
             throws IOException, InterruptedException {
         try {
             Properties additionalProps = PropertiesUtils.toProperties(additionalArguments);
@@ -144,7 +144,7 @@ public class CLIRunner extends Builder {
             baseArgs.setBuild(build);
             baseArgs.setEnvVars(envVars);
             baseArgs.setLogger(logger);
-
+            baseArgs.setLogConfiguration(logConfiguration);
             String filesStorage = resolveFilesStorage(additionalProps, envVars);
 
 

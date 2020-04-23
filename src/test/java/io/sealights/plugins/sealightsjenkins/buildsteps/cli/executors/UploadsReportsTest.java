@@ -2,6 +2,7 @@ package io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors;
 
 import hudson.EnvVars;
 import io.sealights.plugins.sealightsjenkins.TestHelper;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.LogConfiguration;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.UploadReportsCommandArguments;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
@@ -9,10 +10,12 @@ import io.sealights.plugins.sealightsjenkins.utils.NullLogger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,22 +37,20 @@ public class UploadsReportsTest {
                 new UploadReportsCommandArguments("report1.txt,report2.txt", "folders", NO_MORE_REQUESTS, "someSource");
         UploadReportsCommandExecutor uploadReportsExecutor = new UploadReportsCommandExecutor(nullLogger, baseCommandArguments, uploadReportsArguments);
 
-        Runtime runtimeMock = mock(Runtime.class);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
 
-        final ArgumentCaptor<String[]> captor = ArgumentCaptor.forClass(String[].class);
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 
         //Act
-        uploadReportsExecutor.setRuntime(runtimeMock);
+        uploadReportsExecutor.setProcessExecutor(execMock);
         uploadReportsExecutor.execute();
-        verify(runtimeMock).exec(captor.capture());
-        final String[] actualCommandLine = captor.getValue();
-        String[] expectedCommandLine = {"path/to/java", AbstractCommandExecutor.formatTagProp(), "-jar", "agent.jar",
-        "uploadReports", "-token", "fake-token", "-buildsessionidfile", "/path/to/buildsessionid.txt", "-appname", "demoApp", "-buildname", "1", "-branchname", "branchy", "-labid", "someEnv", "-reportFile", "report1.txt", "-reportFile", "report2.txt", "-reportFilesFolder", "folders", "-hasMoreRequests", "false", "-source", "someSource"};
+        verify(execMock).command(captor.capture());
+        final List<String> actualCommandLine = captor.getValue();
 
         // Assert
-        Assert.assertArrayEquals(
+        Assert.assertEquals(
                 "The command line that was executed for the 'upload reports' executor is not as expected",
-                expectedCommandLine, actualCommandLine);
+                createExpectedCommand(baseCommandArguments), actualCommandLine);
     }
 
     @Test
@@ -58,17 +59,18 @@ public class UploadsReportsTest {
         BaseCommandArguments baseCommandArguments = createBaseCommandArguments();
         UploadReportsCommandArguments uploadReportsArguments =
                 new UploadReportsCommandArguments("report1.txt,report2.txt", "folders", NO_MORE_REQUESTS, "someSource");
-        UploadReportsCommandExecutor uploadReportsExecutor = new UploadReportsCommandExecutor(nullLogger, baseCommandArguments, uploadReportsArguments);
+        UploadReportsCommandExecutor uploadReportsExecutor = new UploadReportsCommandExecutor(nullLogger,
+         baseCommandArguments, uploadReportsArguments);
 
-        Runtime runtimeMock = mock(Runtime.class);
-        when(runtimeMock.exec(any(String.class))).thenThrow(new IOException());
-
-        //Act
-        uploadReportsExecutor.setRuntime(runtimeMock);
+        ProcessExecutor execMock = mock(ProcessExecutor.class);
         try {
+            when(execMock.execute()).thenThrow(new IOException());
+
+            //Act
+            uploadReportsExecutor.setProcessExecutor(execMock);
             boolean result = uploadReportsExecutor.execute();
             Assert.assertFalse("uploadReportsExecutor.execute() should be false!", result);
-        }catch (Exception e){
+        } catch (Exception e) {
             Assert.fail("uploadReportsExecutor.execute() should not throw exception!");
         }
     }
@@ -86,8 +88,41 @@ public class UploadsReportsTest {
         baseCommandArguments.setEnvVars(new EnvVars());
         TestHelper.BuildMock build = testHelper.createBuildMock();
         baseCommandArguments.setBuild(build);
-
+        baseCommandArguments.setLogConfiguration(new LogConfiguration());
         return baseCommandArguments;
+    }
+
+    private List<String> createExpectedCommand(BaseCommandArguments baseCommandArguments) {
+        List<String> expected = new ArrayList<>();
+        expected.add("path/to/java");
+        expected.add(AbstractCommandExecutor.formatTagProp());
+        expected.addAll(baseCommandArguments.getLogConfiguration().toSystemProperties());
+        expected.add("-jar");
+        expected.add("agent.jar");
+        expected.add("uploadReports");
+        expected.add("-token");
+        expected.add("fake-token");
+        expected.add("-buildsessionidfile");
+        expected.add("/path/to/buildsessionid.txt");
+        expected.add("-appname");
+        expected.add("demoApp");
+        expected.add("-buildname");
+        expected.add("1");
+        expected.add("-branchname");
+        expected.add("branchy");
+        expected.add("-labid");
+        expected.add("someEnv");
+        expected.add("-reportFile");
+        expected.add("report1.txt");
+        expected.add("-reportFile");
+        expected.add("report2.txt");
+        expected.add("-reportFilesFolder");
+        expected.add("folders");
+        expected.add("-hasMoreRequests");
+        expected.add("false");
+        expected.add("-source");
+        expected.add("someSource");
+        return expected;
     }
 
 }
