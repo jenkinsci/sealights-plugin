@@ -15,6 +15,7 @@ import io.sealights.agents.infra.integration.enums.LogLevel;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.*;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.PropertiesUtils;
+import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class EndExecutionPostBuildStep extends Recorder {
+    public static final String DEFAULT_BSID_VAL = "${SL_BUILD_SESSION_ID}";
 
     private String buildSessionId;
     private String additionalArguments;
@@ -56,6 +58,11 @@ public class EndExecutionPostBuildStep extends Recorder {
         CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, additionalArguments);
         Logger logger = new Logger(listener.getLogger(), "SeaLights CLI - " + endView.getCurrentMode());
         EnvVars envVars = build.getEnvironment(listener);
+
+        if(isBuildSessionIdNull(envVars)) {
+            logger.error("Could not resolve build session id value. raw value is '%s'. Sealights is disabled", buildSessionId);
+            return true;
+        }
         LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel, logFilename,
                 envVars, logger);
         Properties properties = PropertiesUtils.toProperties(additionalArguments);
@@ -69,6 +76,14 @@ public class EndExecutionPostBuildStep extends Recorder {
         return new CLIRunner(buildSessionId, additionalArguments, new CommandBuildName.DefaultBuildName(),
                 labid).perform(build, launcher, listener, endView,
                 cliHandler, logger, logConfiguration);
+    }
+
+    private boolean isBuildSessionIdNull(EnvVars envVars){
+        String expandedVal = envVars.expand(buildSessionId);
+        if(StringUtils.isNullOrEmpty(expandedVal) || expandedVal.equals(DEFAULT_BSID_VAL)){
+            return true;
+        }
+        return  false;
     }
 
     @Exported

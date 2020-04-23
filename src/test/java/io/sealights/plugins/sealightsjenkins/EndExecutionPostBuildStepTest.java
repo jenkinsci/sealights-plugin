@@ -30,7 +30,7 @@ public class EndExecutionPostBuildStepTest {
     public void setUp() throws Exception {
         cliHandler = mock(CLIHandler.class);
         build = mock(AbstractBuild.class);
-        envVars = new EnvVars();
+        envVars = mock(EnvVars.class);
         launcher = mock(Launcher.class);
         listener = mock(BuildListener.class);
         logger = mock(PrintStream.class);
@@ -42,13 +42,41 @@ public class EndExecutionPostBuildStepTest {
     @Test
     public void perform_withLabIdFromAdditionalArgs_shouldUseIt() throws IOException, InterruptedException {
         String lab1 = "lab1";
-        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance("bsid", "labid=" + lab1);
+        String bsid = "bsid";
+        when(envVars.expand(bsid)).thenReturn(bsid);
+        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(bsid, "labid=" + lab1);
         EndExecutionPostBuildStep spy = spy(endExecutionPostBuildStep);
 
         spy.perform(build, launcher, listener);
 
         verify(spy).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
                 any(Logger.class), any(LogConfiguration.class), eq(lab1));
+    }
+
+    @Test
+    public void perform_bsidNotResolved_shouldNotRunCommand() throws IOException, InterruptedException {
+        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(EndExecutionPostBuildStep.DEFAULT_BSID_VAL,
+         null);
+        EndExecutionPostBuildStep spy = spy(endExecutionPostBuildStep);
+
+        spy.perform(build, launcher, listener);
+
+        verify(spy, never()).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
+                any(Logger.class), any(LogConfiguration.class), eq(""));
+    }
+
+    @Test
+    public void perform_bsidResolved_shouldRunCommand() throws IOException, InterruptedException {
+        String bsid = "bsid1";
+        when(envVars.expand(EndExecutionPostBuildStep.DEFAULT_BSID_VAL)).thenReturn(bsid);
+        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(EndExecutionPostBuildStep.DEFAULT_BSID_VAL,
+                null);
+        EndExecutionPostBuildStep spy = spy(endExecutionPostBuildStep);
+
+        spy.perform(build, launcher, listener);
+
+        verify(spy).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
+                any(Logger.class), any(LogConfiguration.class), anyString());
     }
 
     private EndExecutionPostBuildStep createInstance(String bsid, String additionalArgs) {
