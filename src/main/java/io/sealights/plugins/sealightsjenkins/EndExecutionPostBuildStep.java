@@ -1,5 +1,6 @@
 package io.sealights.plugins.sealightsjenkins;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -13,10 +14,12 @@ import io.sealights.agents.infra.integration.enums.LogDestination;
 import io.sealights.agents.infra.integration.enums.LogLevel;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.*;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
+import io.sealights.plugins.sealightsjenkins.utils.PropertiesUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
+import java.util.Properties;
 
 public class EndExecutionPostBuildStep extends Recorder {
 
@@ -51,10 +54,20 @@ public class EndExecutionPostBuildStep extends Recorder {
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, additionalArguments);
-        LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel, logFilename);
         Logger logger = new Logger(listener.getLogger(), "SeaLights CLI - " + endView.getCurrentMode());
+        EnvVars envVars = build.getEnvironment(listener);
+        LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel, logFilename,
+                envVars, logger);
+        Properties properties = PropertiesUtils.toProperties(additionalArguments);
+        return runCLICommand(build, launcher, listener, endView, logger, logConfiguration, properties.getProperty("labid"));
+    }
+
+    public boolean runCLICommand(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener,
+     CommandMode.EndView endView, Logger logger, LogConfiguration logConfiguration, String labid) throws IOException,
+      InterruptedException {
         CLIHandler cliHandler = new CLIHandler(logger);
-        return new CLIRunner(buildSessionId, additionalArguments, new CommandBuildName.DefaultBuildName()).perform(build, launcher, listener, endView,
+        return new CLIRunner(buildSessionId, additionalArguments, new CommandBuildName.DefaultBuildName(),
+                labid).perform(build, launcher, listener, endView,
                 cliHandler, logger, logConfiguration);
     }
 
