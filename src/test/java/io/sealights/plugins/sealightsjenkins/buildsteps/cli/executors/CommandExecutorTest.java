@@ -32,8 +32,8 @@ public class CommandExecutorTest {
         //Act
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
-        String[] commandAndParams =  {"start", "-customerid", "fake-customer", "-server", "https://fake-url/api",
-        "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env", "-testStage", "Integration"};
+        String[] commandAndParams = {"start", "-customerid", "fake-customer", "-server", "https://fake-url/api",
+        "-labid", "fake-env", "-testStage", "Integration"};
         List<String> expectedCommand = createExpectedCommand(commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -48,7 +48,7 @@ public class CommandExecutorTest {
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
         String[] commandAndParams = {"end", "-customerid", "fake-customer", "-server", "https://fake-url/api",
-        "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env"};
+        "-labid", "fake-env"};
         List<String> expectedCommand = createExpectedCommand(commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -62,7 +62,9 @@ public class CommandExecutorTest {
         //Act
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
-        String[] commandAndParams = {"uploadReports", "-customerid", "fake-customer", "-server", "https://fake-url/api", "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env", "-reportFile", "file1", "-reportFile", "file2", "-reportFilesFolder", "folder1", "-reportFilesFolder", "folder2", "-hasMoreRequests", "false", "-source", "theSource"};
+        String[] commandAndParams = {"uploadReports", "-customerid", "fake-customer", "-server", "https://fake-url/api",
+                "-labid", "fake-env", "-reportFile", "file1", "-reportFile", "file2", "-reportFilesFolder", "folder1"
+                , "-reportFilesFolder", "folder2", "-hasMoreRequests", "false", "-source", "theSource"};
         List<String> expectedCommand = createExpectedCommand(commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -76,7 +78,7 @@ public class CommandExecutorTest {
         //Act
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
-        String[] commandAndParams = {"externalReport", "-customerid", "fake-customer", "-server", "https://fake-url/api", "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env", "-report", "fake-report"};
+        String[] commandAndParams = {"externalReport", "-customerid", "fake-customer", "-server", "https://fake-url/api",  "-labid", "fake-env", "-report", "fake-report"};
         List<String> expectedCommand = createExpectedCommand(commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -107,7 +109,7 @@ public class CommandExecutorTest {
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
         String[] commandAndParams = {"start", "-customerid", "fake-customer", "-server", "https://fake-url/api",
-        "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env", "-testStage", "Integration"};
+         "-labid", "fake-env", "-testStage", "Integration"};
         List<String> expectedCommand = createExpectedCommand(javaPath, commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -123,7 +125,7 @@ public class CommandExecutorTest {
         //Act
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
-        String[] commandAndParams = {"start", "-token", validToken, "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env", "-testStage", "Integration"};
+        String[] commandAndParams = {"start", "-token", validToken,  "-labid", "fake-env", "-testStage", "Integration"};
         List<String> expectedCommand = createExpectedCommand(commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -137,7 +139,7 @@ public class CommandExecutorTest {
         //Act
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
-        String[] commandAndParams = {"end", "-token", validToken, "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env"};
+        String[] commandAndParams = {"end", "-token", validToken,  "-labid", "fake-env"};
         List<String> expectedCommand = createExpectedCommand(commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -151,7 +153,7 @@ public class CommandExecutorTest {
         //Act
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
-        String[] commandAndParams = {"uploadReports", "-token", validToken, "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env", "-reportFile", "file1", "-reportFile", "file2", "-reportFilesFolder", "folder1", "-reportFilesFolder", "folder2", "-hasMoreRequests", "false", "-source", "theSource"};
+        String[] commandAndParams = {"uploadReports", "-token", validToken,  "-labid", "fake-env", "-reportFile", "file1", "-reportFile", "file2", "-reportFilesFolder", "folder1", "-reportFilesFolder", "folder2", "-hasMoreRequests", "false", "-source", "theSource"};
         List<String> expectedCommand = createExpectedCommand(commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -165,7 +167,7 @@ public class CommandExecutorTest {
         //Act
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
-        String[] commandAndParams = {"externalReport", "-token", validToken, "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env", "-report", "fake-report"};
+        String[] commandAndParams = {"externalReport", "-token", validToken,  "-labid", "fake-env", "-report", "fake-report"};
         List<String> expectedCommand = createExpectedCommand(commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
@@ -218,7 +220,7 @@ public class CommandExecutorTest {
         //Act
         List<String> actualCommand = commandExecutor.createExecutionCommand();
         //Assert
-        String[] commandAndParams = {"start", "-token", validToken, "-appname", "fake-app", "-buildname", "fake-build", "-branchname", "fake-branch", "-labid", "fake-env", "-testStage", "Integration"};
+        String[] commandAndParams = {"start", "-token", validToken,  "-labid", "fake-env", "-testStage", "Integration"};
         List<String> expectedCommand = createExpectedCommand(javaPath, commandAndParams);
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
