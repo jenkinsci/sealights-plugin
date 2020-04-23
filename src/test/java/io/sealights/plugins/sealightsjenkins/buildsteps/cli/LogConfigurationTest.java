@@ -75,6 +75,20 @@ public class LogConfigurationTest {
     }
 
     @Test
+    public void toSystemProperties_logsFolderEnvVar_shouldResolveFolder(){
+        String logFolder = "log/sl";
+        String logFolderVar = "LOGS_FOLDER";
+        envVars.put(logFolderVar, logFolder);
+        List<String> expectedProps =
+                new ExpectedPropsBuilder().withLogLevel(LogLevel.INFO).withLogToFile().withLogToFolder(PathUtils.join(workspace, logFolder)).build();
+        LogConfiguration logConfiguration = new LogConfiguration("${" + logFolderVar + "}", LogDestination.FILE,
+         LogLevel.INFO, null,
+                envVars, nullLogger);
+
+        runTestAndAssert(expectedProps, logConfiguration);
+    }
+
+    @Test
     public void toSystemProperties_logsToConsoleWithFolder_shouldNotAddFolderToProperties(){
         String logFolder = "log/sl";
         List<String> expectedProps =
