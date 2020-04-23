@@ -417,9 +417,10 @@ public class CLIRunnerTest {
     }
 
     private CommandMode.EndView createEndView(){
-        String buildSesionId = "fake-build-session";
-        String additionalArga = "key=value";
-        return new CommandMode.EndView(buildSesionId,additionalArga);
+        String buildSessionId = "fake-build-session";
+        String additionalArgs = "key=value";
+        String labId = "lab1";
+        return new CommandMode.EndView(buildSessionId, labId, additionalArgs);
     }
 
     private CLIRunner createCLIRunner(String additionalArgs) {

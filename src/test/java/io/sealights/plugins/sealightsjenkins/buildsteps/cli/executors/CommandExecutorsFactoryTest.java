@@ -45,7 +45,7 @@ public class CommandExecutorsFactoryTest {
     public void createExecutor_withUploadReportsMode_shouldGetUploadReportCommandExecutor() {
         //Arrange
         CommandExecutorsFactory factory = new CommandExecutorsFactory();
-        CommandMode mode = new CommandMode.UploadReportsView("", "", "", "","");
+        CommandMode mode = new CommandMode.UploadReportsView("", "", "", "", "","");
         //Act
         ICommandExecutor executor = factory.createExecutor(nullLogger, createBaseCommandArguments(), createAbstractCommandArguments(mode));
         //Assert
@@ -127,17 +127,19 @@ public class CommandExecutorsFactoryTest {
         ModeToArgumentsConverter converter = new ModeToArgumentsConverter();
         return converter.convert(mode);
     }
-    
+
     private CommandMode.StartView createStartView(){
         String testStage="";
         String buildSessionId ="fake-buildSessionId";
         String additionalArguments ="key=value";
-        return new CommandMode.StartView(testStage,buildSessionId,additionalArguments);
+        String labId = "lab1";
+        return new CommandMode.StartView(testStage, buildSessionId, labId, additionalArguments);
     }
 
     private CommandMode.EndView createEndView(){
         String buildSesionId = "fake-build-session";
         String additionalArga = "key=value";
-        return new CommandMode.EndView(buildSesionId,additionalArga);
+        String labId = "lab1";
+        return new CommandMode.EndView(buildSesionId, labId, additionalArga);
     }
 }

@@ -152,7 +152,6 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
         }else {
             addPackagesIncluded(commandsList);
         }
-        // TODO: Check if needed (https://sealights.atlassian.net/browse/SLDEV-7227)
         addArgumentKeyVal("buildsessionidfile", this.buildSessionIdFileOnMaster, commandsList);
         commandsList.add("-enableNoneZeroErrorCode");
     }
