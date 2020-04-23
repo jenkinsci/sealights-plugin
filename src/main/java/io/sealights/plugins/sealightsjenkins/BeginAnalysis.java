@@ -649,7 +649,7 @@ public class BeginAnalysis extends Builder {
         slInfo.setLogFolder(logFolder);
         slInfo.setExecutionType(executionType);
         slInfo.resolveFromAdditionalProperties(additionalProps, envVars);
-        slInfo.setBuildSessionId(resolveBuildSessionId(logger, slInfo, additionalProps));
+        slInfo.setBuildSessionId(resolveBuildSessionId(logger, slInfo, additionalProps, envVars));
         slInfo.setMetadata(metadata);
         slInfo.setRecursiveOnBuildFilesFolders(enableMultipleBuildFiles);
         slInfo.setBuildFilesFolders(foldersToSearch);
@@ -689,13 +689,15 @@ public class BeginAnalysis extends Builder {
             slInfo.setTestListenerJvmParams(paramsMap);
     }
 
-    private String resolveBuildSessionId(Logger logger, SeaLightsPluginInfo slInfo, Properties additionalProps) {
+    private String resolveBuildSessionId(Logger logger, SeaLightsPluginInfo slInfo, Properties additionalProps,
+     EnvVars envVars) {
 
         resolveCreateBuildSessionIdProperty(slInfo, additionalProps);
 
         String buildSessionIdFile = (String) additionalProps.get("buildsessionidfile");
 
         ArgumentFileResolver argumentFileResolver = new ArgumentFileResolver();
+        buildSessionId = envVars.expand(buildSessionId);
         buildSessionId = argumentFileResolver.resolve(logger, buildSessionId, buildSessionIdFile);
 
         return buildSessionId;
