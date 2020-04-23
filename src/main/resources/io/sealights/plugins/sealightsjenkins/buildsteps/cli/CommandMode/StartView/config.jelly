@@ -9,6 +9,10 @@
         <f:textbox value="${testStage}" default="Unit Tests"/>
     </f:entry>
 
+    <f:entry title="Lab Id" field="labId">
+        <f:textbox value="${labId}" default="$${SL_BUILD_SESSION_ID}"/>
+    </f:entry>
+
     <f:advanced title="SeaLights CLI Advanced">
         <f:entry title="${%Additional Arguments}" field="additionalArguments">
             <f:expandableTextbox value="${additionalArguments}"/>

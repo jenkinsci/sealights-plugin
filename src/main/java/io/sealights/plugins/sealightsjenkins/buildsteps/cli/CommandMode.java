@@ -29,11 +29,14 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     private final CommandModes currentMode;
     private  String buildSessionId;
     private  String additionalArguments;
+    protected String labId;
 
-    private CommandMode(final CommandModes currentMode, final String buildSessionId, final String additionalArguments) {
+    private CommandMode(final CommandModes currentMode, final String buildSessionId, final String additionalArguments
+    , String labId) {
         this.currentMode = currentMode;
         this.buildSessionId = buildSessionId;
         this.additionalArguments = additionalArguments;
+        this.labId = labId;
     }
 
     @Exported
@@ -65,6 +68,15 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     public Descriptor<CommandMode> getDescriptor() {
         return Jenkins.getInstance().getDescriptorOrDie(getClass());
     }
+    @Exported
+    public String getLabId() {
+        return labId;
+    }
+
+    @Exported
+    public void setLabId(String labId) {
+        this.labId = labId;
+    }
 
     public static class CommandModeDescriptor extends Descriptor<CommandMode> {
 
@@ -94,8 +106,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private String testStage;
 
         @DataBoundConstructor
-        public StartView(String testStage, String buildSessionId, String additionalArguments) {
-            super(CommandModes.Start, buildSessionId, additionalArguments);
+        public StartView(String testStage, String buildSessionId, String labId, String additionalArguments) {
+            super(CommandModes.Start, buildSessionId, additionalArguments, labId);
             this.testStage = testStage;
         }
 
@@ -125,8 +137,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
     public static class EndView extends CommandMode {
 
         @DataBoundConstructor
-        public EndView(String buildSessionId, String additionalArguments) {
-            super(CommandModes.End, buildSessionId, additionalArguments);
+        public EndView(String buildSessionId, String labId, String additionalArguments) {
+            super(CommandModes.End, buildSessionId, additionalArguments, labId);
         }
 
         @Extension
@@ -147,8 +159,8 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
         @DataBoundConstructor
         public UploadReportsView(String reportFiles, String reportsFolders,
-                                 String source, String buildSessionId, String additionalArguments) {
-            super(CommandModes.UploadReports, buildSessionId, additionalArguments);
+                                 String source, String buildSessionId, String labId, String additionalArguments) {
+            super(CommandModes.UploadReports, buildSessionId, additionalArguments, labId);
             this.reportFiles = reportFiles;
             this.reportsFolders = reportsFolders;
             this.hasMoreRequests = true;
@@ -210,7 +222,7 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
 
         @DataBoundConstructor
         public ExternalReportView(String report, String buildSessionId, String additionalArguments) {
-            super(CommandModes.ExternalReport, buildSessionId, additionalArguments);
+            super(CommandModes.ExternalReport, buildSessionId, additionalArguments, null);
             this.report = report;
         }
 
@@ -232,7 +244,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private CommandBuildName buildName;
         private transient String packagesIncluded;
         private transient String packagesExcluded;
-        private String labId;
 
         public List<BeginAnalysis> getBranches() {
             return branches;
@@ -264,11 +275,10 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         private ConfigView(String appName, String branchName,
                           CommandBuildName buildName, String labId, String buildSessionId, String additionalArguments,
                           List<TechnologyOptions> techOptions, CommandModes currentMode) {
-            super(currentMode, buildSessionId, additionalArguments);
+            super(currentMode, buildSessionId, additionalArguments, labId);
             this.appName = appName;
             this.branchName = branchName;
             this.buildName = buildName;
-            this.labId = labId;
             this.techOptions = new DescribableList<>(this.getDescriptor(), techOptions);
         }
 
@@ -308,16 +318,6 @@ public class CommandMode implements Describable<CommandMode>, ExtensionPoint, Se
         @Exported
         public void setBuildName(CommandBuildName buildName) {
             this.buildName = buildName;
-        }
-
-        @Exported
-        public String getLabId() {
-            return labId;
-        }
-
-        @Exported
-        public void setLabId(String labId) {
-            this.labId = labId;
         }
 
         @Exported

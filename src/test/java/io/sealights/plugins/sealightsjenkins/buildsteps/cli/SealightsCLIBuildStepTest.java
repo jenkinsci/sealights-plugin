@@ -6,25 +6,23 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class SealightsCLIBuildStepTest {
-
+    String labId = "lab1";
     @Test
     public void createCLIRunner_startCommand_shouldNotSetAppBranchAndBuild() {
         String additionalArgs = "appname=app1\nbuildname=1\nbranchname=master";
 
-        CommandMode.StartView startView = new CommandMode.StartView("stage", "bs1", additionalArgs);
+        CommandMode.StartView startView = new CommandMode.StartView("stage", "bs1", labId, additionalArgs);
 
         runTest(startView);
-
     }
 
     @Test
     public void createCLIRunner_endCommand_shouldNotSetAppBranchAndBuild() {
         String additionalArgs = "appname=app1\nbuildname=1\nbranchname=master";
 
-        CommandMode.EndView endView = new CommandMode.EndView("bs1", additionalArgs);
+        CommandMode.EndView endView = new CommandMode.EndView("bs1", labId, additionalArgs);
 
         runTest(endView);
-
     }
 
     @Test
@@ -32,10 +30,20 @@ public class SealightsCLIBuildStepTest {
         String additionalArgs = "appname=app1\nbuildname=1\nbranchname=master";
 
         CommandMode.UploadReportsView reportsView = new CommandMode.UploadReportsView("report.xml", null, "Junit",
-        "bs1", additionalArgs);
+        "bs1", labId, additionalArgs);
 
         runTest(reportsView);
+    }
 
+    @Test
+    public void createCLIRunner_endCommand_shouldParseLabIdFromAdditionalArgs() {
+        String labid = "lab2";
+        String additionalArgs = "labid=" + labid;
+        CommandMode.EndView endView = new CommandMode.EndView("bs1", null, additionalArgs);
+        SealightsCLIBuildStep sealightsCLIBuildStep = createSealightsCLIBuildStep(endView);
+
+        CLIRunner cliRunner = sealightsCLIBuildStep.createCLIRunner(endView);
+        Assert.assertEquals(labid,cliRunner.getLabId());
     }
 
     private void runTest(CommandMode mode) {
