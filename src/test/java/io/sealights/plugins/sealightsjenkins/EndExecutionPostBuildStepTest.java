@@ -30,7 +30,7 @@ public class EndExecutionPostBuildStepTest {
     public void setUp() throws Exception {
         cliHandler = mock(CLIHandler.class);
         build = mock(AbstractBuild.class);
-        envVars = mock(EnvVars.class);
+        envVars = spy(new EnvVars());
         launcher = mock(Launcher.class);
         listener = mock(BuildListener.class);
         logger = mock(PrintStream.class);
@@ -42,9 +42,7 @@ public class EndExecutionPostBuildStepTest {
     @Test
     public void perform_withLabIdFromAdditionalArgs_shouldUseIt() throws IOException, InterruptedException {
         String lab1 = "lab1";
-        String bsid = "bsid";
-        when(envVars.expand(bsid)).thenReturn(bsid);
-        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(bsid, "labid=" + lab1);
+        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance("bsid", "labid=" + lab1);
         EndExecutionPostBuildStep spy = spy(endExecutionPostBuildStep);
 
         spy.perform(build, launcher, listener);
@@ -63,6 +61,32 @@ public class EndExecutionPostBuildStepTest {
 
         verify(spy, never()).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
                 any(Logger.class), any(LogConfiguration.class), eq(""));
+    }
+
+    @Test
+    public void perform_bsidNull_shouldNotRunCommand() throws IOException, InterruptedException {
+        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(null,
+                null);
+        EndExecutionPostBuildStep spy = spy(endExecutionPostBuildStep);
+
+        spy.perform(build, launcher, listener);
+
+        verify(spy, never()).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
+                any(Logger.class), any(LogConfiguration.class), eq(""));
+    }
+
+    @Test
+    public void perform_bsidEnvVar_shouldRunCommand() throws IOException, InterruptedException {
+        String lab1 = "lab1";
+        String bsid = "${bsid}";
+        envVars.put("bsid", "bs1");
+        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(bsid, "labid=" + lab1);
+        EndExecutionPostBuildStep spy = spy(endExecutionPostBuildStep);
+
+        spy.perform(build, launcher, listener);
+
+        verify(spy).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
+                any(Logger.class), any(LogConfiguration.class), eq(lab1));
     }
 
     @Test
