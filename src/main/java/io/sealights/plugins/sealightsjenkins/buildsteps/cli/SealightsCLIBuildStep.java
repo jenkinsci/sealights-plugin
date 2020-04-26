@@ -252,7 +252,7 @@ public class SealightsCLIBuildStep extends Builder {
             Properties properties = PropertiesUtils.toProperties(commandMode.getAdditionalArguments());
             String labId= (commandMode.getLabId()!= null)? commandMode.getLabId() : properties.get("labid").toString();
             CommandBuildName buildName = new CommandBuildName.EmptyBuildName();
-            return new CLIRunner(commandMode.getBuildSessionId(), buildName, commandMode.getAdditionalArguments(),labId);
+            return new CLIRunner(commandMode.getBuildSessionId(), commandMode.getAdditionalArguments(), buildName, labId);
         }
     }
 

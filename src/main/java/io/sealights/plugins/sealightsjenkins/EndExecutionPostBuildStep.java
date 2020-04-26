@@ -36,16 +36,18 @@ public class EndExecutionPostBuildStep extends Recorder {
     private String logFilename;
     private LogDestination logDestination = LogDestination.CONSOLE;
     private LogLevel logLevel = LogLevel.OFF;
+    private String labId;
 
     @DataBoundConstructor
     public EndExecutionPostBuildStep(String buildSessionId, String additionalArguments, String logFolder,
-     String logFilename, LogDestination logDestination, LogLevel logLevel) {
+     String logFilename, LogDestination logDestination, LogLevel logLevel, String labId) {
         this.buildSessionId = buildSessionId;
         this.additionalArguments = additionalArguments;
         this.logFolder = logFolder;
         this.logFilename = logFilename;
         this.logDestination = logDestination;
         this.logLevel = logLevel;
+        this.labId = labId;
     }
 
     /**
@@ -60,7 +62,7 @@ public class EndExecutionPostBuildStep extends Recorder {
      */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, additionalArguments);
+        CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, additionalArguments, labId);
         Logger logger = new Logger(listener.getLogger(), "SeaLights CLI - " + endView.getCurrentMode());
         EnvVars envVars = build.getEnvironment(listener);
 
@@ -71,7 +73,7 @@ public class EndExecutionPostBuildStep extends Recorder {
         LogConfiguration logConfiguration = new LogConfiguration(logFolder, logDestination, logLevel, logFilename,
                 envVars, logger);
         Properties properties = PropertiesUtils.toProperties(additionalArguments);
-        return runCLICommand(build, launcher, listener, endView, logger, logConfiguration, properties.getProperty("labid"));
+        return runCLICommand(build, launcher, listener, endView, logger, logConfiguration, labId);
     }
 
     public boolean runCLICommand(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener,
@@ -144,6 +146,16 @@ public class EndExecutionPostBuildStep extends Recorder {
     @Exported
     public void setLogFilename(String logFilename) {
         this.logFilename = logFilename;
+    }
+
+    @Exported
+    public String getLabId() {
+        return labId;
+    }
+
+    @Exported
+    public void setLabId(String labId) {
+        this.labId = labId;
     }
 
     @Override

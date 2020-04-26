@@ -40,18 +40,6 @@ public class EndExecutionPostBuildStepTest {
     }
 
     @Test
-    public void perform_withLabIdFromAdditionalArgs_shouldUseIt() throws IOException, InterruptedException {
-        String lab1 = "lab1";
-        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance("bsid", "labid=" + lab1);
-        EndExecutionPostBuildStep spy = spy(endExecutionPostBuildStep);
-
-        spy.perform(build, launcher, listener);
-
-        verify(spy).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
-                any(Logger.class), any(LogConfiguration.class), eq(lab1));
-    }
-
-    @Test
     public void perform_bsidNotResolved_shouldNotRunCommand() throws IOException, InterruptedException {
         EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(EndExecutionPostBuildStep.DEFAULT_BSID_VAL,
          null);
@@ -80,7 +68,7 @@ public class EndExecutionPostBuildStepTest {
         String lab1 = "lab1";
         String bsid = "${bsid}";
         envVars.put("bsid", "bs1");
-        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(bsid, "labid=" + lab1);
+        EndExecutionPostBuildStep endExecutionPostBuildStep = createInstance(bsid, null, lab1);
         EndExecutionPostBuildStep spy = spy(endExecutionPostBuildStep);
 
         spy.perform(build, launcher, listener);
@@ -104,7 +92,11 @@ public class EndExecutionPostBuildStepTest {
     }
 
     private EndExecutionPostBuildStep createInstance(String bsid, String additionalArgs) {
-        return new EndExecutionPostBuildStep(bsid, additionalArgs, null, null, LogDestination.CONSOLE, LogLevel.OFF);
+        return createInstance(bsid, additionalArgs, null);
+    }
+    private EndExecutionPostBuildStep createInstance(String bsid, String additionalArgs, String labId) {
+        return new EndExecutionPostBuildStep(bsid, additionalArgs, null, null, LogDestination.CONSOLE, LogLevel.OFF,
+         labId);
     }
 
 }
