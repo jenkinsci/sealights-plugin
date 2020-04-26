@@ -698,6 +698,7 @@ public class BeginAnalysis extends Builder {
 
         ArgumentFileResolver argumentFileResolver = new ArgumentFileResolver();
         buildSessionId = envVars.expand(buildSessionId);
+        buildSessionIdFile = envVars.expand(buildSessionIdFile);
         buildSessionId = argumentFileResolver.resolve(logger, buildSessionId, buildSessionIdFile);
 
         return buildSessionId;
