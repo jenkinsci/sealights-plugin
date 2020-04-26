@@ -243,7 +243,7 @@ public class SealightsCLIBuildStep extends Builder {
         }
     }
 
-    public CLIRunner createCLIRunner(CommandMode commandMode){
+    private CLIRunner createCLIRunner(CommandMode commandMode){
         if(commandMode instanceof CommandMode.ConfigView){
             CommandMode.ConfigView configView=(CommandMode.ConfigView) commandMode;
             return new CLIRunner(configView.getBuildSessionId(),configView.getAppName(),configView.getBranchName(),
