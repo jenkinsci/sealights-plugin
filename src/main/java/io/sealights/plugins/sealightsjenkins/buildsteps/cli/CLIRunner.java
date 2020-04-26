@@ -51,6 +51,13 @@ public class CLIRunner extends Builder {
         this.labId = labId;
     }
 
+    public CLIRunner(String buildSessionId, String additionalArguments, CommandBuildName buildName, String labId) {
+        this.buildSessionId = buildSessionId;
+        this.additionalArguments = additionalArguments;
+        this.buildName = buildName;
+        this.labId = labId;
+    }
+
     @Exported
     public String getBuildSessionId() {
         return buildSessionId;
