@@ -60,7 +60,7 @@ public class EndExecutionPostBuildStepTest {
         spy.perform(build, launcher, listener);
 
         verify(spy, never()).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
-                any(Logger.class), any(LogConfiguration.class), eq(""));
+                any(Logger.class), any(LogConfiguration.class), anyString());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class EndExecutionPostBuildStepTest {
         spy.perform(build, launcher, listener);
 
         verify(spy, never()).runCLICommand(eq(build), eq(launcher), eq(listener), any(CommandMode.EndView.class),
-                any(Logger.class), any(LogConfiguration.class), eq(""));
+                any(Logger.class), any(LogConfiguration.class), anyString());
     }
 
     @Test
