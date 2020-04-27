@@ -139,8 +139,10 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
         // this value is currently showed in the UI even in config mode,
         // so there is possibility for it to be set.
         baseArgs.setLabId(null);
-
         super.addBaseArgumentsLine(commandsList);
+        addArgumentKeyVal("appname", baseArgs.getAppName(), commandsList);
+        addArgumentKeyVal("buildname", baseArgs.getBuildName(), commandsList);
+        addArgumentKeyVal("branchname", baseArgs.getBranchName(), commandsList);
     }
 
     @Override
@@ -150,7 +152,6 @@ public class ConfigCommandExecutor extends AbstractCommandExecutor {
         }else {
             addPackagesIncluded(commandsList);
         }
-        // TODO: Check if needed (https://sealights.atlassian.net/browse/SLDEV-7227)
         addArgumentKeyVal("buildsessionidfile", this.buildSessionIdFileOnMaster, commandsList);
         commandsList.add("-enableNoneZeroErrorCode");
     }
