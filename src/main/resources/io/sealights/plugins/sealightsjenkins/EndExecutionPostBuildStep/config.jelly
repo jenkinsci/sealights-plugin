@@ -21,7 +21,7 @@
         </f:entry>
 
         <f:entry title="Logs Folder" field="logFolder" description="The path in which the logs will be saved. (relative to workspace)">
-            <f:textbox value="${instance.logFolder}" default="$${WORKSPACE}/sl-log"/>
+            <f:textbox value="${instance.logFolder}" default="$${WORKSPACE}/sealights-logs"/>
         </f:entry>
 
         <f:entry title="Logs filename" field="logFilename" description="The name of log file.">
