@@ -1,6 +1,7 @@
 package io.sealights.plugins.sealightsjenkins;
 
 import io.sealights.agents.infra.integration.SeaLightsPluginInfo;
+import io.sealights.agents.infra.integration.enums.ExecutionType;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.StringUtils;
 
@@ -22,7 +23,7 @@ public class SlInfoValidator {
 
         boolean isValid = true;
         boolean hasBuildSessionId = !StringUtils.isNullOrEmpty(slInfo.getBuildSessionId());
-        if (slInfo.isCreateBuildSessionId() || !hasBuildSessionId) {
+        if (shouldValidateBuildParams(slInfo)) {
             // make sure we have properties to create build session id.
             isValid = validateField(slInfo.getAppName(), !hasBuildSessionId, "App Name");
             isValid = isValid && validateField(slInfo.getBuildName(), !hasBuildSessionId, "Build Name");
@@ -31,6 +32,14 @@ public class SlInfoValidator {
         }
 
         return isValid;
+    }
+
+    private boolean shouldValidateBuildParams(SeaLightsPluginInfo slInfo) {
+        if(slInfo.getExecutionType() == ExecutionType.TESTS_ONLY && !StringUtils.isNullOrEmpty(slInfo.getLabId())){
+            return false;
+        }
+        boolean hasBuildSessionId = !StringUtils.isNullOrEmpty(slInfo.getBuildSessionId());
+        return slInfo.isCreateBuildSessionId() || !hasBuildSessionId;
     }
 
     private boolean validateField(String value, boolean hasBuildSessionId, String name) {
