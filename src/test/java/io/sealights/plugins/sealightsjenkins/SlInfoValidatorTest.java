@@ -30,10 +30,18 @@ public class SlInfoValidatorTest {
     }
 
     @Test
-    public void validate_runTestOnlyNoBuildArgs_shouldReturnTrue() {
+    public void validate_runTestOnlyNoBuildArgsHasLabId_shouldReturnTrue() {
         pluginInfo.setExecutionType(ExecutionType.TESTS_ONLY);
+        pluginInfo.setLabId("lab1");
 
         assertTrue("Should not validate app branch and build", validator.validate(pluginInfo));
+    }
+
+    @Test
+    public void validate_runTestOnlyNoBuildArgsNoLabId_shouldReturnFalse() {
+        pluginInfo.setExecutionType(ExecutionType.TESTS_ONLY);
+
+        assertFalse("Should validate app branch and build", validator.validate(pluginInfo));
     }
 
     @Test

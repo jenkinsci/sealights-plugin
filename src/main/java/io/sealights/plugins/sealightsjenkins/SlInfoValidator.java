@@ -35,7 +35,7 @@ public class SlInfoValidator {
     }
 
     private boolean shouldValidateBuildParams(SeaLightsPluginInfo slInfo) {
-        if(slInfo.getExecutionType() == ExecutionType.TESTS_ONLY){
+        if(slInfo.getExecutionType() == ExecutionType.TESTS_ONLY && !StringUtils.isNullOrEmpty(slInfo.getLabId())){
             return false;
         }
         boolean hasBuildSessionId = !StringUtils.isNullOrEmpty(slInfo.getBuildSessionId());
