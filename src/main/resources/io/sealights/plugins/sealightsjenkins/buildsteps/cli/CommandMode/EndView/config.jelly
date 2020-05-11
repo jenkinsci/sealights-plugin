@@ -5,7 +5,7 @@
         <f:textbox value="${buildSessionId}" default="$${SL_BUILD_SESSION_ID}"/>
     </f:entry>
     <f:entry title="Lab Id" field="labId">
-        <f:textbox value="${labId}" default="$${SL_BUILD_SESSION_ID}"/>
+        <f:textbox value="${labId}"/>
     </f:entry>
     <f:advanced title="SeaLights CLI Advanced">
         <f:entry title="${%Additional Arguments}" field="additionalArguments">
