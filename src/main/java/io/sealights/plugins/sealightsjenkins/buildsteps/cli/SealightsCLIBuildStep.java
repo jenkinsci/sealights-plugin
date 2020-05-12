@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class SealightsCLIBuildStep extends Builder {
+    public static final String DEFAULT_LOGS_FOLDER = "$${WORKSPACE}/sealights-logs";
 
     public boolean enabled;
     public boolean failBuildIfStepFail;
@@ -62,6 +63,7 @@ public class SealightsCLIBuildStep extends Builder {
         if(commandMode instanceof CommandMode.ConfigView){
             resolveTechOption();
         }
+        resolveLogConfiguration();
         return this;
     }
 
@@ -107,6 +109,18 @@ public class SealightsCLIBuildStep extends Builder {
         configView.setBranchName(cliRunner.getBranchName());
         configView.setBuildName(cliRunner.getBuildName());
         return  configView;
+    }
+
+    private void resolveLogConfiguration() {
+        if(logLevel == null) {
+            logLevel = LogLevel.OFF;
+        }
+        if(logDestination == null) {
+            logDestination = LogDestination.CONSOLE;
+        }
+        if(logFolder ==null) {
+            logFolder = DEFAULT_LOGS_FOLDER;
+        }
     }
 
     public CommandMode getCommandMode() {
