@@ -67,6 +67,11 @@ public class SealightsCLIBuildStep extends Builder {
         return this;
     }
 
+    // Added for tests only
+    public Object invokeReadResolve() {
+        return readResolve();
+    }
+
     private SealightsCLIBuildStep resolveTechOption(){
         CommandMode.ConfigView config = (CommandMode.ConfigView) commandMode;
         DescribableList<TechnologyOptions, TechnologyOptionsDescriptor> technologyOptions = config.getTechOptions();
@@ -118,7 +123,7 @@ public class SealightsCLIBuildStep extends Builder {
         if(logDestination == null) {
             logDestination = LogDestination.CONSOLE;
         }
-        if(logFolder.equals(null)) {
+        if(logFolder ==null) {
             logFolder = DEFAULT_LOGS_FOLDER;
         }
     }
