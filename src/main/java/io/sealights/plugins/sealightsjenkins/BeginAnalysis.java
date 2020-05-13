@@ -689,7 +689,7 @@ public class BeginAnalysis extends Builder {
             slInfo.setTestListenerJvmParams(paramsMap);
     }
 
-    private String resolveBuildSessionId(Logger logger, SeaLightsPluginInfo slInfo, Properties additionalProps,
+    public String resolveBuildSessionId(Logger logger, SeaLightsPluginInfo slInfo, Properties additionalProps,
      EnvVars envVars) {
 
         resolveCreateBuildSessionIdProperty(slInfo, additionalProps);
