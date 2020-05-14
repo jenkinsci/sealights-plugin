@@ -5,6 +5,8 @@ import io.sealights.agents.infra.integration.enums.LogLevel;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.mockito.Mockito.mock;
+
 public class SealightsCLIBuildStepTest {
     String labId = "lab1";
     @Test
@@ -44,6 +46,18 @@ public class SealightsCLIBuildStepTest {
 
         CLIRunner cliRunner = sealightsCLIBuildStep.createCLIRunner(endView);
         Assert.assertEquals(labid,cliRunner.getLabId());
+    }
+
+    @Test
+    public void invokeReadResolve_nullLogParams_shouldInitiateToDefault() {
+        SealightsCLIBuildStep buildStep = new SealightsCLIBuildStep(true, false, mock(CommandMode.class),
+                null, null, null, null, null);
+
+        buildStep.invokeReadResolve();
+
+        Assert.assertEquals(buildStep.getLogDestination(), LogDestination.CONSOLE);
+        Assert.assertEquals(buildStep.getLogLevel(), LogLevel.OFF);
+        Assert.assertEquals(buildStep.getLogFolder(), SealightsCLIBuildStep.DEFAULT_LOGS_FOLDER);
     }
 
     private void runTest(CommandMode mode) {
