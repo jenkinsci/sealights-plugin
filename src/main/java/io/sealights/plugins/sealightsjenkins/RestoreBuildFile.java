@@ -9,6 +9,7 @@ import hudson.init.Initializer;
 import hudson.model.*;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.*;
+import io.sealights.agents.infra.integration.maven.entities.PomFile;
 import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import io.sealights.plugins.sealightsjenkins.utils.RenameFileCallable;
 import io.sealights.plugins.sealightsjenkins.utils.SearchFileCallable;
@@ -47,7 +48,7 @@ public class RestoreBuildFile extends Recorder {
 
         VirtualChannel channel = Computer.currentComputer().getChannel();
         FilePath rootFolderPath = new FilePath(channel, rootFolder);
-        List<String> filesToRestore = rootFolderPath.act(new SearchFileCallable("**/*.slbak"));
+        List<String> filesToRestore = rootFolderPath.act(new SearchFileCallable("**/*" + PomFile.BACKUP_EXTENSION));
         logger.info("searching in folder: '" + rootFolder +"', found '" + filesToRestore.size()+"' files.");
         for (String currentName : filesToRestore) {
             restoreSingleFile(currentName, logger);
@@ -56,7 +57,7 @@ public class RestoreBuildFile extends Recorder {
 
 
     public void restoreSingleFile(String slbackFile, Logger logger) throws IOException, InterruptedException {
-        String originalFile = slbackFile.replace(".slbak","");
+        String originalFile = slbackFile.replace(PomFile.BACKUP_EXTENSION,"");
         VirtualChannel channel = Computer.currentComputer().getChannel();
         FilePath backupFile = new FilePath(channel, slbackFile);
         if (!backupFile.exists()) {
@@ -103,7 +104,7 @@ public class RestoreBuildFile extends Recorder {
 
                 logger.debug("Restoring parent pom: " + this.parentPomFile);
                 if (!StringUtils.isNullOrEmpty(this.parentPomFile))
-                    restoreSingleFile(this.parentPomFile + ".slbak", logger);
+                    restoreSingleFile(this.parentPomFile + PomFile.BACKUP_EXTENSION, logger);
 
             } else {
                 logger.info("No need to restore any files.");
