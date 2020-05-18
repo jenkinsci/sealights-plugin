@@ -26,7 +26,7 @@ public class JenkinsPomFile extends PomFile {
     }
 
     @Override
-    protected void saveInternal(String filename, Transformer transformer, DOMSource domSource) throws TransformerException, IOException, InterruptedException {
+    protected void saveInternal(String filename, Transformer transformer, DOMSource domSource) throws Exception {
         VirtualChannel channel = Computer.currentComputer().getChannel();
         FilePath filePath = new FilePath(channel, filename);
 
