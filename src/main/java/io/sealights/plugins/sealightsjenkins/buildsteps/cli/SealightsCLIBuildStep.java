@@ -116,8 +116,7 @@ public class SealightsCLIBuildStep extends Builder {
         if(!StringUtils.isNullOrEmpty(cliRunner.getBranchName())) {
             configView.setBranchName(cliRunner.getBranchName());
         }
-        // Cli runner might initiate with default build name
-        if(cliRunner.getBuildName() != null && !(cliRunner.getBuildName() instanceof CommandBuildName.DefaultBuildName)) {
+        if(cliRunner.getBuildName() != null) {
             configView.setBuildName(cliRunner.getBuildName());
         }
         return  configView;
