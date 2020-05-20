@@ -110,9 +110,15 @@ public class SealightsCLIBuildStep extends Builder {
 
     private CommandMode.ConfigView getConfigParams(){
         CommandMode.ConfigView configView = (CommandMode.ConfigView) commandMode;
-        configView.setAppName(cliRunner.getAppName());
-        configView.setBranchName(cliRunner.getBranchName());
-        configView.setBuildName(cliRunner.getBuildName());
+        if(!StringUtils.isNullOrEmpty(cliRunner.getAppName())) {
+            configView.setAppName(cliRunner.getAppName());
+        }
+        if(!StringUtils.isNullOrEmpty(cliRunner.getBranchName())) {
+            configView.setBranchName(cliRunner.getBranchName());
+        }
+        if(cliRunner.getBuildName() != null) {
+            configView.setBuildName(cliRunner.getBuildName());
+        }
         return  configView;
     }
 
