@@ -9,11 +9,13 @@ import static org.mockito.Mockito.mock;
 
 public class SealightsCLIBuildStepTest {
     String labId = "lab1";
-    @Test
+    String buildSessionId = "bs1";
+
+   @Test
     public void createCLIRunner_startCommand_shouldNotSetAppBranchAndBuild() {
         String additionalArgs = "appname=app1\nbuildname=1\nbranchname=master";
 
-        CommandMode.StartView startView = new CommandMode.StartView("stage", "bs1", labId, additionalArgs);
+        CommandMode.StartView startView = new CommandMode.StartView("stage", buildSessionId, labId, additionalArgs);
 
         runTest(startView);
     }
@@ -22,7 +24,7 @@ public class SealightsCLIBuildStepTest {
     public void createCLIRunner_endCommand_shouldNotSetAppBranchAndBuild() {
         String additionalArgs = "appname=app1\nbuildname=1\nbranchname=master";
 
-        CommandMode.EndView endView = new CommandMode.EndView("bs1", labId, additionalArgs);
+        CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, labId, additionalArgs);
 
         runTest(endView);
     }
@@ -32,7 +34,7 @@ public class SealightsCLIBuildStepTest {
         String additionalArgs = "appname=app1\nbuildname=1\nbranchname=master";
 
         CommandMode.UploadReportsView reportsView = new CommandMode.UploadReportsView("report.xml", null, "Junit",
-        "bs1", labId, additionalArgs);
+                buildSessionId, labId, additionalArgs);
 
         runTest(reportsView);
     }
@@ -41,7 +43,7 @@ public class SealightsCLIBuildStepTest {
     public void createCLIRunner_endCommand_shouldParseLabIdFromAdditionalArgs() {
         String labid = "lab2";
         String additionalArgs = "labid=" + labid;
-        CommandMode.EndView endView = new CommandMode.EndView("bs1", null, additionalArgs);
+        CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, null, additionalArgs);
         SealightsCLIBuildStep sealightsCLIBuildStep = createSealightsCLIBuildStep(endView);
 
         CLIRunner cliRunner = sealightsCLIBuildStep.createCLIRunner(endView);
@@ -58,6 +60,28 @@ public class SealightsCLIBuildStepTest {
         Assert.assertEquals(buildStep.getLogDestination(), LogDestination.CONSOLE);
         Assert.assertEquals(buildStep.getLogLevel(), LogLevel.OFF);
         Assert.assertEquals(buildStep.getLogFolder(), SealightsCLIBuildStep.DEFAULT_LOGS_FOLDER);
+    }
+
+    @Test
+    public void createCliRunner_commandModeHasLabId_shouldUseIt() {
+        SealightsCLIBuildStep buildStep = new SealightsCLIBuildStep(true, false, mock(CommandMode.class),
+                null, null, null, null, null);
+
+        CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, labId, null);
+        CLIRunner cliRunner = buildStep.createCLIRunner(endView);
+
+        Assert.assertEquals(cliRunner.getLabId(), labId);
+    }
+
+    @Test
+    public void createCliRunner_commandModeHasNoLabId_shouldSetToNull() {
+        SealightsCLIBuildStep buildStep = new SealightsCLIBuildStep(true, false, mock(CommandMode.class),
+                null, null, null, null, null);
+
+        CommandMode.EndView endView = new CommandMode.EndView(buildSessionId, null, null);
+        CLIRunner cliRunner = buildStep.createCLIRunner(endView);
+
+        Assert.assertEquals(cliRunner.getLabId(), null);
     }
 
     private void runTest(CommandMode mode) {
