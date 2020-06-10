@@ -49,7 +49,7 @@ public class ModeToArgumentsConverter {
     }
 
     private ExternalReportCommandArguments toExternalReportArguments(CommandMode.ExternalReportView externalReportView){
-        return new ExternalReportCommandArguments(externalReportView.getReport());
+        return new ExternalReportCommandArguments();
     }
 
     private ConfigCommandArguments toConfigCommandArguments(CommandMode.ConfigView configView){

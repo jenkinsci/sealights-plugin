@@ -69,19 +69,6 @@ public class CommandExecutorTest {
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
 
-    @Test
-    public void createExecutionCommand_externalReportCommandExecutor_withoutToken_shouldCreateGoodExecutionLine() {
-        //Arrange
-        BaseCommandArguments baseArguments = createBaseCommandArgumentsWithoutToken();
-        ExternalReportCommandArguments externalReportArguments = new ExternalReportCommandArguments("fake-report");
-        AbstractCommandExecutor commandExecutor = new ExternalReportCommandExecutor(nullLogger, baseArguments, externalReportArguments);
-        //Act
-        List<String> actualCommand = commandExecutor.createExecutionCommand();
-        //Assert
-        String[] commandAndParams = {"externalReport", "-customerid", "fake-customer", "-server", "https://fake-url/api",  "-labid", "fake-env", "-report", "fake-report"};
-        List<String> expectedCommand = createExpectedCommand(commandAndParams);
-        Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
-    }
 
     @Test
     public void createExecutionCommand_configCommandExecutor_withoutToken_shouldCreateGoodExecutionLine() {
@@ -158,19 +145,6 @@ public class CommandExecutorTest {
         Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
     }
 
-    @Test
-    public void createExecutionCommand_externalReportCommandExecutor_shouldCreateGoodExecutionLine() {
-        //Arrange
-        BaseCommandArguments baseArguments = createBaseCommandArguments();
-        ExternalReportCommandArguments externalReportArguments = new ExternalReportCommandArguments("fake-report");
-        AbstractCommandExecutor commandExecutor = new ExternalReportCommandExecutor(nullLogger, baseArguments, externalReportArguments);
-        //Act
-        List<String> actualCommand = commandExecutor.createExecutionCommand();
-        //Assert
-        String[] commandAndParams = {"externalReport", "-token", validToken,  "-labid", "fake-env", "-report", "fake-report"};
-        List<String> expectedCommand = createExpectedCommand(commandAndParams);
-        Assert.assertEquals("execution command is not as expected", expectedCommand, actualCommand);
-    }
 
     @Test
     public void createExecutionCommand_configCommandExecutor_shouldCreateGoodExecutionLine() {

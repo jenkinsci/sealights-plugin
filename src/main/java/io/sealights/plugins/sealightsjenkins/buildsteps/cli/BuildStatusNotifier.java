@@ -1,35 +1,28 @@
 package io.sealights.plugins.sealightsjenkins.buildsteps.cli;
 
-import hudson.*;
+import hudson.DescriptorExtensionList;
+import hudson.Extension;
+import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
-import hudson.model.Result;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import io.sealights.plugins.sealightsjenkins.BeginAnalysis;
-import io.sealights.plugins.sealightsjenkins.CleanupManager;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.BaseCommandArguments;
 import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.ExternalReportCommandArguments;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.entities.SealightsBuildStatus;
-import io.sealights.plugins.sealightsjenkins.buildsteps.cli.utils.BuildNameResolver;
-import io.sealights.plugins.sealightsjenkins.entities.TokenData;
-import io.sealights.plugins.sealightsjenkins.entities.ValidationError;
-import io.sealights.plugins.sealightsjenkins.utils.*;
+import io.sealights.plugins.sealightsjenkins.buildsteps.cli.executors.ExternalReportCommandExecutor;
+import io.sealights.plugins.sealightsjenkins.utils.Logger;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 /**
  * This class creates build status report file on the file system and then
  * sends it to the server using the 'externalReport' CLI command.
+ * ===================Deprecated=======================
  */
 public class BuildStatusNotifier extends Notifier {
 
@@ -41,17 +34,6 @@ public class BuildStatusNotifier extends Notifier {
     private String additionalArguments;
     private String reportTitle;
     private BeginAnalysis beginAnalysis = new BeginAnalysis();
-
-    private final String DEFAULT_REPORT_TITLE ="CI Status";
-
-    /*
-    * Start - For when working on slave
-    * */
-    private boolean isSlaveMachine = false;
-    /*
-    * End - For when working on slave
-    * */
-
 
     @DataBoundConstructor
     public BuildStatusNotifier(boolean enabled, String buildSessionId, String appName, String branchName,
@@ -69,273 +51,11 @@ public class BuildStatusNotifier extends Notifier {
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
         Logger logger = new Logger(listener.getLogger(), "SeaLights Build Status Notifier");
-        try {
-            // This step must be first
-            setDefaultValues();
-            if (!enabled) {
-                logger.info("'Report Build Status' is disabled.");
-                return true;
-            }
-
-            this.isSlaveMachine = build.getWorkspace().isRemote();
-
-            Properties additionalProps = PropertiesUtils.toProperties(additionalArguments);
-            EnvVars envVars = build.getEnvironment(listener);
-
-            String filesStorage = resolveFilesStorage(additionalProps, envVars);
-
-            BaseCommandArguments baseCommandArguments = createBaseCommandArguments(
-                    build, envVars, additionalProps, logger);
-
-            String workingDir = findWorkingDirPath(build);
-
-            // we creates a report file on the file system
-            String reportFilePath = resolveReportFilePath(workingDir, logger);
-            if (StringUtils.isNullOrEmpty(reportTitle)){
-                reportTitle = DEFAULT_REPORT_TITLE;
-            }
-            createReportFile(build.getResult(), build.getDuration(), reportFilePath, logger, reportTitle);
-
-            logger.info("About to report build status.");
-
-            // we sends the created report file to the server using SeaLights cli
-            ExternalReportCommandArguments externalReportArguments = new ExternalReportCommandArguments(reportFilePath);
-            CLIHandler cliHandler =
-                    new CLIHandler(baseCommandArguments, externalReportArguments, filesStorage, logger);
-
-            boolean isSuccess = cliHandler.handle();
-
-            if (isSuccess) {
-                onSuccess(envVars, additionalProps, reportFilePath, workingDir, logger);
-            }
-
-        } catch (Exception e) {
-            logger.error("Failed to send build status report. Error: ", e);
-        }
-        return true;
-    }
-
-    private void onSuccess(
-            EnvVars envVars, Properties additionalProps, String createdReport, String workingDir, Logger logger)
-            throws IOException, InterruptedException {
-
-        String keepReportString = resolveEnvVar(envVars, (String) additionalProps.get("keepreport"));
-        Boolean keepReport = Boolean.valueOf(keepReportString);
-
-        if (keepReport) {
-            keepReportFile(createdReport, workingDir, logger);
-        } else {
-            FileUtils.tryDeleteFile(logger, createdReport);
-        }
-    }
-
-    private void keepReportFile(String createdReport, String workingDir, Logger logger)
-            throws IOException, InterruptedException {
-
-        if (!isSlaveMachine) {
-            // when working on master, the report is created in the workspace.
-            // in order to keep it, we just won't delete it (do nothing...).
-            return;
-        }
-
-        // when working on slave machine, the report is first created as temp file in the master machine.
-        // in order to keep the report (on slave machine workspace),
-        // we will copy the report from the master's temp folder to the slave's workspace.
-        // after copying, the temp file on the master will be deleted.
-
-        CleanupManager cleanupManager = new CleanupManager(logger);
-        CustomFile reportOnMaster = new CustomFile(logger, cleanupManager, createdReport);
-        String reportPathOnSlave = PathUtils.join(workingDir, "buildStatusReport_" + UUID.randomUUID() + ".json");
-        boolean deleteFileOnSlave = true, deleteFileOnMaster = true;
-        reportOnMaster.copyToSlave(reportPathOnSlave, deleteFileOnMaster, !deleteFileOnSlave);
-
-        cleanupManager.clean();
+        return new ExternalReportCommandExecutor(logger, new BaseCommandArguments(),
+         new ExternalReportCommandArguments()).execute();
 
     }
 
-    private String createTempPathToFileOnMaster() {
-        String tempFolder = System.getProperty("java.io.tmpdir");
-        String fileName = "reportStatus_" + UUID.randomUUID() + ".txt";
-        return PathUtils.join(tempFolder, fileName);
-    }
-
-    private void setDefaultValues() {
-        if (this.buildName == null)
-            this.buildName = new CommandBuildName.EmptyBuildName();
-    }
-
-    private String resolveReportFilePath(String workingDir, Logger logger) {
-        String fileName;
-
-        if (isSlaveMachine) {
-            // create a copy of the file at the master machine because the file will be reported from the master machine.
-            String reportPathOnMaster = createTempPathToFileOnMaster();
-            fileName = reportPathOnMaster;
-        } else {
-            // we are trying to create the report at the working directory
-            fileName = PathUtils.join(workingDir, "buildStatusReport_" + UUID.randomUUID() + ".json");
-        }
-
-        logger.info("Report file location: '" + fileName + "'");
-        return fileName;
-    }
-
-    private String findWorkingDirPath(AbstractBuild<?, ?> build) {
-        String workingDir;
-        FilePath ws = build.getWorkspace();
-        if (ws == null || (workingDir = ws.getRemote()) == null) {
-            // if we can't resolve the working directory, we will create the report at the temp directory
-            workingDir = System.getProperty("java.io.tmpdir");
-        }
-
-        return workingDir;
-    }
-
-    private void createReportFile(final Result result, long duration, String fileName, Logger logger, String reportTitle) {
-        Map reportMap = createReportMap(result, duration, reportTitle);
-        saveReportToFS(reportMap, fileName, logger);
-    }
-
-    private Map createReportMap(Result result, long duration, String reportTitle) {
-        String status = toSealightsBuildStatus(result);
-        String title = reportTitle;
-        String formatedDuration = TimeUtils.toStringDuration(duration);
-
-        List<Map> data = new ArrayList<>();
-        Map index0 = createReportData("Jenkins status","string",result.toString());
-        data.add(index0);
-
-        Map index1 = createReportData("Duration","string",formatedDuration);
-        data.add(index1);
-
-        Map<String, Object> externalReport = new HashMap<>();
-        externalReport.put("title", title);
-        externalReport.put("data", data);
-        externalReport.put("status", status);
-
-        return externalReport;
-    }
-
-    private Map createReportData(String fieldName, String type, String value){
-        Map map = new HashMap();
-        map.put("fieldName", fieldName);
-        map.put("type", type);
-        map.put("value", value);
-        return map;
-    }
-
-    private String toSealightsBuildStatus(Result result) {
-
-        // possible statuses SUCCESS, UNSTABLE, FAILURE, NOT_BUILT, ABORTED
-        if (Result.SUCCESS == result) {
-            return SealightsBuildStatus.SUCCESS.getName();
-        } else if (Result.UNSTABLE == result || Result.FAILURE == result || Result.ABORTED == result) {
-            return SealightsBuildStatus.FAILURE.getName();
-        } else {
-            // return empty status for every other result ('null' || NOT_BUILT)
-            return null;
-        }
-    }
-
-    private void saveReportToFS(Map reportMap, String reportFilePath, Logger logger) {
-        try {
-            logger.info("Try to create report file at '" + reportFilePath + "'");
-            File reportFile = new File(reportFilePath);
-            if (!reportFile.createNewFile()) {
-                throw new RuntimeException("Failed to create new file at '" + reportFilePath + "' for the report.");
-            }
-            JsonSerializer.serializeToFile(reportFile, reportMap);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create report file at '" + reportFilePath + "'", e);
-        }
-    }
-
-    private BaseCommandArguments createBaseCommandArguments(
-            AbstractBuild<?, ?> build, EnvVars envVars, Properties additionalProps, Logger logger) {
-
-        BaseCommandArguments baseArgs = new BaseCommandArguments();
-
-        String globalToken = beginAnalysis.getDescriptor().getToken();
-        baseArgs.setToken(resolveGlobalArgument(envVars, additionalProps, "token", globalToken));
-        baseArgs.setTokenFile(resolveEnvVar(envVars, (String) additionalProps.get("tokenfile")));
-
-        // need to create tokenData for the upgrade feature (need to know to which server it should request for agents)
-        TokenData tokenData = createTokenData(baseArgs.getToken(), baseArgs.getTokenFile(), logger);
-        baseArgs.setTokenData(tokenData);
-
-        String globalProxy = beginAnalysis.getDescriptor().getProxy();
-        baseArgs.setProxy(resolveGlobalArgument(envVars, additionalProps, "proxy", globalProxy));
-
-        baseArgs.setBuildSessionId(resolveEnvVar(envVars, buildSessionId));
-        baseArgs.setBuildSessionIdFile(resolveEnvVar(envVars, (String) additionalProps.get("buildsessionidfile")));
-
-        baseArgs.setAppName(resolveEnvVar(envVars, appName));
-
-        BuildNameResolver buildNameResolver = new BuildNameResolver();
-        baseArgs.setBuildName(buildNameResolver.getFinalBuildName(build, envVars, buildName, baseArgs.getBuildSessionId(), logger));
-
-        baseArgs.setBranchName(resolveEnvVar(envVars, branchName));
-
-        baseArgs.setAgentPath(resolveEnvVar(envVars, (String) additionalProps.get("agentpath")));
-        baseArgs.setJavaPath(resolveEnvVar(envVars, (String) additionalProps.get("javapath")));
-
-        baseArgs.setBuild(build);
-        baseArgs.setEnvVars(envVars);
-        baseArgs.setLogger(logger);
-
-        return baseArgs;
-    }
-
-    private String resolveGlobalArgument(EnvVars envVars, Properties additionalProps, String name, String globalValue) {
-        String global = JenkinsUtils.resolveEnvVarsInString(envVars, (String) additionalProps.get(name));
-        if (StringUtils.isNullOrEmpty(global)) {
-            global = globalValue;
-        }
-        return global;
-    }
-
-    private String resolveFilesStorage(Properties additionalProps, EnvVars envVars) {
-        String filesStorage = (String) additionalProps.get("filesstorage");
-        if (!StringUtils.isNullOrEmpty(filesStorage)) {
-            return resolveEnvVar(envVars, filesStorage);
-        }
-
-        filesStorage = this.beginAnalysis.getDescriptor().getFilesStorage();
-        if (!StringUtils.isNullOrEmpty(filesStorage)) {
-            return filesStorage;
-        }
-
-        return System.getProperty("java.io.tmpdir");
-    }
-
-    private String resolveEnvVar(EnvVars envVars, String envVarKey) {
-        return JenkinsUtils.resolveEnvVarsInString(envVars, envVarKey);
-    }
-
-    private TokenData createTokenData(String token, String tokenFile, Logger logger) {
-        TokenData tokenData;
-
-        ArgumentFileResolver argumentFileResolver = new ArgumentFileResolver();
-        token = argumentFileResolver.resolve(logger, token, tokenFile);
-
-        try {
-            tokenData = TokenData.parse(token);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid token. Error: ", e);
-        }
-
-        TokenValidator tokenValidator = new TokenValidator();
-        List<ValidationError> validationErrors = tokenValidator.validate(tokenData);
-        if (validationErrors.size() > 0) {
-            logger.error("Invalid token. The token contains the following errors:");
-            for (ValidationError validationError : validationErrors) {
-                logger.error("Field: '" + validationError.getName() + "', Error: '" + validationError.getProblem() + "'.");
-            }
-            throw new RuntimeException("Invalid token.");
-        }
-
-        return tokenData;
-    }
 
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
