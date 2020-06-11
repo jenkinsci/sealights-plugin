@@ -11,6 +11,8 @@ import java.util.List;
  * Executor for the 'externalReport' command.
  */
 public class ExternalReportCommandExecutor extends AbstractCommandExecutor {
+    public static final String DEPRECATION_MESSAGE = "externalReport step is deprecated, this data is not supported " +
+     "anymore. will be removed soon";
 
     private ExternalReportCommandArguments externalReportArguments;
 
@@ -22,7 +24,6 @@ public class ExternalReportCommandExecutor extends AbstractCommandExecutor {
 
     @Override
     public void addAdditionalArguments(List<String> commandsList) {
-        addArgumentKeyVal("report", JenkinsUtils.resolveEnvVarsInString(baseArgs.getEnvVars(), externalReportArguments.getReport()), commandsList);
     }
 
     @Override
@@ -30,4 +31,9 @@ public class ExternalReportCommandExecutor extends AbstractCommandExecutor {
         return "externalReport";
     }
 
+    @Override
+    public boolean execute() {
+        logger.info(DEPRECATION_MESSAGE);
+        return true;
+    }
 }

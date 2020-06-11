@@ -29,6 +29,7 @@ import java.util.*;
 
 public class SealightsCLIBuildStep extends Builder {
     public static final String DEFAULT_LOGS_FOLDER = "$${WORKSPACE}/sealights-logs";
+    public static final String LAB_ID = "labid";
 
     public boolean enabled;
     public boolean failBuildIfStepFail;
@@ -274,11 +275,21 @@ public class SealightsCLIBuildStep extends Builder {
             return new CLIRunner(configView.getBuildSessionId(),configView.getAppName(),configView.getBranchName(),
                     configView.getBuildName(),configView.getAdditionalArguments(),null);
         }else {
-            Properties properties = PropertiesUtils.toProperties(commandMode.getAdditionalArguments());
-            String labId= (commandMode.getLabId()!= null)? commandMode.getLabId() : properties.get("labid").toString();
+            String labId = resolveLabId(commandMode);
             CommandBuildName buildName = new CommandBuildName.EmptyBuildName();
             return new CLIRunner(commandMode.getBuildSessionId(), commandMode.getAdditionalArguments(), buildName, labId);
         }
+    }
+
+    private String resolveLabId(CommandMode commandMode) {
+        Properties properties = PropertiesUtils.toProperties(commandMode.getAdditionalArguments());
+        if (commandMode.getLabId()!= null){
+            return commandMode.getLabId();
+        }
+        if(properties.containsKey(LAB_ID)){
+            return properties.get(LAB_ID).toString();
+        }
+        return null;
     }
 
     private String resolveBuildName(CommandBuildName buildName){

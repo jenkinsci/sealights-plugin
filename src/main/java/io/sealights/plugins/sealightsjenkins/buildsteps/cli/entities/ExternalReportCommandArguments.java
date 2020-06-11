@@ -7,8 +7,7 @@ public class ExternalReportCommandArguments extends AbstractCommandArgument {
 
     private String report;
 
-    public ExternalReportCommandArguments(String report) {
-        this.report = report;
+    public ExternalReportCommandArguments() {
     }
 
     public String getReport() {
