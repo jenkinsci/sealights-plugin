@@ -61,7 +61,7 @@ public class JenkinsUtils {
     public static String getUpstreamBuildName(AbstractBuild<?, ?> build, String upstreamProjectName, Logger logger) {
         String finalBuildName = getBuildNumberFromUpstreamBuild(build.getCauses(), upstreamProjectName);
         if (StringUtils.isNullOrEmpty(finalBuildName)) {
-            logger.warning("Couldn't find build number for " + upstreamProjectName + ". Using this job's build name.");
+            logger.warn("Couldn't find build number for " + upstreamProjectName + ". Using this job's build name.");
             return null;
         }
 

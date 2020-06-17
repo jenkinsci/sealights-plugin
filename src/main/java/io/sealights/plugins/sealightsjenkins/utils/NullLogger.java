@@ -16,7 +16,7 @@ public class NullLogger extends Logger {
     public void info(String message){}
 
     @Override
-    public void warning(String message){}
+    public void warn(String message){}
 
     @Override
     public void error(String message){}

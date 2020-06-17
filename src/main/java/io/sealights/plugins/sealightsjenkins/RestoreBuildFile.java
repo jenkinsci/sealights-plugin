@@ -61,7 +61,7 @@ public class RestoreBuildFile extends Recorder {
         VirtualChannel channel = Computer.currentComputer().getChannel();
         FilePath backupFile = new FilePath(channel, slbackFile);
         if (!backupFile.exists()) {
-            logger.warning("File '" + originalFile + "' doesn't exist. Not need to restore.");//File doesn't exist. Not need to restore.
+            logger.warn("File '" + originalFile + "' doesn't exist. Not need to restore.");//File doesn't exist. Not need to restore.
             return;
         }
 

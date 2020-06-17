@@ -70,23 +70,23 @@ public abstract class AbstractUpgradeManager {
     private boolean isValidResponse(UpgradeResponse upgradeResponse) {
         boolean isValid = true;
         if (upgradeResponse == null) {
-            logger.warning("Got response 'null'.");
+            logger.warn("Got response 'null'.");
             return false;
         }
 
         AgentInfo agentInfo = upgradeResponse.getAgent();
         if (agentInfo == null) {
-            logger.warning("Got response with agent information 'null'.");
+            logger.warn("Got response with agent information 'null'.");
             return false;
         }
 
         if (!Version.isValidVersion(agentInfo.getVersion())) {
-            logger.warning("Got response with invalid version '" + agentInfo.getVersion() + "'.");
+            logger.warn("Got response with invalid version '" + agentInfo.getVersion() + "'.");
             isValid = false;
         }
 
         if (!isValidAgentName(agentInfo.getName())) {
-            logger.warning("Got response with invalid agent name '" + agentInfo.getName() + "'.");
+            logger.warn("Got response with invalid agent name '" + agentInfo.getName() + "'.");
             isValid = false;
         }
 
@@ -101,7 +101,7 @@ public abstract class AbstractUpgradeManager {
         File folder = new File(jarsFolder);
         File[] filesInFolder = folder.listFiles();
         if (filesInFolder == null) {
-            logger.warning("Unable to rearrange the cache folder since 'filesInFolder' is null.");
+            logger.warn("Unable to rearrange the cache folder since 'filesInFolder' is null.");
             return;
         }
         TreeMap<Version, List<File>> versions = createAgentsVersionsSortedMap(filesInFolder);
@@ -228,7 +228,7 @@ public abstract class AbstractUpgradeManager {
         // try to download the agent to the target zip file.
         logger.info("Trying to upgrade to version '" + version + "' from url '" + url + "'.");
         if (!upgradeProxy.downloadAgent(url, zipFilePath)) {
-            logger.warning("Failed to download agent with version '" + version + "'.");
+            logger.warn("Failed to download agent with version '" + version + "'.");
         } else {
             logger.info("Download completed successfully.");
             rearrangeJarsFolder(jarsFolder);
@@ -242,7 +242,7 @@ public abstract class AbstractUpgradeManager {
             if (newAgent.isFile())
                 return newAgent.getAbsolutePath();
 
-            logger.warning("Failed to unzip agent with version '" + version + "'.");
+            logger.warn("Failed to unzip agent with version '" + version + "'.");
         }
         return null;
     }
@@ -257,7 +257,7 @@ public abstract class AbstractUpgradeManager {
             return null;
         }
         if (!recommendedAgent.isFile()) {
-            logger.warning("Didn't find the recommended agent '"
+            logger.warn("Didn't find the recommended agent '"
                     + recommendedAgent.getAbsolutePath() + "' in file system or it is not a valid file.");
             return null;
         }
@@ -289,7 +289,7 @@ public abstract class AbstractUpgradeManager {
                 return;
             }
             if (oldAgent.exists()) {
-                logger.warning("Failed to delete " + descriptor + ": '" + oldAgent.getAbsolutePath() + "'.");
+                logger.warn("Failed to delete " + descriptor + ": '" + oldAgent.getAbsolutePath() + "'.");
             }
 
         } catch (Exception e) {
