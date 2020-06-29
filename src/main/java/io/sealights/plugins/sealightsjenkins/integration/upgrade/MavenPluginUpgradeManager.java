@@ -1,7 +1,6 @@
 package io.sealights.plugins.sealightsjenkins.integration.upgrade;
 
 import io.sealights.agents.infra.integration.SeaLightsPluginInfo;
-import io.sealights.onpremise.agents.infra.logging.ILogger;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeConfiguration;
 import io.sealights.plugins.sealightsjenkins.integration.upgrade.entities.UpgradeResponse;
@@ -15,9 +14,9 @@ import java.io.IOException;
 public class MavenPluginUpgradeManager {
 
     private SeaLightsPluginInfo slInfo;
-    private ILogger logger;
+    private Logger logger;
 
-    public MavenPluginUpgradeManager(SeaLightsPluginInfo slInfo, ILogger logger) {
+    public MavenPluginUpgradeManager(SeaLightsPluginInfo slInfo, Logger logger) {
         this.slInfo = slInfo;
         this.logger = logger;
     }

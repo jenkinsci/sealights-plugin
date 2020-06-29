@@ -19,8 +19,6 @@ import io.sealights.agents.infra.integration.enums.LogLevel;
 import io.sealights.agents.infra.integration.maven.integration.MavenIntegration;
 import io.sealights.agents.infra.integration.maven.integration.MavenIntegrationInfo;
 import io.sealights.agents.infra.integration.IntegrationLogger;
-import io.sealights.onpremise.agents.infra.logging.ILogger;
-import io.sealights.plugins.sealightsjenkins.entities.FileBackupInfo;
 import io.sealights.plugins.sealightsjenkins.entities.TokenData;
 import io.sealights.plugins.sealightsjenkins.entities.ValidationError;
 import io.sealights.plugins.sealightsjenkins.exceptions.SeaLightsIllegalStateException;
@@ -458,7 +456,7 @@ public class BeginAnalysis extends Builder {
         }
     }
 
-    private String tryGetSlMvnPluginVersion(SeaLightsPluginInfo slInfo, ILogger logger, Properties additionalProps) {
+    private String tryGetSlMvnPluginVersion(SeaLightsPluginInfo slInfo, Logger logger, Properties additionalProps) {
 
         String recommendedVersion = additionalProps.getProperty("mvnpluginversion");
 
@@ -571,7 +569,7 @@ public class BeginAnalysis extends Builder {
         return pomPath;
     }
 
-    private void doMavenIntegration(ILogger logger, SeaLightsPluginInfo slInfo, String mvnPluginVersionToUse) throws IOException, InterruptedException {
+    private void doMavenIntegration(Logger logger, SeaLightsPluginInfo slInfo, String mvnPluginVersionToUse) throws IOException, InterruptedException {
         // Set build logger as actual logger in pom integration process
         IntegrationLogger.setPluginLogger(logger);
         List<String> folders = Arrays.asList(slInfo.getBuildFilesFolders().split("\\s*,\\s*"));
@@ -780,7 +778,7 @@ public class BeginAnalysis extends Builder {
             if (StringUtils.isNullOrEmpty(token)) {
                 token = getDescriptor().getToken();
                 if (StringUtils.isNullOrEmpty(token)) {
-                    logger.warning("Sealights token is not set. Sealights will try to run without it.");
+                    logger.warn("Sealights token is not set. Sealights will try to run without it.");
                     return false;
                 }
             }
@@ -821,7 +819,7 @@ public class BeginAnalysis extends Builder {
         return true;
     }
 
-    private List<PomFile> getPomFiles(List<String> folders, String patterns, ILogger logger, String pomPath) throws IOException, InterruptedException {
+    private List<PomFile> getPomFiles(List<String> folders, String patterns, Logger logger, String pomPath) throws IOException, InterruptedException {
         List<PomFile> pomFiles = new ArrayList<>();
         boolean isParentPomInList = false;
         VirtualChannel channel = Computer.currentComputer().getChannel();

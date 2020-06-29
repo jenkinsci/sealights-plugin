@@ -29,7 +29,7 @@ public class CleanupManager {
             try {
                 FileUtils.tryDeleteFile(logger, file);
             } catch (FileSystemException e) {
-                logger.warning("Failed to delete file: " + file + ". Reason: " + e.getMessage());
+                logger.warn("Failed to delete file: " + file + ". Reason: " + e.getMessage());
             }
         }
     }

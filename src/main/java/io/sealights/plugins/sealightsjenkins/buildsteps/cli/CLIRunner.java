@@ -288,7 +288,7 @@ public class CLIRunner extends Builder {
             if (StringUtils.isNullOrEmpty(token)) {
                 token = beginAnalysis.getDescriptor().getToken();
                 if (StringUtils.isNullOrEmpty(token)) {
-                    logger.warning("Sealights token is not set. Sealights will try to run without it.");
+                    logger.warn("Sealights token is not set. Sealights will try to run without it.");
                     return false;
                 }
             }

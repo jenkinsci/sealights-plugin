@@ -67,12 +67,12 @@ public class FileUtils {
     public static boolean copyFilesBetweenMasterAndSlave(
             Logger logger, String fileOnMaster, String fileOnSlave, boolean toSlave, boolean isFolder) throws IOException, InterruptedException {
         if (StringUtils.isNullOrEmpty(fileOnSlave)) {
-            logger.warning("fileOnSlave is null. Skipping the copy.");
+            logger.warn("fileOnSlave is null. Skipping the copy.");
             return false;
         }
 
         if (StringUtils.isNullOrEmpty(fileOnMaster)) {
-            logger.warning("fileOnMaster is null. Skipping the copy.");
+            logger.warn("fileOnMaster is null. Skipping the copy.");
             return false;
         }
 
