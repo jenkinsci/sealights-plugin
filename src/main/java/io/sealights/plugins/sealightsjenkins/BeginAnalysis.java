@@ -12,6 +12,7 @@ import hudson.util.DescribableList;
 import hudson.util.FormValidation;
 import hudson.util.XStream2;
 import io.sealights.agents.infra.integration.SeaLightsPluginInfo;
+import io.sealights.agents.infra.integration.maven.entities.CollectedPomFiles;
 import io.sealights.agents.infra.integration.maven.entities.PomFile;
 import io.sealights.agents.infra.integration.enums.ExecutionType;
 import io.sealights.agents.infra.integration.enums.LogDestination;
@@ -573,7 +574,7 @@ public class BeginAnalysis extends Builder {
         // Set build logger as actual logger in pom integration process
         IntegrationLogger.setPluginLogger(logger);
         List<String> folders = Arrays.asList(slInfo.getBuildFilesFolders().split("\\s*,\\s*"));
-        List<PomFile> pomFiles = getPomFiles(folders, slInfo.getBuildFilesPatterns(), logger, pomPath);
+        CollectedPomFiles pomFiles = getPomFiles(folders, slInfo.getBuildFilesPatterns(), logger, pomPath);
 
         MavenIntegrationInfo info = new MavenIntegrationInfo(
                 pomFiles,
@@ -819,29 +820,24 @@ public class BeginAnalysis extends Builder {
         return true;
     }
 
-    private List<PomFile> getPomFiles(List<String> folders, String patterns, Logger logger, String pomPath) throws IOException, InterruptedException {
-        List<PomFile> pomFiles = new ArrayList<>();
-        boolean isParentPomInList = false;
+    private CollectedPomFiles getPomFiles(List<String> folders, String patterns, Logger logger, String pomPath) throws IOException, InterruptedException {
+        List<PomFile> nonRootPomFiles = new ArrayList<>();
         VirtualChannel channel = Computer.currentComputer().getChannel();
-        if (!patterns.startsWith("**" + File.separator))
+        if (!patterns.startsWith("**" + File.separator)) {
             patterns = "**" + File.separator + patterns;
+        }
 
         for (String folder : folders) {
             List<String> remotePoms = new FilePath(channel, folder).act(new SearchFileCallable(patterns));
             for (String matchingPom : remotePoms) {
                 logger.debug("Adding pom:" + matchingPom);
-                if (matchingPom.equalsIgnoreCase(pomPath))
-                    isParentPomInList = true;
-                pomFiles.add(new JenkinsPomFile(matchingPom, logger));
+                if (!matchingPom.equalsIgnoreCase(pomPath)) {
+                    nonRootPomFiles.add(new JenkinsPomFile(matchingPom, logger));
+                }
             }
         }
 
-
-        if (!isParentPomInList) {
-            pomFiles.add(new JenkinsPomFile(pomPath, logger));
-        }
-
-        return pomFiles;
+        return new CollectedPomFiles(new JenkinsPomFile(pomPath, logger), null, nonRootPomFiles);
     }
 
     private void tryAddRestoreBuildFilePublisher(AbstractBuild build, Logger logger) {

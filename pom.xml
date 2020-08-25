@@ -34,7 +34,7 @@
         <artifacts.folder>${resources.folder}/artifacts</artifacts.folder>
         <testng.version>6.1.1</testng.version>
         <mockito.version>1.10.19</mockito.version>
-        <java.agent.infra.version>[2.0.0-SNAPSHOT],[2.0,)</java.agent.infra.version>
+        <java.agent.infra.version>[3.0.0-SNAPSHOT],[3.0,)</java.agent.infra.version>
     </properties>
 
 
@@ -140,6 +140,36 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>display-info</id>
+                        <configuration>
+                            <rules>
+                                <enforceBytecodeVersion>
+                                    <maxJdkVersion>1.${java.level}</maxJdkVersion>
+                                    <excludes>
+                                        <!-- These are original excludes, as in the parent pom. -->
+                                        <exclude>org.jenkins-ci.main:jenkins-core</exclude>
+                                        <exclude>org.jenkins-ci.main:cli</exclude>
+                                        <exclude>org.jenkins-ci.main:jenkins-test-harness</exclude>
+                                        <exclude>com.google.code.findbugs:annotations</exclude>
+
+                                        <!-- Excluding these, as jackson's Java bytecode version is 1.6, documentation
+                                        states support for 1.7, but the enforcer fails due to presence of a Java 9
+                                        module class in the jackson JAR. -->
+                                        <exclude>com.fasterxml.jackson.core:jackson-core:jar:2.11.1</exclude>
+                                        <exclude>com.fasterxml.jackson.core:jackson-annotations:jar:2.11.1</exclude>
+                                        <exclude>com.fasterxml.jackson.core:jackson-databind:jar:2.11.1</exclude>
+                                    </excludes>
+                                </enforceBytecodeVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
