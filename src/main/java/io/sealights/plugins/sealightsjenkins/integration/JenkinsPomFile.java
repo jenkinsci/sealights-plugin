@@ -11,7 +11,6 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayOutputStream;
@@ -51,7 +50,7 @@ public class JenkinsPomFile extends PomFile {
     }
 
     @Override
-    public void backup() throws Exception {
+    public void backup(String workspacePath) throws Exception {
         String backupFile = this.filename + BACKUP_EXTENSION;
         LOGGER.info("JenkinsPomFile - creating a back up file: " + backupFile);
         VirtualChannel channel = Computer.currentComputer().getChannel();
