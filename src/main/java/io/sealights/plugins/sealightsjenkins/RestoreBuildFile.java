@@ -26,6 +26,7 @@ import java.util.List;
  */
 public class RestoreBuildFile extends Recorder {
 
+    private static final String POM_BACKUP_PATTERN = "**/pom.xml.slback";
     private boolean shouldRestore;
     private String folders;
     private String parentPomFile;
@@ -48,7 +49,7 @@ public class RestoreBuildFile extends Recorder {
 
         VirtualChannel channel = Computer.currentComputer().getChannel();
         FilePath rootFolderPath = new FilePath(channel, rootFolder);
-        List<String> filesToRestore = rootFolderPath.act(new SearchFileCallable("**/*" + PomFile.BACKUP_EXTENSION));
+        List<String> filesToRestore = rootFolderPath.act(new SearchFileCallable(POM_BACKUP_PATTERN));
         logger.info("searching in folder: '" + rootFolder +"', found '" + filesToRestore.size()+"' files.");
         for (String currentName : filesToRestore) {
             restoreSingleFile(currentName, logger);
