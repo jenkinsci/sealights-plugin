@@ -6,7 +6,7 @@
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
         <version>2.11</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
 
@@ -35,7 +35,7 @@
         <testng.version>6.1.1</testng.version>
         <mockito.version>1.10.19</mockito.version>
         <java.agent.infra.version>[3.0.0-SNAPSHOT],[3.0,)</java.agent.infra.version>
-        <lombok.version>1.16.16</lombok.version>
+        <lombok.version>1.18.22</lombok.version>
     </properties>
 
 
@@ -332,12 +332,12 @@
                                 <phase>pre-integration-test</phase>
                                 <configuration>
                                     <target>
-                                        <echo message="Unzipping SeaLights artifacts file." />
-                                        <unzip src="${resources.folder}/sealights-java-${sealights.version}.tgz" dest="${resources.folder}/" />
-                                        <echo message="Finished unzipping. Copying the files to the resources folder." />
-                                        <copy file="${artifacts.folder}/sl-test-listener-${sealights.version}.jar" tofile="${resources.folder}/sl-test-listener.jar" />
-                                        <copy file="${artifacts.folder}/sl-build-scanner-${sealights.version}.jar" tofile="${resources.folder}/sl-build-scanner.jar" />
-                                        <echo message="Finished copying. Deleting the zip file." />
+                                        <echo message="Unzipping SeaLights artifacts file."/>
+                                        <unzip src="${resources.folder}/sealights-java-${sealights.version}.tgz" dest="${resources.folder}/"/>
+                                        <echo message="Finished unzipping. Copying the files to the resources folder."/>
+                                        <copy file="${artifacts.folder}/sl-test-listener-${sealights.version}.jar" tofile="${resources.folder}/sl-test-listener.jar"/>
+                                        <copy file="${artifacts.folder}/sl-build-scanner-${sealights.version}.jar" tofile="${resources.folder}/sl-build-scanner.jar"/>
+                                        <echo message="Finished copying. Deleting the zip file."/>
                                     </target>
                                 </configuration>
                                 <goals>
